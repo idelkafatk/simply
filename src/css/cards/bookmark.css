@@ -43,6 +43,7 @@
 
 .kg-bookmark-container {
   @extend %card;
+  border-radius: 0.5rem;
 
   display: flex;
   flex-direction: column;

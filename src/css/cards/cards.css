@@ -1,5 +1,7 @@
 .kg-card {
   @extend %font-sans;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
 .kg-card:not(.kg-callout-card) {
@@ -27,6 +29,11 @@ except for when immediately preceeded by a heading */
 }
 
 /* This keeps small iamges centered */
+.kg-image-card {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
 .kg-image-card img {
   margin: auto;
 }

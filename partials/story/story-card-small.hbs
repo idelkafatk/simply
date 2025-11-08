@@ -6,7 +6,7 @@
 
     {{#if feature_image}}
     <a href="{{url}}" class="storySmall-link flex flex-col grow">
-        <img class="storySmall-img object-cover w-full h-48 blur-up lazyload"
+        <img class="storySmall-img object-cover w-full h-48 blur-up lazyload rounded-lg"
             src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
             data-srcset="{{img_url feature_image size="xs"}} 100w,{{img_url feature_image size="s"}} 300w,{{img_url feature_image size="m"}} 600w"
             data-sizes="auto"
@@ -25,7 +25,7 @@
 
     {{else}}
 
-    <a href="{{url}}" class="flex flex-col grow justify-between p-6 bg-blank rounded shadow transition-all hover:shadow-card-primary">
+    <a href="{{url}}" class="flex flex-col grow justify-between p-6 bg-blank rounded-lg shadow transition-all hover:shadow-card-primary">
         <div>
             <h2 class="text-xl text-title leading-tight">{{title}}</h2>
             <p class="pt-4 mb-2">{{excerpt words="20"}}...</p>

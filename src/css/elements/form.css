@@ -1,15 +1,15 @@
 $input-background: hsl(0, 0%, 96%);
 
-$input-focus-box-shadow-size: 0 0.625rem 1.25rem;
+$input-focus-box-shadow-size: 0 0 0 3px;
 
-$input-focus-box-shadow-color: rgba(0, 0, 0, .1);
+$input-focus-box-shadow-color: rgba(107, 70, 193, 0.1);
 
 $input-disabled-background-color: $input-background;
 $input-disabled-border-color: $input-background;
 $input-disabled-color: rgba(117, 117, 117, 0.3);
 $input-disabled-placeholder-color: rgba(117, 117, 117, 0.3);
 
-$input-shadow: inset 0 0.0625em 0.125em rgb(10 10 10 / 5%);
+$input-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 
 $textarea-padding: $control-padding-horizontal;
 $textarea-max-height: 40em;

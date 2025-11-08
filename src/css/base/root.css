@@ -4,23 +4,23 @@
 :root {
   --ghost-accent-color: $primary-color;
   --color-primary: var(--ghost-accent-color);
-  --blank: #fff;
+  --blank: #FAFAFA;
 
   /* Global Color */
-  --bg-base: #fff;
+  --bg-base: #FAFAFA;
   --text-base: $primary-text-color;
 
   /* Header */
   --header-text-link: $primary-text-color;
-  --header-bg: #fff;
+  --header-bg: #FFFFFF;
 
   /* story */
-  --story-small-bg: #fff;
-  --card-bg: #fff;
+  --story-small-bg: #FFFFFF;
+  --card-bg: #FFFFFF;
 
   /* Drop Down */
   --dropdown-text: $primary-text-color;
-  --dropdown-bg: #fff;
+  --dropdown-bg: #FFFFFF;
 
   /* title */
   --title-color: $gray-900;
@@ -28,7 +28,7 @@
   /* link */
   --color-link: var(--ghost-accent-color);
 
-  --border-color: #e2ecec;
+  --border-color: #E5E5E5;
 
   /* gray */
   --gray-100: $gray-100;
@@ -43,27 +43,27 @@
   --gray-900: $gray-900;
 
   /* Button */
-  --button-color: #292929;
-  --button-bg: #f2f2f2;
-  --button-hover-color: rgba(0,0,0,.7);
-  --button-hover-bg: #ececec;
+  --button-color: #404040;
+  --button-bg: #F0F0F0;
+  --button-hover-color: #262626;
+  --button-hover-bg: #E5E5E5;
 
   /* Button white */
-  --button-white-color: #191919;
-  --button-white-bg: #fff;
-  --button-white-hover-color: #757575;
-  --button-white-hover-bg: #f9f9f9;
+  --button-white-color: #262626;
+  --button-white-bg: #FFFFFF;
+  --button-white-hover-color: #525252;
+  --button-white-hover-bg: #FAFAFA;
 
   /* form */
-  --input-color: hsl(0, 0%, 21%);
-  --input-bg: #fff;
-  --input-border-color: #ced4da;
-  --input-hover-border-color: #80bdff;
-  --input-focus-border-color: #80bdff;
-  --placeholder-color: rgba(54, 54, 54, 0.8);
+  --input-color: #404040;
+  --input-bg: #FFFFFF;
+  --input-border-color: #E5E5E5;
+  --input-hover-border-color: #D4D4D4;
+  --input-focus-border-color: #D97706;
+  --placeholder-color: rgba(163, 163, 163, 0.8);
 
   /* cta */
-  --bg-cta: rgb(255, 255, 255);
+  --bg-cta: rgb(250, 250, 250);
 }
 
 /* Dark mode

@@ -482,6 +482,8 @@ amp-social-share.rounded {
 
 .kg-gallery-container {
   position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
 .kg-gallery-row {
@@ -521,7 +523,7 @@ amp-social-share.rounded {
   background: transparent;
   padding: 20px;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   box-shadow: inset 0 0 0 1px rgb(124 139 154 / 25%);
 }
 
@@ -572,7 +574,7 @@ amp-social-share.rounded {
   max-width: 512px;
   color: #15212A;
   background: #fff;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   transition: none;
   margin: 0 auto;
 }
@@ -671,7 +673,7 @@ amp-social-share.rounded {
 .kg-callout-card {
   display: flex;
   padding: 20px 28px;
-  border-radius: 3px;
+  border-radius: 0.5rem;
 }
 
 .kg-callout-card-grey {

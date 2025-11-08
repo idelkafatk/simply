@@ -114,7 +114,7 @@ const simplySetup = () => {
     const hasCover = documentBody.closest('.has-cover')
     const $jsHeader = document.querySelector('.js-header')
 
-    window.addEventListener('scroll', () => {
+    const updateHeader = () => {
       const lastScrollY = window.scrollY
 
       if (lastScrollY > 5) {
@@ -126,17 +126,48 @@ const simplySetup = () => {
       if (!hasCover) return
 
       lastScrollY >= 20 ? documentBody.classList.remove('is-head-transparent') : documentBody.classList.add('is-head-transparent')
-    }, { passive: true })
+    }
+
+    // Check scroll position on page load
+    updateHeader()
+
+    window.addEventListener('scroll', updateHeader, { passive: true })
   }
 
   headerTransparency()
 
   /* Dark Mode
   /* ---------------------------------------------------------- */
+  const updateThemeIcons = () => {
+    const $toggleDarkMode = docSelectorAll('.js-dark-mode')
+    
+    if (!$toggleDarkMode.length) return
+
+    $toggleDarkMode.forEach(button => {
+      const moonIcon = button.querySelector('.icon--moon')
+      const sunnyIcon = button.querySelector('.icon--sunny')
+      
+      if (!moonIcon || !sunnyIcon) return
+
+      if (rootEl.classList.contains('dark')) {
+        // Dark mode: show sunny icon, hide moon icon
+        moonIcon.classList.add('hidden')
+        sunnyIcon.classList.remove('hidden')
+      } else {
+        // Light mode: show moon icon, hide sunny icon
+        moonIcon.classList.remove('hidden')
+        sunnyIcon.classList.add('hidden')
+      }
+    })
+  }
+
   const darkMode = () => {
     const $toggleDarkMode = docSelectorAll('.js-dark-mode')
 
     if (!$toggleDarkMode.length) return
+
+    // Update icons on page load
+    updateThemeIcons()
 
     $toggleDarkMode.forEach(item => item.addEventListener('click', function (event) {
       event.preventDefault()
@@ -148,10 +179,22 @@ const simplySetup = () => {
         rootEl.classList.remove('dark')
         localStorage.theme = 'light'
       }
+      
+      // Update icons after theme change
+      updateThemeIcons()
     }))
   }
 
   darkMode()
+
+  // Watch for theme changes (e.g., from system preference)
+  const observer = new MutationObserver(() => {
+    updateThemeIcons()
+  })
+  observer.observe(rootEl, {
+    attributes: true,
+    attributeFilter: ['class']
+  })
 
   /* DropDown Toggle
   /* ---------------------------------------------------------- */
@@ -183,6 +226,30 @@ const simplySetup = () => {
     e.preventDefault()
     documentBody.classList.toggle('has-menu')
   })
+
+  /* Remove focus from buttons after click
+  /* ---------------------------------------------------------- */
+  const removeButtonFocus = () => {
+    const buttons = docSelectorAll('.button, button, a.button')
+    
+    if (!buttons.length) return
+
+    buttons.forEach(button => {
+      button.addEventListener('mousedown', function (e) {
+        // Prevent default focus on mousedown
+        if (e.button === 0) { // Left mouse button
+          this.blur()
+        }
+      })
+      
+      button.addEventListener('click', function () {
+        // Remove focus after click
+        setTimeout(() => this.blur(), 0)
+      })
+    })
+  }
+
+  removeButtonFocus()
 }
 
 document.addEventListener('DOMContentLoaded', simplySetup)

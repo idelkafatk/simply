@@ -1,5 +1,5 @@
-$control-radius: 4px;
-$control-radius-small: 2px;
+$control-radius: 0.75rem;
+$control-radius-small: 0.25rem;
 
 $control-border-width: 1px;
 

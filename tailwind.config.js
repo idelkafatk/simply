@@ -5,7 +5,7 @@ module.exports = {
   // darkMode: 'class',
   theme: {
     fontFamily: {
-      sans: ['Inter', ...defaultTheme.fontFamily.sans],
+      sans: ['Rubik', ...defaultTheme.fontFamily.sans],
       serif: ['PT Serif', ...defaultTheme.fontFamily.serif]
     },
     colors: {
@@ -140,9 +140,9 @@ module.exports = {
         vmin8: '8vmin'
       },
       boxShadow: {
-        '3xl': '0 36px 64px 0 rgba(0,0,0,.2)',
-        '4xl': 'inset 0 0 0 0.1rem rgb(58 3 45 / 8%), 0 10px 20px rgb(58 3 45 / 4%), 0 2px 6px rgb(58 3 45 / 4%), 0 0 1px rgb(58 3 45 / 4%)',
-        'card-primary': 'inset 0 0 0 0.1rem var(--color-primary), 0 10px 20px rgb(58 3 45 / 4%), 0 2px 6px rgb(58 3 45 / 4%), 0 0 1px rgb(58 3 45 / 4%)'
+        '3xl': '0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
+        '4xl': '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)',
+        'card-primary': '0 4px 6px -1px rgba(217, 119, 6, 0.1), 0 2px 4px -1px rgba(217, 119, 6, 0.06), inset 0 0 0 1px rgba(217, 119, 6, 0.1)'
       },
       inset: {
         32: '8rem',
