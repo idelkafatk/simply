@@ -3,7 +3,7 @@
         {{!-- Logo --}}
         <div class="header-left mr-5 flex flex-none items-center">
             <a href="{{@site.url}}"
-                class="header-logo inline-block leading-none godo-tracking"
+                class="header-logo inline-flex items-center gap-[0.2rem] leading-none godo-tracking"
                 data-event-category="Header"
                 data-event-action="Logo"
                 data-event-label="Click"
@@ -11,9 +11,8 @@
                 {{#if @site.logo}}
                     <img src="{{img_url @site.logo size="m"}}" class="header-logo-img max-h-9 logo-default" alt="{{@site.title}}" width="115" height="30"/>
                     {{!-- <img src="{{asset "images/logo-dark-mode.png"}}" class="header-logo-img max-h-9 hidden logo-dark-mode" alt="" width="115" height="30"/> --}}
-                {{else}}
-                    <span class="text-3xl font-bold text-logo">{{@site.title}}</span>
                 {{/if}}
+                <span class="text-3xl font-bold text-logo">{{@site.title}}</span>
             </a>
         </div>
 

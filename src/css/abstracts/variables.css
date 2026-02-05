@@ -15,7 +15,7 @@ $gray-700: #525252;
 $gray-800: #404040;
 $gray-900: #262626;
 
-$primary-text-color: $gray-800;
+$primary-text-color: $gray-600;
 $primary-text-color-title: $gray-900;
 
 /* Header
