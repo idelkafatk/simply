@@ -70,36 +70,36 @@
 /* ---------------------------------------------------------- */
 
 .dark {
-  --blank: #111;
+  --blank: #151719;
 
   /* Global */
-  --bg-base: #111;
-  --text-base: #acacac;
+  --bg-base: #151719;
+  --text-base: rgba(255, 255, 255, 0.75);
 
   /* Header */
   --header-text-link: #fff;
-  --header-bg: #000;
+  --header-bg: #151719;
 
   /* story */
-  --story-small-bg: #131212;
-  --card-bg: #131212;
+  --story-small-bg: #1a1c1f;
+  --card-bg: #1a1c1f;
 
   /* Drop Down */
   --dropdown-text: #fff;
-  --dropdown-bg: #191b1f;
+  --dropdown-bg: #1a1c1f;
 
   /* title */
-  --title-color: hsla(0, 0%, 100%, .9);
+  --title-color: #fff;
 
   /* Gray */
-  --gray-100: #141414;
-  --gray-150: #141414;
-  --gray-200: #141414;
-  --gray-300: #1b1a1a;
-  --gray-500: #747E86;
-  --gray-600: #A1A1AA;
-  --gray-700: #9e9a9a;
-  --gray-900: hsla(0, 0%, 100%, .9);
+  --gray-100: #1a1c1f;
+  --gray-150: #1a1c1f;
+  --gray-200: #1a1c1f;
+  --gray-300: #2a2c2f;
+  --gray-500: #738a94;
+  --gray-600: #979797;
+  --gray-700: rgba(255, 255, 255, 0.75);
+  --gray-900: #fff;
 
   --border-color: #2e2e2e;
 
