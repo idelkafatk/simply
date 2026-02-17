@@ -33,22 +33,30 @@ a {
 /* ---------------------------------------------------------- */
 
 blockquote:not([class]) {
-  @apply text-2xl;
+  @apply text-xl;
 
-  border-left: 3px solid currentColor;
-  line-height: 1.5;
-  /* margin: 2rem 0 2rem -1.5rem; */
-  /* padding-bottom: .125rem; */
-  padding-left: 4vmin;
-  margin-left: -.25rem;
+  background-color: var(--bg-blockquote, rgba(0, 0, 0, 0.03));
+  border-left: 4px solid var(--ghost-accent-color, #D97706);
+  border-radius: 0 8px 8px 0;
+  line-height: 1.6;
+  padding: 0.4em 0.75em;
+  margin-left: 0;
 
-  /* p:first-of-type {
+  .dark & {
+    background-color: var(--bg-blockquote, rgba(255, 255, 255, 0.05));
+  }
+
+  p:first-of-type {
     margin-top: 0;
-  } */
+  }
+
+  p:last-of-type {
+    margin-bottom: 0;
+  }
 
   @media (min-width: theme("screens.sm")) {
-    font-size: 1.5rem;
-    margin-left: -4vmin;
+    font-size: 1.25rem;
+    padding: 0.5em 1.25em;
   }
 }
 

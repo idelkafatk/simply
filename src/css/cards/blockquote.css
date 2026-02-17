@@ -1,17 +1,23 @@
 .pullquote,
 .kg-blockquote-alt {
-  @apply text-gray-500;
-
+  background-color: var(--bg-blockquote, rgba(0, 0, 0, 0.03));
+  border-left: 4px solid var(--ghost-accent-color, #D97706);
+  border-radius: 0 8px 8px 0;
+  color: inherit;
   font-size: 1.2em;
   font-style: italic;
   line-height: 1.7em;
-  padding: 0 1.2em;
-  text-align: center;
+  padding: 0.4em 0.75em;
+  text-align: left;
+
+  .dark & {
+    background-color: var(--bg-blockquote, rgba(255, 255, 255, 0.05));
+  }
 }
 
 @screen md {
   .kg-blockquote-alt {
-    font-size: 1.5em;
-    padding: 0 2em;
+    font-size: 1.35em;
+    padding: 0.5em 1.25em;
   }
 }
