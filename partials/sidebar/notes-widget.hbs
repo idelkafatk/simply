@@ -1,0 +1,15 @@
+{{!-- Latest notes widget (home sidebar). Links to the full /notes/ feed. --}}
+<aside class="sidebar-notes-widget {{class}} flex-col justify-start">
+    <div class="lg:sticky lg:top-28">
+        {{#get "posts" filter="tag:[hash-note]" limit="6" as |notes|}}
+            {{#if notes}}
+                {{> "sidebar/sidebar-notes" widgetTitle=(t "Notes") widgetPosts=notes}}
+            {{else}}
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-300">
+                    <h3 class="text-lg font-semibold text-title">{{t "Notes"}}</h3>
+                </div>
+                <p class="text-gray-500 text-sm py-4">{{t "No notes yet"}}</p>
+            {{/if}}
+        {{/get}}
+    </div>
+</aside>

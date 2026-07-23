@@ -1,0 +1,16 @@
+{{!-- Presentational notes list for sidebars. Expects widgetTitle + widgetPosts. --}}
+<div class="sidebar-notes-block mb-8">
+    <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-300">
+        <h3 class="text-lg font-semibold text-title">{{widgetTitle}}</h3>
+        <a href="/notes/" class="link is-hover text-sm font-medium">{{t "See all"}}</a>
+    </div>
+
+    {{#foreach widgetPosts}}
+    <a href="{{url}}" class="sidebar-note block py-4 no-underline {{#unless @last}}border-b border-gray-300{{/unless}}">
+        <div class="flex items-center text-xs text-gray-500 mb-1.5">
+            <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM"}}</time>
+        </div>
+        <p class="sidebar-note-body text-sm leading-normal text-global line-clamp-3">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="24"}}{{/if}}</p>
+    </a>
+    {{/foreach}}
+</div>

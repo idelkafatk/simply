@@ -1,21 +1,42 @@
-/* Notes (microblog / tweet-style)
+/* Notes (microblog)
 /* ---------------------------------------------------------- */
 
-/* Thread connector line between notes in the /notes/ timeline */
-.notes-feed .story-note {
-  position: relative;
+/* Preserve intentional line breaks like a short note / tweet */
+.note-single-body {
+  white-space: pre-line;
 }
 
-.notes-feed .story-note:not(:last-child) .story-note-avatar::after {
-  content: "";
-  position: absolute;
-  left: 1.375rem; /* center of the 44px avatar */
-  top: 3.25rem;
-  bottom: -1.5rem; /* bridge the gap-6 spacing */
-  width: 2px;
-  background: var(--gray-300);
+.notes-feed {
+  margin-right: -1rem;
+  margin-left: -1rem;
+}
+
+.story-note {
+  padding-right: 1rem;
+  padding-left: 1rem;
+  transition: background-color 150ms ease;
+}
+
+.story-note:hover {
+  background-color: var(--gray-100);
+}
+
+.story-note:focus-visible {
+  background-color: var(--gray-100);
+  outline: 2px solid var(--ghost-accent-color);
+  outline-offset: 2px;
 }
 
 .story-note-body {
-  white-space: pre-line; /* keep line breaks like a tweet */
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: pre-line;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+}
+
+.story-note-body.is-manual-clamp {
+  display: block;
+  max-height: 12em;
+  -webkit-line-clamp: unset;
 }

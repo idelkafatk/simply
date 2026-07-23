@@ -1,4 +1,4 @@
-/* global followSocialMedia menuDropdown localStorage */
+/* global followSocialMedia menuDropdown localStorage MutationObserver requestAnimationFrame */
 
 // lib
 import 'lazysizes'
@@ -71,7 +71,7 @@ const simplySetup = () => {
 
   /*  Toggle modal
   /* ---------------------------------------------------------- */
-  /*const simplyModal = () => {
+  /* const simplyModal = () => {
     const $modals = docSelectorAll('.js-modal')
     const $modalButtons = docSelectorAll('.js-modal-button')
     const $modalCloses = docSelectorAll('.js-modal-close')
@@ -140,13 +140,13 @@ const simplySetup = () => {
   /* ---------------------------------------------------------- */
   const updateThemeIcons = () => {
     const $toggleDarkMode = docSelectorAll('.js-dark-mode')
-    
+
     if (!$toggleDarkMode.length) return
 
     $toggleDarkMode.forEach(button => {
       const moonIcon = button.querySelector('.icon--moon')
       const sunnyIcon = button.querySelector('.icon--sunny')
-      
+
       if (!moonIcon || !sunnyIcon) return
 
       if (rootEl.classList.contains('dark')) {
@@ -179,7 +179,7 @@ const simplySetup = () => {
         rootEl.classList.remove('dark')
         localStorage.theme = 'light'
       }
-      
+
       // Update icons after theme change
       updateThemeIcons()
     }))
@@ -231,7 +231,7 @@ const simplySetup = () => {
   /* ---------------------------------------------------------- */
   const removeButtonFocus = () => {
     const buttons = docSelectorAll('.button, button, a.button')
-    
+
     if (!buttons.length) return
 
     buttons.forEach(button => {
@@ -241,7 +241,7 @@ const simplySetup = () => {
           this.blur()
         }
       })
-      
+
       button.addEventListener('click', function () {
         // Remove focus after click
         setTimeout(() => this.blur(), 0)
@@ -250,6 +250,93 @@ const simplySetup = () => {
   }
 
   removeButtonFocus()
+
+  /* Notes inline ellipsis
+  /* ---------------------------------------------------------- */
+  const notesInlineEllipsis = () => {
+    const notesFeed = document.querySelector('.notes-feed')
+    if (!notesFeed) return
+
+    const noteText = new WeakMap()
+
+    const updateNote = note => {
+      const noteBody = note.querySelector('.story-note-body')
+      if (!noteBody) return
+
+      if (!noteText.has(noteBody)) noteText.set(noteBody, noteBody.textContent.trim())
+
+      const originalText = noteText.get(noteBody)
+      const characters = Array.from(originalText)
+      noteBody.classList.add('is-manual-clamp')
+      noteBody.textContent = originalText
+
+      if (noteBody.scrollHeight <= noteBody.clientHeight + 1) return
+
+      let start = 0
+      let end = characters.length
+
+      while (start < end) {
+        const middle = Math.ceil((start + end) / 2)
+        noteBody.textContent = `${characters.slice(0, middle).join('').trimEnd()}...`
+
+        if (noteBody.scrollHeight <= noteBody.clientHeight + 1) {
+          start = middle
+        } else {
+          end = middle - 1
+        }
+      }
+
+      noteBody.textContent = `${characters.slice(0, start).join('').trimEnd()}...`
+    }
+
+    const updateNotes = () => {
+      notesFeed.querySelectorAll('.story-note').forEach(updateNote)
+    }
+
+    requestAnimationFrame(updateNotes)
+    window.addEventListener('resize', updateNotes)
+    if (document.fonts) document.fonts.ready.then(updateNotes)
+
+    const notesObserver = new MutationObserver(updateNotes)
+    notesObserver.observe(notesFeed, { childList: true })
+  }
+
+  notesInlineEllipsis()
+
+  /* Mobile notes placement
+  /* ---------------------------------------------------------- */
+  const mobileNotesPlacement = () => {
+    const notesWidget = document.querySelector('.js-mobile-notes-widget')
+    const postFeed = document.querySelector('.js-feed-entry')
+    if (!notesWidget || !postFeed) return
+
+    const mobileViewport = window.matchMedia('(max-width: 999px)')
+
+    const placeNotes = () => {
+      if (!mobileViewport.matches) {
+        notesWidget.classList.add('hidden')
+        return
+      }
+
+      const visiblePosts = postFeed.querySelectorAll(':scope > .js-story')
+      const targetPost = visiblePosts[2] || visiblePosts[visiblePosts.length - 1]
+      if (!targetPost) return
+
+      if (targetPost.nextElementSibling !== notesWidget) {
+        targetPost.insertAdjacentElement('afterend', notesWidget)
+      }
+
+      notesWidget.classList.remove('hidden')
+    }
+
+    placeNotes()
+    mobileViewport.addEventListener('change', placeNotes)
+
+    const feedObserver = new MutationObserver(placeNotes)
+    feedObserver.observe(postFeed, { childList: true })
+  }
+
+  mobileNotesPlacement()
 }
 
 document.addEventListener('DOMContentLoaded', simplySetup)

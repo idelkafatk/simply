@@ -1,38 +1,29 @@
-{{!-- Single note, displayed like a post in a thread / tweet. Rendered inside {{#post}}. --}}
+{{!-- Single note, forum-thread / status style. Rendered inside {{#post}}. --}}
 <article class="note-single mx-auto max-w-2xl py-vmin8 px-4">
-    <header class="note-single-header flex items-center mb-6">
-        {{#primary_author}}
-        <a href="{{url}}" class="flex-none mr-3" title="{{name}}">
-            <img class="object-cover rounded-full h-12 w-12"
-                src="{{#if profile_image}}{{img_url profile_image size="xs"}}{{else}}{{asset "images/avatar.png"}}{{/if}}"
-                alt="{{name}}" width="48" height="48" />
-        </a>
-        <div class="leading-snug">
-            <a href="{{url}}" class="block font-medium text-title hover:text-primary">{{name}}</a>
-            <span class="text-sm text-gray-500">{{> "components/datetime"}}</span>
+    <div class="note-single-thread border-t border-gray-300 pt-8">
+        <header class="note-single-header flex items-center justify-end mb-5">
+            <time class="text-sm text-gray-500 capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time>
+        </header>
+
+        {{!-- Note content, one size up like a lead status --}}
+        <div class="note-single-body post-body {{@custom.post_font}} text-xl md:text-2xl leading-relaxed">
+            {{content}}
         </div>
-        {{/primary_author}}
-    </header>
 
-    {{!-- Note content, one size up like a lead tweet --}}
-    <div class="note-single-body post-body {{@custom.post_font}} text-xl md:text-2xl leading-relaxed">
-        {{content}}
+        {{#if feature_image}}
+        <figure class="note-single-media block mt-6 overflow-hidden rounded-lg border border-gray-300">
+            <img class="block w-full simply-zoom"
+                srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w"
+                sizes="(max-width: 730px) 600px, 100vw"
+                src="{{img_url feature_image size="l"}}"
+                alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" />
+        </figure>
+        {{/if}}
+
+        {{#if primary_tag}}
+        <footer class="note-single-footer flex items-center flex-wrap gap-x-3 gap-y-2 mt-8 pt-5 border-t border-gray-300 text-sm text-gray-500">
+            {{#foreach tags}}<a href="{{url}}" class="hover:underline">#{{name}}</a>{{/foreach}}
+        </footer>
+        {{/if}}
     </div>
-
-    {{#if feature_image}}
-    <figure class="note-single-media block mt-6 overflow-hidden rounded-lg border border-gray-300">
-        <img class="block w-full simply-zoom"
-            srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w"
-            sizes="(max-width: 730px) 600px, 100vw"
-            src="{{img_url feature_image size="l"}}"
-            alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" />
-    </figure>
-    {{/if}}
-
-    <footer class="note-single-footer flex items-center flex-wrap gap-x-4 gap-y-3 mt-8 pt-6 border-t border-gray-300 text-sm text-gray-500">
-        <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY, HH:mm"}}</time>
-        {{#if primary_tag}}<span class="note-single-tags flex items-center gap-2">{{#foreach tags}}<a href="{{url}}" class="hover:underline">#{{name}}</a>{{/foreach}}</span>{{/if}}
-        {{!-- Social Share - ./partials/components/social-share --}}
-        <div class="ml-auto">{{> "components/social-share" Tracking_name="Note"}}</div>
-    </footer>
 </article>

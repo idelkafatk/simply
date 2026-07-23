@@ -12,8 +12,12 @@
             <header class="story-post-header">
                 <h1 class="text-4xl leading-tight text-title mb-5">{{title}}</h1>
                 {{#if custom_excerpt}}<p class="post-excerpt my-6 text-xl text-gray-500">{{custom_excerpt}}</p>{{/if}}
-                {{!-- Author - Primary Tag - Datetime - Read time - ./partials/components/author-meta.hbs --}}
-                {{> "components/author-meta"}}
+                {{#has tag="#note, hash-note"}}
+                    <time class="block text-sm text-gray-500 capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time>
+                {{else}}
+                    {{!-- Author - Primary Tag - Datetime - Read time - ./partials/components/author-meta.hbs --}}
+                    {{> "components/author-meta"}}
+                {{/has}}
 
                 {{#if feature_image}}
                 <figure class="story-post-media mt-8 relative">

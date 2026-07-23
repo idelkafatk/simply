@@ -1,38 +1,26 @@
-{{!-- Tweet-style note card. Used on the home feed and in the /notes/ timeline. --}}
-<article class="story-note js-story flex relative{{#if story_class}} {{story_class}}{{/if}}">
-    {{#foreach authors limit="1"}}
-    <a href="{{url}}" class="story-note-avatar flex-none mr-3" title="{{name}}">
-        <img class="object-cover rounded-full h-11 w-11"
-            src="{{#if profile_image}}{{img_url profile_image size="xs"}}{{else}}{{asset "images/avatar.png"}}{{/if}}"
-            alt="{{name}}" width="44" height="44" />
-    </a>
-    {{/foreach}}
-
-    <div class="story-note-main flex flex-col grow min-w-0 p-5 bg-blank rounded-lg shadow-4xl transition-all hover:shadow-card-primary">
-        <div class="story-note-meta flex items-center flex-wrap text-sm text-gray-500 mb-2">
-            <span class="story-note-author font-medium text-title">{{primary_author.name}}</span>
-            <span class="bull mx-1.5">·</span>
-            <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time>
-            {{#if featured}}<svg class="icon icon--star is-small p-1"><use xlink:href="#icon-star"></use></svg>{{/if}}
+{{!-- Note row (microblog / forum-thread style). Used in the /notes/ timeline. --}}
+<a href="{{url}}" class="story-note js-story block py-8 border-b border-gray-300 no-underline">
+    <div class="flex flex-col min-w-0">
+        <div class="story-note-meta flex items-center mb-3">
+            <time class="text-sm text-gray-500 capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time>
         </div>
 
-        <a href="{{url}}" class="story-note-body block text-lg leading-normal text-global">
-            {{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="60"}}{{/if}}
-        </a>
+        <div class="story-note-body text-lg leading-normal text-global">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="200"}}{{/if}}</div>
 
         {{#if feature_image}}
-        <a href="{{url}}" class="story-note-media block mt-4 overflow-hidden rounded-lg border border-gray-300">
+        <figure class="story-note-media mt-4 overflow-hidden rounded-lg border border-gray-300">
             <img class="block w-full max-h-96 object-cover blur-up lazyload"
                 src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
                 data-srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w"
                 data-sizes="auto"
                 alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" />
-        </a>
+        </figure>
         {{/if}}
 
+        {{#if primary_tag}}
         <div class="story-note-footer flex items-center mt-4 text-sm text-gray-500">
-            {{#if primary_tag}}{{#primary_tag}}<a href="{{url}}" class="hover:underline">#{{name}}</a><span class="bull mx-1.5">·</span>{{/primary_tag}}{{/if}}
-            <a href="{{url}}" class="link is-hover font-medium">{{t "Read more"}}<svg class="icon is-medium"><use xlink:href="#icon-arrow"></use></svg></a>
+            {{#primary_tag}}<span>#{{name}}</span>{{/primary_tag}}
         </div>
+        {{/if}}
     </div>
-</article>
+</a>
