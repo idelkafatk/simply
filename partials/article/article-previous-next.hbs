@@ -1,0 +1,11 @@
+{{#get "posts" limit="1" order="published_at desc" filter="published_at:<'{{published_at}}'+tag:-hash-note" as |previous_articles|}}
+    {{#foreach previous_articles}}
+        {{> "story/story-previous-next" storyTitle=(t "Previous article") class="mb-8"}}
+    {{/foreach}}
+{{/get}}
+
+{{#get "posts" limit="1" order="published_at asc" filter="published_at:>'{{published_at}}'+tag:-hash-note" as |next_articles|}}
+    {{#foreach next_articles}}
+        {{> "story/story-previous-next" storyTitle=(t "Next article") class=""}}
+    {{/foreach}}
+{{/get}}
