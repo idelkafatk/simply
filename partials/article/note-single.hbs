@@ -1,8 +1,11 @@
 {{!-- Single note, forum-thread / status style. Rendered inside {{#post}}. --}}
 <article class="note-single mx-auto max-w-2xl py-vmin8 px-4">
     <div class="note-single-thread border-t border-gray-300 pt-8">
-        <header class="note-single-header flex items-center justify-end mb-5">
-            <time class="text-sm text-gray-500 capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time>
+        <header class="note-single-header mb-6">
+            <div class="flex items-center text-sm text-gray-500">
+                <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+            </div>
+            <h1 class="text-3xl md:text-4xl text-title leading-tight mt-3">{{title}}</h1>
         </header>
 
         {{!-- Note content, one size up like a lead status --}}

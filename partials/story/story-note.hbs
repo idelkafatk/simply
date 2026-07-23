@@ -1,9 +1,11 @@
 {{!-- Note row (microblog / forum-thread style). Used in the /notes/ timeline. --}}
 <a href="{{url}}" class="story-note js-story block py-8 border-b border-gray-300 no-underline">
     <div class="flex flex-col min-w-0">
-        <div class="story-note-meta flex items-center mb-3">
-            <time class="text-sm text-gray-500 capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time>
+        <div class="story-note-meta flex items-center mb-3 text-sm text-gray-500">
+            <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
         </div>
+
+        <h2 class="story-note-title text-xl font-semibold leading-tight text-title mb-3">{{title}}</h2>
 
         <div class="story-note-body text-lg leading-normal text-global">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="200"}}{{/if}}</div>
 

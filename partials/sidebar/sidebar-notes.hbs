@@ -8,8 +8,9 @@
     {{#foreach widgetPosts}}
     <a href="{{url}}" class="sidebar-note block py-4 no-underline {{#unless @last}}border-b border-gray-300{{/unless}}">
         <div class="flex items-center text-xs text-gray-500 mb-1.5">
-            <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM"}}</time>
+            <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
         </div>
+        <h3 class="text-base font-semibold leading-tight text-title line-clamp-2 mb-2">{{title}}</h3>
         <p class="sidebar-note-body text-sm leading-normal text-global line-clamp-3">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="24"}}{{/if}}</p>
     </a>
     {{/foreach}}

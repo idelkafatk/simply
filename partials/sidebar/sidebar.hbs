@@ -9,7 +9,7 @@
             {{!-- Notes shown separately from articles --}}
             {{#get "posts" limit="3" filter="tag:[hash-note]+id:-{{id}}" as |sidebar_notes| }}
                 {{#if sidebar_notes}}
-                    {{> "sidebar/sidebar-post-card" widgetTitle=(t "Latest Notes") widgetPosts=sidebar_notes }}
+                    {{> "sidebar/sidebar-post-card" widgetTitle=(t "Latest Notes") widgetPosts=sidebar_notes noteCards=true }}
                 {{/if}}
             {{/get}}
         {{else}}

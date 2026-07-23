@@ -21,7 +21,7 @@
                 <h3 class="sp-small-title text-base font-semibold mb-2 leading-tight text-title line-clamp-2">{{title}}</h3>
 
                 <div class="hh-date flex items-center text-gray-500 text-sm">
-                    <time class="datetime capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time>
+                    <time class="datetime capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{#if ../noteCards}}{{date format="D MMMM YYYY"}}{{else}}{{date format="D MMM YYYY"}}{{/if}}</time>
                 </div>
             </div>
         </a>
