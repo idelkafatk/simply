@@ -8,12 +8,16 @@
 <div class="site-post container mx-auto py-vmin8">
     <div class="js-feed-entry max-w-1100 mx-auto grid md:grid-cols-2 lg:grid-cols-12 gap-6">
         {{#foreach posts}}
-            {{#has number="1"}}
-                {{> "story/story-grid" story_class="ss1 lg:grid lg:col-span-full lg:grid-cols-3 lg:gap-6"}}
-            {{else has number="5, 6"}}
-                {{> "story/story-grid" story_class="ss2 lg:col-span-6"}}
+            {{#has tag="hash-note"}}
+                {{> "story/story-note" story_class="lg:col-span-4"}}
             {{else}}
-                {{> "story/story-grid" story_class="lg:col-span-4"}}
+                {{#has number="1"}}
+                    {{> "story/story-grid" story_class="ss1 lg:grid lg:col-span-full lg:grid-cols-3 lg:gap-6"}}
+                {{else has number="5, 6"}}
+                    {{> "story/story-grid" story_class="ss2 lg:col-span-6"}}
+                {{else}}
+                    {{> "story/story-grid" story_class="lg:col-span-4"}}
+                {{/has}}
             {{/has}}
         {{/foreach}}
     </div>

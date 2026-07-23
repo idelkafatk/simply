@@ -3,6 +3,16 @@
 
 {{#post}}
 
+{{#has tag="hash-note"}}
+
+{{!-- Class for <body> --}}
+{{#contentFor "special_body_class"}}is-note{{/contentFor}}
+
+{{!-- Note (thread / tweet style) - partials/article/note-single.hbs --}}
+{{> "article/note-single"}}
+
+{{else}}
+
 {{!-- Class for <body> --}}
 {{#contentFor "special_body_class"}}is-article{{/contentFor}}
 
@@ -18,6 +28,8 @@
     {{!-- Article Body - partials/article/article-body.hbs --}}
     {{> "article/article-body"}}
 </article>
+
+{{/has}}
 
 {{/post}}
 

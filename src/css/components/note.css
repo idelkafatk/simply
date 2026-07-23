@@ -1,0 +1,21 @@
+/* Notes (microblog / tweet-style)
+/* ---------------------------------------------------------- */
+
+/* Thread connector line between notes in the /notes/ timeline */
+.notes-feed .story-note {
+  position: relative;
+}
+
+.notes-feed .story-note:not(:last-child) .story-note-avatar::after {
+  content: "";
+  position: absolute;
+  left: 1.375rem; /* center of the 44px avatar */
+  top: 3.25rem;
+  bottom: -1.5rem; /* bridge the gap-6 spacing */
+  width: 2px;
+  background: var(--gray-300);
+}
+
+.story-note-body {
+  white-space: pre-line; /* keep line breaks like a tweet */
+}

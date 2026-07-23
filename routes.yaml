@@ -58,6 +58,12 @@ routes:
       post: page.medium-with-sidebar
     limit: 14
 
+  /notes/:
+    controller: channel
+    filter: 'tag:[hash-note]'
+    template: godo-notes
+    limit: 20
+
   /podcast/rss/:
     template: podcast/rss
     content_type: text/xml
