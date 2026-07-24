@@ -36,6 +36,8 @@
 
             <section id="post-body" class="post-body relative godo-canvas {{#match @custom.post_font "=" "font-serif"}}font-serif{{else}}font-sans{{/match}}">{{content}}</section>
 
+            {{#if access}}{{> "components/telegram-discussion"}}{{/if}}
+
             {{!-- Tags - ./partials/components/tags,hbs --}}
             <footer class="post-footer godo-canvas pt-10">
                 {{> "components/tags"}}

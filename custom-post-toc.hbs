@@ -28,6 +28,8 @@
         </div>
     </section>
 
+    {{#if access}}{{> "components/telegram-discussion"}}{{/if}}
+
     <footer class="post-footer godo-canvas pt-10">
         {{!-- Tags - ./partials/components/tags,hbs --}}
         {{> "components/tags"}}

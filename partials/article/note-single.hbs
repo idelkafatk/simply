@@ -28,5 +28,7 @@
             {{#foreach tags}}<a href="{{url}}" class="hover:underline">#{{name}}</a>{{/foreach}}
         </footer>
         {{/if}}
+
+        {{#if access}}{{> "components/telegram-discussion"}}{{/if}}
     </div>
 </article>

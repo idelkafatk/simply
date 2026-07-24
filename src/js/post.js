@@ -8,6 +8,26 @@ import loadScript from './util/load-script'
 import docSelectorAll from './util/document-query-selector-all'
 
 const simplyPost = () => {
+  const telegramDiscussion = () => {
+    const metadata = document.querySelector('[data-telegram-discussion-url]')
+    const container = document.querySelector('[data-telegram-discussion]')
+    const link = container && container.querySelector('[data-telegram-discussion-link]')
+
+    if (!metadata || !container || !link) return
+
+    try {
+      const url = new URL(metadata.getAttribute('data-telegram-discussion-url'))
+      if (url.protocol !== 'https:' || url.hostname !== 't.me') return
+
+      link.href = url.toString()
+      container.hidden = false
+    } catch {
+      // Invalid metadata leaves the discussion block hidden.
+    }
+  }
+
+  telegramDiscussion()
+
   /* All Video Responsive
   /* ---------------------------------------------------------- */
   const videoResponsive = () => {
