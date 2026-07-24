@@ -1,0 +1,9 @@
+<nav class="notes-topic-filter" aria-label="Notes by topic">
+    <a class="notes-topic-filter-link {{#if allActive}}is-active{{/if}}" href="/notes/">{{t "All"}}</a>
+
+    {{#get "tags" limit="all" filter="visibility:public+slug:[guides,korea,life,travel,relocation,tech,japan]" order="name asc" as |topic_tags|}}
+        {{#foreach topic_tags}}
+            <a class="notes-topic-filter-link" href="/notes/{{slug}}/">#{{name}}</a>
+        {{/foreach}}
+    {{/get}}
+</nav>

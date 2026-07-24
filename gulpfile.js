@@ -189,6 +189,14 @@ function zipper (done) {
   ], handleError(done))
 }
 
+function copyProductionRoutes (done) {
+  pump([
+    src('routes.yaml'),
+    rename('routes-prod.yaml'),
+    dest('dist')
+  ], handleError(done))
+}
+
 
 
 
@@ -241,7 +249,7 @@ const compile = parallel(styles, scripts, images)
 const watcher = parallel(cssWatcher, jsWatcher, imgWatcher, hbsWatcher)
 
 const build = series(clean, compile)
-const production = series(build, copyAmpStyle, copyMainStyle, zipper)
+const production = series(build, copyAmpStyle, copyMainStyle, zipper, copyProductionRoutes)
 // const production = series(build)
 const development = series(build, serve, watcher)
 

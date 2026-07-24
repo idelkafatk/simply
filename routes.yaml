@@ -1,62 +1,45 @@
 routes:
-  /signup/: members/signup
-  /signin/: members/signin
-  /account/: members/account
-  /membership/: members/membership
-
-  /featured/:
+  /notes/guides/:
     controller: channel
-    filter: 'tag:-[hash-portfolio,hash-kusi-doc]'
-    limit: 12
-    template: godo-template-featured
-    # Optional for metada for seo
-    # data: page.home-featured
+    filter: 'tag:hash-note+tag:guides'
+    template: godo-notes-topic
+    limit: 20
 
-  /archive/:
+  /notes/korea/:
     controller: channel
-    filter: 'tag:-[hash-portfolio,hash-kusi-doc]'
-    limit: all
-    template: godo-archive
+    filter: 'tag:hash-note+tag:korea'
+    template: godo-notes-topic
+    limit: 20
 
-  /grid/:
+  /notes/life/:
     controller: channel
-    filter: 'tag:-[hash-portfolio,hash-kusi-doc]'
-    limit: 12
-    template: godo-template-grid
+    filter: 'tag:hash-note+tag:life'
+    template: godo-notes-topic
+    limit: 20
 
-  /sidebar/:
+  /notes/travel/:
     controller: channel
-    filter: 'tag:-[hash-portfolio,hash-kusi-doc]'
-    limit: 12
-    template: godo-template-sidebar
+    filter: 'tag:hash-note+tag:travel'
+    template: godo-notes-topic
+    limit: 20
 
-  /medium/:
+  /notes/relocation/:
     controller: channel
-    filter: 'tag:-[hash-portfolio,hash-kusi-doc]'
-    template: godo-template-medium
-    limit: 14
+    filter: 'tag:hash-note+tag:relocation'
+    template: godo-notes-topic
+    limit: 20
 
-  /featured-slider/:
+  /notes/tech/:
     controller: channel
-    filter: 'tag:-[hash-portfolio,hash-kusi-doc]'
-    template: godo-template-featured-slider
+    filter: 'tag:hash-note+tag:tech'
+    template: godo-notes-topic
+    limit: 20
 
-  /photographer/:
+  /notes/japan/:
     controller: channel
-    filter: 'tag:-[hash-portfolio,hash-kusi-doc]'
-    template: godo-template-photographer
-    limit: 12
-
-  /personal/:
-    template: godo-home-personal
-    data: page.godo-personal
-
-  /medium-sidebar/:
-    controller: channel
-    template: godo-template-medium-sidebar
-    data:
-      post: page.medium-with-sidebar
-    limit: 14
+    filter: 'tag:hash-note+tag:japan'
+    template: godo-notes-topic
+    limit: 20
 
   /notes/:
     controller: channel
@@ -64,37 +47,9 @@ routes:
     template: godo-notes
     limit: 20
 
-  /podcast/rss/:
-    template: podcast/rss
-    content_type: text/xml
-
 collections:
-  # PortFolio
-  /portafolio/:
-    permalink: /portafolio/{slug}/
-    filter: 'tag:[hash-portfolio]'
-    data: page.porftfolio
-    template: godo-template-portfolio
-    limit: all
-
-  # Podcast
-  /podcast/:
-    permalink: /podcast/{slug}/
-    filter: 'tag:[hash-podcast]'
-    data: page.podcast
-    template: godo-podcast
-    limit: 10
-
-  # Documentation
-  /docs/:
-    permalink: /docs/{slug}/
-    filter: 'tag:[hash-kusi-doc]'
-    template: godo-home-kusi-doc
-
-  # Default
   /:
     permalink: /{slug}/
-    filter: 'tag:-[hash-portfolio,hash-kusi-doc,hash-podcast]'
     template: index
 
 taxonomies:

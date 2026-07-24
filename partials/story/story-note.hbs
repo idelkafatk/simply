@@ -1,28 +1,34 @@
 {{!-- Note row (microblog / forum-thread style). Used in the /notes/ timeline. --}}
-<a href="{{url}}" class="story-note js-story block py-8 border-b border-gray-300 no-underline">
+<article class="story-note js-story block py-8 border-b border-gray-300">
     <div class="flex flex-col min-w-0">
-        <div class="story-note-meta flex items-center mb-3 text-sm text-gray-500">
-            <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
-        </div>
+        <a href="{{url}}" class="story-note-main block no-underline">
+            <div class="story-note-meta flex items-center mb-3 text-sm text-gray-500">
+                <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+            </div>
 
-        <h2 class="story-note-title text-xl font-semibold leading-tight text-title mb-3">{{title}}</h2>
+            <h2 class="story-note-title text-xl font-semibold leading-tight text-title mb-3">{{title}}</h2>
 
-        <div class="story-note-body text-lg leading-normal text-global">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="200"}}{{/if}}</div>
+            <div class="story-note-body text-lg leading-normal text-global">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="200"}}{{/if}}</div>
 
-        {{#if feature_image}}
-        <figure class="story-note-media mt-4 overflow-hidden rounded-lg border border-gray-300">
-            <img class="block w-full max-h-96 object-cover blur-up lazyload"
-                src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-                data-srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w"
-                data-sizes="auto"
-                alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" />
-        </figure>
-        {{/if}}
+            {{#if feature_image}}
+            <figure class="story-note-media mt-4 overflow-hidden rounded-lg border border-gray-300">
+                <img class="block w-full max-h-96 object-cover blur-up lazyload"
+                    src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                    data-srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w"
+                    data-sizes="auto"
+                    alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" />
+            </figure>
+            {{/if}}
+        </a>
 
-        {{#if primary_tag}}
-        <div class="story-note-footer flex items-center mt-4 text-sm text-gray-500">
-            {{#primary_tag}}<span>#{{name}}</span>{{/primary_tag}}
-        </div>
-        {{/if}}
+        {{#has tag="count:>1"}}
+            <div class="story-note-footer mt-4 text-sm text-gray-500">
+                {{#foreach tags}}
+                    {{#match visibility "=" "public"}}
+                        <a class="note-topic-link" href="/notes/{{slug}}/">#{{name}}</a>
+                    {{/match}}
+                {{/foreach}}
+            </div>
+        {{/has}}
     </div>
-</a>
+</article>
