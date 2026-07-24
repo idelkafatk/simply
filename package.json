@@ -162,7 +162,7 @@
       },
       "telegram_url": {
         "type": "text",
-        "default": "https://t.me/idel_notes",
+        "default": "https://t.me/idel_blog",
         "group": "post"
       }
     }
