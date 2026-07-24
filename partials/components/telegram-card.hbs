@@ -1,0 +1,40 @@
+{{!--
+  Unified Telegram promo card. Replaces components/telegram-bot.hbs + components/telegram-discussion.hbs.
+  - Primary CTA ("join the channel") is always visible.
+  - Secondary "go to discussion" row ships hidden; revealed by telegramDiscussion() in
+    src/js/post.js via [data-telegram-discussion-url] / [data-telegram-discussion] /
+    [data-telegram-discussion-link]. Keep these three hooks stable — the sibling
+    idel-blog-tg-bot repo relies on the discussion-url marker format, and this JS relies
+    on the other two, but neither cares about surrounding DOM structure.
+--}}
+<div class="pt-vmin8">
+    <div class="telegram-card border-t-3 border-primary bg-gray-100 p-8 rounded-lg">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-title mb-1">{{@site.title}} в Telegram</h2>
+                <p class="text-sm text-gray-500 m-0">Новые статьи, заметки и обсуждения.</p>
+            </div>
+
+            <a class="button is-telegram rounded-full gap-2 shrink-0"
+               href="{{#if @custom.telegram_url}}{{@custom.telegram_url}}{{else}}https://t.me/idel_notes{{/if}}"
+               target="_blank"
+               rel="noopener noreferrer">
+                <svg class="w-5 h-5 fill-current" aria-hidden="true"><use xlink:href="#icon-send"></use></svg>
+                <span>Подписаться</span>
+            </a>
+        </div>
+
+        {{#if access}}
+        <div class="mt-5 pt-5 border-t border-gray-300" data-telegram-discussion hidden>
+            <a class="inline-flex items-center gap-2 text-sm font-medium text-title hover:underline"
+               data-telegram-discussion-link
+               href="#"
+               target="_blank"
+               rel="noopener noreferrer">
+                <svg class="w-4 h-4 fill-current" aria-hidden="true"><use xlink:href="#icon-comments"></use></svg>
+                <span>Перейти к обсуждению</span>
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</div>

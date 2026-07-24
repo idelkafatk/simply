@@ -2,8 +2,6 @@
 
 {{#if access}}
 
-{{> "components/telegram-discussion"}}
-
 <footer class="post-footer godo-canvas pt-10">
     {{!-- Tags - ./partials/components/tags,hbs --}}
     {{> "components/tags"}}
@@ -14,8 +12,8 @@
     {{!-- Newsletter - ./partials/components/newsletter.hbs --}}
     {{> "components/newsletter"}}
 
-    {{!-- Telegram Bot - ./partials/components/telegram-bot.hbs --}}
-    {{> "components/telegram-bot"}}
+    {{!-- Telegram - ./partials/components/telegram-card.hbs --}}
+    {{> "components/telegram-card"}}
 
     {{!-- Previous and next article --}}
     {{#if @custom.show_prev_and_next_post}}

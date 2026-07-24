@@ -63,7 +63,9 @@ module.exports = {
       youtube: '#FF0000',
       linkedin: '#007bb6',
       instagram: '#bf32a8',
-      whatsapp: '#64d448'
+      whatsapp: '#64d448',
+      telegram: 'var(--button-telegram-bg)',
+      'telegram-hover': 'var(--button-telegram-hover-bg)'
     },
     screens: {
       sm: '640px',

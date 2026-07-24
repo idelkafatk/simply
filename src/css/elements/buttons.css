@@ -63,6 +63,16 @@
   color: #fff;
 }
 
+.button.is-telegram {
+  background-color: var(--button-telegram-bg);
+  color: var(--button-telegram-color);
+
+  &:hover {
+    background-color: var(--button-telegram-hover-bg);
+    color: var(--button-telegram-hover-color);
+  }
+}
+
 /* circle */
 .button.is-circle {
   width: 2.25rem;

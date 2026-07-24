@@ -54,6 +54,12 @@
   --button-white-hover-color: #525252;
   --button-white-hover-bg: #FAFAFA;
 
+  /* Button telegram */
+  --button-telegram-color: #FFFFFF;
+  --button-telegram-bg: #087EA4;
+  --button-telegram-hover-color: #FFFFFF;
+  --button-telegram-hover-bg: #076C8E;
+
   /* form */
   --input-color: #404040;
   --input-bg: #FFFFFF;
