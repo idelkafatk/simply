@@ -1,9 +1,45 @@
 <nav class="notes-topic-filter" aria-label="Notes by topic">
     <a class="notes-topic-filter-link {{#if allActive}}is-active{{/if}}" href="/notes/">{{t "All"}}</a>
 
-    {{#get "tags" limit="all" filter="visibility:public+slug:[guides,korea,life,travel,relocation,tech,japan]" order="name asc" as |topic_tags|}}
-        {{#foreach topic_tags}}
-            <a class="notes-topic-filter-link" href="/notes/{{slug}}/">#{{name}}</a>
+    {{#get "posts" limit="1" filter="tag:hash-note+tag:guides" as |guides_notes|}}
+        {{#foreach guides_notes}}
+            {{#link href="/notes/guides/" class="notes-topic-filter-link" activeClass="is-active"}}#Гайды{{/link}}
+        {{/foreach}}
+    {{/get}}
+
+    {{#get "posts" limit="1" filter="tag:hash-note+tag:korea" as |korea_notes|}}
+        {{#foreach korea_notes}}
+            {{#link href="/notes/korea/" class="notes-topic-filter-link" activeClass="is-active"}}#Корея{{/link}}
+        {{/foreach}}
+    {{/get}}
+
+    {{#get "posts" limit="1" filter="tag:hash-note+tag:life" as |life_notes|}}
+        {{#foreach life_notes}}
+            {{#link href="/notes/life/" class="notes-topic-filter-link" activeClass="is-active"}}#Повседневность{{/link}}
+        {{/foreach}}
+    {{/get}}
+
+    {{#get "posts" limit="1" filter="tag:hash-note+tag:travel" as |travel_notes|}}
+        {{#foreach travel_notes}}
+            {{#link href="/notes/travel/" class="notes-topic-filter-link" activeClass="is-active"}}#Путешествия{{/link}}
+        {{/foreach}}
+    {{/get}}
+
+    {{#get "posts" limit="1" filter="tag:hash-note+tag:relocation" as |relocation_notes|}}
+        {{#foreach relocation_notes}}
+            {{#link href="/notes/relocation/" class="notes-topic-filter-link" activeClass="is-active"}}#Релокация{{/link}}
+        {{/foreach}}
+    {{/get}}
+
+    {{#get "posts" limit="1" filter="tag:hash-note+tag:tech" as |tech_notes|}}
+        {{#foreach tech_notes}}
+            {{#link href="/notes/tech/" class="notes-topic-filter-link" activeClass="is-active"}}#Технологии{{/link}}
+        {{/foreach}}
+    {{/get}}
+
+    {{#get "posts" limit="1" filter="tag:hash-note+tag:japan" as |japan_notes|}}
+        {{#foreach japan_notes}}
+            {{#link href="/notes/japan/" class="notes-topic-filter-link" activeClass="is-active"}}#Япония{{/link}}
         {{/foreach}}
     {{/get}}
 </nav>

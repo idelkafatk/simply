@@ -6,14 +6,12 @@
                 {{> "sidebar/sidebar-post-card" widgetTitle=(t "Latest Posts") widgetPosts=sidebar_latest_post }}
             {{/get}}
 
-            {{!-- Notes related to the article's primary topic --}}
-            {{#if primary_tag}}
-                {{#get "posts" limit="3" filter="tag:hash-note+tag:{{primary_tag.slug}}+id:-{{id}}" as |sidebar_notes| }}
-                    {{#if sidebar_notes}}
-                        {{> "sidebar/sidebar-post-card" widgetTitle=(t "Latest Notes") widgetPosts=sidebar_notes noteCards=true }}
-                    {{/if}}
-                {{/get}}
-            {{/if}}
+            {{!-- Latest notes shown separately from articles --}}
+            {{#get "posts" limit="3" filter="tag:[hash-note]+id:-{{id}}" as |sidebar_notes| }}
+                {{#if sidebar_notes}}
+                    {{> "sidebar/sidebar-post-card" widgetTitle=(t "Latest Notes") widgetPosts=sidebar_notes noteCards=true }}
+                {{/if}}
+            {{/get}}
         {{else}}
             {{#get "posts" filter="featured:true" limit="3" as |sidebar_featured_post| }}
                 {{#if sidebar_featured_post}}
