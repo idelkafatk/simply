@@ -32,13 +32,27 @@
   overflow: hidden;
   white-space: pre-line;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 8;
+  -webkit-line-clamp: 12;
 }
 
 .story-note-body.is-manual-clamp {
   display: block;
-  max-height: 12em;
+  max-height: 18em;
   -webkit-line-clamp: unset;
+}
+
+.story-note-gallery:not(:empty) {
+  --gallery-height: 20rem;
+
+  margin-top: 1rem;
+}
+
+.story-note-gallery .kg-gallery-card {
+  margin: 0;
+}
+
+.story-note.has-gallery .story-note-media {
+  display: none;
 }
 
 .story-note-footer a:hover {

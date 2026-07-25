@@ -2,10 +2,12 @@
 
 // lib
 import 'lazysizes'
+import mediumZoom from 'medium-zoom'
 
 // import loadScript from './util/load-script'
 import urlRegexp from './util/url-regular-expression'
 import docSelectorAll from './util/document-query-selector-all'
+import { initGalleryCards } from './util/gallery'
 
 const simplySetup = () => {
   const rootEl = document.documentElement
@@ -302,6 +304,46 @@ const simplySetup = () => {
   }
 
   notesInlineEllipsis()
+
+  /* Notes galleries
+  /* ---------------------------------------------------------- */
+  const notesGalleries = () => {
+    const notesFeed = document.querySelector('.notes-feed')
+    if (!notesFeed) return
+
+    const galleryZoom = mediumZoom({
+      margin: 20,
+      background: 'hsla(0,0%,100%,.85)'
+    })
+
+    const updateNote = note => {
+      const source = note.querySelector('[data-note-gallery-source]')
+      const target = note.querySelector('[data-note-gallery]')
+      if (!source || !target) return
+
+      const galleries = source.content.querySelectorAll('.kg-gallery-card')
+
+      if (galleries.length) {
+        galleries.forEach(gallery => target.appendChild(gallery.cloneNode(true)))
+        note.classList.add('has-gallery')
+        initGalleryCards(target)
+        galleryZoom.attach(target.querySelectorAll('img'))
+      }
+
+      source.remove()
+    }
+
+    const updateNotes = () => {
+      notesFeed.querySelectorAll('.story-note').forEach(updateNote)
+    }
+
+    updateNotes()
+
+    const notesObserver = new MutationObserver(updateNotes)
+    notesObserver.observe(notesFeed, { childList: true })
+  }
+
+  notesGalleries()
 
   /* Mobile notes placement
   /* ---------------------------------------------------------- */

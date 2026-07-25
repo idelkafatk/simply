@@ -6,6 +6,7 @@ import mediumZoom from 'medium-zoom'
 
 import loadScript from './util/load-script'
 import docSelectorAll from './util/document-query-selector-all'
+import { initGalleryCards } from './util/gallery'
 
 const simplyPost = () => {
   const telegramDiscussion = () => {
@@ -72,80 +73,7 @@ const simplyPost = () => {
 
   /* Gallery Card
   /* ---------------------------------------------------------- */
-  const setGalleryImageSizes = () => {
-    docSelectorAll('.kg-gallery-image > img').forEach(image => {
-      const container = image.closest('.kg-gallery-image')
-      const width = Number(image.getAttribute('width'))
-      const height = Number(image.getAttribute('height'))
-
-      if (!container || !width || !height) return
-
-      container.style.setProperty('--gallery-image-width', `${25 * width / height}rem`)
-    })
-  }
-
-  setGalleryImageSizes()
-
-  const initGalleryPagination = () => {
-    docSelectorAll('.kg-gallery-container').forEach(gallery => {
-      const images = Array.from(gallery.querySelectorAll('.kg-gallery-image'))
-
-      if (images.length < 2) return
-
-      const pagination = document.createElement('div')
-      const dots = images.map(() => {
-        const dot = document.createElement('span')
-
-        dot.className = 'kg-gallery-pagination-dot'
-        dot.setAttribute('aria-hidden', 'true')
-        pagination.appendChild(dot)
-
-        return dot
-      })
-      let activeIndex = -1
-      let animationFrame
-
-      pagination.className = 'kg-gallery-pagination'
-      pagination.setAttribute('aria-live', 'polite')
-      pagination.setAttribute('role', 'status')
-      gallery.insertAdjacentElement('afterend', pagination)
-
-      const updatePagination = () => {
-        const galleryLeft = gallery.getBoundingClientRect().left
-        let closestDistance = Infinity
-        let closestIndex = 0
-
-        images.forEach((image, index) => {
-          const distance = Math.abs(image.getBoundingClientRect().left - galleryLeft)
-
-          if (distance < closestDistance) {
-            closestDistance = distance
-            closestIndex = index
-          }
-        })
-
-        if (closestIndex !== activeIndex) {
-          if (activeIndex >= 0) dots[activeIndex].classList.remove('is-active')
-
-          activeIndex = closestIndex
-          dots[activeIndex].classList.add('is-active')
-          pagination.setAttribute('aria-label', `${activeIndex + 1} / ${images.length}`)
-        }
-
-        animationFrame = null
-      }
-
-      gallery.addEventListener('scroll', () => {
-        if (animationFrame) return
-
-        animationFrame = window.requestAnimationFrame(updatePagination)
-      }, { passive: true })
-
-      updatePagination()
-    })
-  }
-
-  initGalleryPagination()
+  initGalleryCards(document)
 
   /* highlight prismjs
   /* ---------------------------------------------------------- */

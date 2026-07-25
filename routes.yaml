@@ -3,49 +3,49 @@ routes:
     controller: channel
     filter: 'tag:hash-note+tag:guides'
     template: godo-notes-topic
-    limit: 20
+    limit: 10
 
   /notes/korea/:
     controller: channel
     filter: 'tag:hash-note+tag:korea'
     template: godo-notes-topic
-    limit: 20
+    limit: 10
 
   /notes/life/:
     controller: channel
     filter: 'tag:hash-note+tag:life'
     template: godo-notes-topic
-    limit: 20
+    limit: 10
 
   /notes/travel/:
     controller: channel
     filter: 'tag:hash-note+tag:travel'
     template: godo-notes-topic
-    limit: 20
+    limit: 10
 
   /notes/relocation/:
     controller: channel
     filter: 'tag:hash-note+tag:relocation'
     template: godo-notes-topic
-    limit: 20
+    limit: 10
 
   /notes/tech/:
     controller: channel
     filter: 'tag:hash-note+tag:tech'
     template: godo-notes-topic
-    limit: 20
+    limit: 10
 
   /notes/japan/:
     controller: channel
     filter: 'tag:hash-note+tag:japan'
     template: godo-notes-topic
-    limit: 20
+    limit: 10
 
   /notes/:
     controller: channel
     filter: 'tag:[hash-note]'
     template: godo-notes
-    limit: 20
+    limit: 10
 
 collections:
   /:

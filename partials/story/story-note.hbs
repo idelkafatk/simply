@@ -30,5 +30,9 @@
                 {{/foreach}}
             </div>
         {{/has}}
+
+        {{!-- Keep the full post inert; JavaScript extracts only Ghost Gallery cards. --}}
+        <div class="story-note-gallery" data-note-gallery></div>
+        <template data-note-gallery-source>{{content}}</template>
     </div>
 </article>
