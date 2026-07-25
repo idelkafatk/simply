@@ -1,20 +1,28 @@
 {{#if post.tags}}
 {{#get "posts" limit="6" filter="tags:[{{post.tags}}]+id:-{{post.id}}+tag:-hash-note" as |post_related|}}
 {{#if post_related}}
-<div class="post-related bg-gray-150 py-10">
+<section class="post-related bg-gray-150 py-10" data-related-articles-carousel aria-labelledby="related-articles-title">
     <div class="container mx-auto">
-        <div class="max-w-1100 mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <h3 class="text-title text-32 col-span-full mb-10 text-center">
+        <div class="max-w-1100 mx-auto">
+            <h3 id="related-articles-title" class="text-title text-32 mb-10 text-center">
                 {{{t "Related <span class='text-primary'>Articles</span>"}}}
             </h3>
 
-            {{!-- Meta - partials/story/story-card-small.hbs --}}
-            {{#foreach post_related}}
-                {{> "story/story-card-small"}}
-            {{/foreach}}
+            <div class="related-carousel-viewport">
+                <div id="related-articles-track" class="related-carousel-track" data-related-articles-track role="list" tabindex="0">
+                    {{!-- Meta - partials/story/story-card-small.hbs --}}
+                    {{#foreach post_related}}
+                        <div class="related-carousel-item" data-related-articles-item role="listitem">
+                            {{> "story/story-card-small"}}
+                        </div>
+                    {{/foreach}}
+                </div>
+            </div>
+
+            <div class="related-carousel-pagination" data-related-articles-pagination role="status" aria-live="polite"></div>
         </div>
     </div>
-</div>
+</section>
 {{/if}}
 {{/get}}
 {{/if}}

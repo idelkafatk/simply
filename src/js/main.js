@@ -405,6 +405,25 @@ const simplySetup = () => {
   }
 
   notesCarousels()
+
+  /* Related articles carousel
+  /* ---------------------------------------------------------- */
+  const relatedArticlesCarousels = () => {
+    document.querySelectorAll('[data-related-articles-carousel]').forEach(carouselRoot => {
+      const carousel = carouselRoot.querySelector('[data-related-articles-track]')
+      const items = Array.from(carouselRoot.querySelectorAll('[data-related-articles-item]'))
+      const pagination = carouselRoot.querySelector('[data-related-articles-pagination]')
+
+      initHorizontalCarousel({
+        carousel,
+        items,
+        pagination,
+        dotClassName: 'related-carousel-pagination-dot'
+      })
+    })
+  }
+
+  relatedArticlesCarousels()
 }
 
 document.addEventListener('DOMContentLoaded', simplySetup)
