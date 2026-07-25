@@ -21,40 +21,24 @@
 </section>
 {{/tag}}
 
-{{!-- Tagged stories + matching notes sidebar --}}
+{{!-- Matching notes carousel + tagged stories --}}
 <div class="site-post mx-auto max-w-extreme py-vmin8 px-4">
-    <div class="tag-content-grid grid gap-10 xl:gap-12">
-        <div class="min-w-0">
-            <div class="tag-post-feed js-feed-entry grid md:grid-cols-2 gap-6">
-                {{#foreach posts}}
-                    {{#has tag="#note, hash-note"}}
-                        {{!-- Matching notes are surfaced separately --}}
-                    {{else}}
-                        {{> "story/story-grid"}}
-                    {{/has}}
-                {{/foreach}}
+    {{#get "posts" filter="tag:hash-note+tag:{{tag.slug}}" limit="10" as |notes|}}
+        {{#if notes}}
+            {{> "components/notes-carousel" carouselId="tag-notes" widgetTitle=(t "Notes") widgetPosts=notes}}
+        {{/if}}
+    {{/get}}
 
-                {{#get "posts" filter="tag:hash-note+tag:{{tag.slug}}" limit="3" as |mobile_notes|}}
-                    {{#if mobile_notes}}
-                        <aside class="js-mobile-notes-widget sidebar-notes-widget hidden md:col-span-2">
-                            {{> "sidebar/sidebar-notes" widgetTitle=(t "Latest Notes") widgetPosts=mobile_notes}}
-                        </aside>
-                    {{/if}}
-                {{/get}}
-            </div>
-
-            {{!-- Pagination - partials/pagination.hbs --}}
-            {{pagination}}
-        </div>
-
-        {{#get "posts" filter="tag:hash-note+tag:{{tag.slug}}" limit="6" as |notes|}}
-            {{#if notes}}
-                <aside class="sidebar-notes-widget hidden lg:flex flex-col justify-start">
-                    <div class="lg:sticky lg:top-28">
-                        {{> "sidebar/sidebar-notes" widgetTitle=(t "Notes") widgetPosts=notes}}
-                    </div>
-                </aside>
-            {{/if}}
-        {{/get}}
+    <div class="tag-post-feed js-feed-entry grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{#foreach posts}}
+            {{#has tag="#note, hash-note"}}
+                {{!-- Matching notes are surfaced separately --}}
+            {{else}}
+                {{> "story/story-grid"}}
+            {{/has}}
+        {{/foreach}}
     </div>
+
+    {{!-- Pagination - partials/pagination.hbs --}}
+    {{pagination}}
 </div>

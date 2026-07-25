@@ -1,0 +1,50 @@
+{{!-- Horizontal notes carousel. Expects carouselId + widgetTitle + widgetPosts. --}}
+<section class="notes-carousel js-notes-carousel" data-notes-carousel aria-labelledby="{{carouselId}}-title">
+    <header class="notes-carousel-header">
+        <div class="notes-carousel-heading">
+            <h2 id="{{carouselId}}-title" class="text-2xl font-semibold text-title">{{widgetTitle}}</h2>
+        </div>
+    </header>
+
+    <div class="notes-carousel-viewport">
+        <div id="{{carouselId}}-track" class="notes-carousel-track" data-notes-carousel-track role="list" tabindex="0">
+            {{#foreach widgetPosts}}
+                <article class="notes-carousel-card {{#if feature_image}}has-image{{/if}}" data-notes-carousel-item role="listitem">
+                    <a href="{{url}}" class="notes-carousel-link">
+                        {{#if feature_image}}
+                            <figure class="notes-carousel-media">
+                                <img class="blur-up lazyload"
+                                    src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                                    data-srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w"
+                                    data-sizes="auto"
+                                    alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" />
+                            </figure>
+                        {{/if}}
+
+                        <div class="notes-carousel-body">
+                            <time class="notes-carousel-date capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+                            <h3 class="notes-carousel-title text-title">{{title}}</h3>
+                            <p class="notes-carousel-excerpt text-global">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="200"}}{{/if}}</p>
+                        </div>
+                    </a>
+                </article>
+            {{/foreach}}
+        </div>
+
+        <button class="notes-carousel-nav notes-carousel-nav-prev js-notes-carousel-prev" type="button" aria-label="{{t "Previous notes"}}" aria-controls="{{carouselId}}-track">
+            <svg class="icon rotate-180 transform" aria-hidden="true"><use xlink:href="#icon-arrow-forward"></use></svg>
+        </button>
+        <button class="notes-carousel-nav notes-carousel-nav-next js-notes-carousel-next" type="button" aria-label="{{t "Next notes"}}" aria-controls="{{carouselId}}-track">
+            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-forward"></use></svg>
+        </button>
+    </div>
+
+    <div class="notes-carousel-pagination" data-notes-carousel-pagination role="status" aria-live="polite"></div>
+
+    <div class="notes-carousel-footer">
+        <a href="/notes/" class="notes-carousel-all">
+            <span>{{t "See all"}}</span>
+            <svg class="icon notes-carousel-all-icon" aria-hidden="true"><use xlink:href="#icon-arrow"></use></svg>
+        </a>
+    </div>
+</section>

@@ -4,33 +4,24 @@
 {{!-- Publication Cover - partials/home/publication-cover.hbs --}}
 {{!-- {{> "home/publication-cover"}} --}}
 
-{{!-- Feed Stories + Notes sidebar --}}
+{{!-- Notes carousel + stories --}}
 <div class="site-post mx-auto max-w-extreme py-vmin8 px-4">
-    <div class="grid gap-10 xl:gap-12 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div class="min-w-0">
-            <div class="js-feed-entry grid md:grid-cols-2 gap-6">
-                {{#foreach posts}}
-                    {{#has tag="#note, hash-note"}}
-                        {{!-- Notes are surfaced in the sidebar + /notes/, skipped in the main feed --}}
-                    {{else}}
-                        {{> "story/story-grid"}}
-                    {{/has}}
-                {{/foreach}}
+    {{#get "posts" filter="tag:[hash-note]" limit="10" as |notes|}}
+        {{#if notes}}
+            {{> "components/notes-carousel" carouselId="home-notes" widgetTitle=(t "Latest Notes") widgetPosts=notes}}
+        {{/if}}
+    {{/get}}
 
-                {{#get "posts" filter="tag:[hash-note]" limit="3" as |mobile_notes|}}
-                    {{#if mobile_notes}}
-                        <aside class="js-mobile-notes-widget sidebar-notes-widget hidden md:col-span-2">
-                            {{> "sidebar/sidebar-notes" widgetTitle=(t "Latest Notes") widgetPosts=mobile_notes}}
-                        </aside>
-                    {{/if}}
-                {{/get}}
-            </div>
-
-            {{!-- Pagination - partials/pagination.hbs --}}
-            {{pagination}}
-        </div>
-
-        {{!-- Latest notes - partials/sidebar/notes-widget.hbs --}}
-        {{> "sidebar/notes-widget" class="hidden lg:flex"}}
+    <div class="js-feed-entry grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{#foreach posts}}
+            {{#has tag="#note, hash-note"}}
+                {{!-- Notes are surfaced in the carousel + /notes/, skipped in the main feed --}}
+            {{else}}
+                {{> "story/story-grid"}}
+            {{/has}}
+        {{/foreach}}
     </div>
+
+    {{!-- Pagination - partials/pagination.hbs --}}
+    {{pagination}}
 </div>

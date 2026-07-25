@@ -8,6 +8,7 @@ import mediumZoom from 'medium-zoom'
 import urlRegexp from './util/url-regular-expression'
 import docSelectorAll from './util/document-query-selector-all'
 import { initGalleryCards } from './util/gallery'
+import { initHorizontalCarousel } from './util/horizontal-carousel'
 
 const simplySetup = () => {
   const rootEl = document.documentElement
@@ -345,40 +346,65 @@ const simplySetup = () => {
 
   notesGalleries()
 
-  /* Mobile notes placement
+  /* Notes carousel
   /* ---------------------------------------------------------- */
-  const mobileNotesPlacement = () => {
-    const notesWidget = document.querySelector('.js-mobile-notes-widget')
-    const postFeed = document.querySelector('.js-feed-entry')
-    if (!notesWidget || !postFeed) return
+  const notesCarousels = () => {
+    const noteText = new WeakMap()
 
-    const mobileViewport = window.matchMedia('(max-width: 999px)')
+    const updateExcerpt = excerpt => {
+      if (!noteText.has(excerpt)) noteText.set(excerpt, excerpt.textContent.trim())
 
-    const placeNotes = () => {
-      if (!mobileViewport.matches) {
-        notesWidget.classList.add('hidden')
-        return
+      const originalText = noteText.get(excerpt)
+      const characters = Array.from(originalText)
+      excerpt.classList.add('is-manual-clamp')
+      excerpt.textContent = originalText
+
+      if (excerpt.scrollHeight <= excerpt.clientHeight + 1) return
+
+      let start = 0
+      let end = characters.length
+
+      while (start < end) {
+        const middle = Math.ceil((start + end) / 2)
+        excerpt.textContent = `${characters.slice(0, middle).join('').trimEnd()}...`
+
+        if (excerpt.scrollHeight <= excerpt.clientHeight + 1) {
+          start = middle
+        } else {
+          end = middle - 1
+        }
       }
 
-      const visiblePosts = postFeed.querySelectorAll(':scope > .js-story')
-      const targetPost = visiblePosts[2] || visiblePosts[visiblePosts.length - 1]
-      if (!targetPost) return
-
-      if (targetPost.nextElementSibling !== notesWidget) {
-        targetPost.insertAdjacentElement('afterend', notesWidget)
-      }
-
-      notesWidget.classList.remove('hidden')
+      excerpt.textContent = `${characters.slice(0, start).join('').trimEnd()}...`
     }
 
-    placeNotes()
-    mobileViewport.addEventListener('change', placeNotes)
+    const updateExcerpts = () => {
+      document.querySelectorAll('.notes-carousel-excerpt').forEach(updateExcerpt)
+    }
 
-    const feedObserver = new MutationObserver(placeNotes)
-    feedObserver.observe(postFeed, { childList: true })
+    document.querySelectorAll('[data-notes-carousel]').forEach(carouselRoot => {
+      const carousel = carouselRoot.querySelector('[data-notes-carousel-track]')
+      const items = Array.from(carouselRoot.querySelectorAll('[data-notes-carousel-item]'))
+      const pagination = carouselRoot.querySelector('[data-notes-carousel-pagination]')
+      const previousButton = carouselRoot.querySelector('.js-notes-carousel-prev')
+      const nextButton = carouselRoot.querySelector('.js-notes-carousel-next')
+
+      initHorizontalCarousel({
+        carousel,
+        items,
+        pagination,
+        dotClassName: 'notes-carousel-pagination-dot',
+        previousButton,
+        nextButton
+      })
+    })
+
+    requestAnimationFrame(updateExcerpts)
+    window.addEventListener('resize', updateExcerpts)
+    if (document.fonts) document.fonts.ready.then(updateExcerpts)
   }
 
-  mobileNotesPlacement()
+  notesCarousels()
 }
 
 document.addEventListener('DOMContentLoaded', simplySetup)
