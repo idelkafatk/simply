@@ -272,3 +272,7 @@
     scroll-padding-inline: 1rem;
   }
 }
+
+.kg-gallery-pagination[hidden] {
+  display: none;
+}
