@@ -23,11 +23,15 @@
         </figure>
         {{/if}}
 
-        {{#if primary_tag}}
+        {{#has tag="count:>1"}}
         <footer class="note-single-footer flex items-center flex-wrap gap-x-3 gap-y-2 mt-8 pt-5 border-t border-gray-300 text-sm text-gray-500">
-            {{#foreach tags}}<a href="{{url}}" class="hover:underline">#{{name}}</a>{{/foreach}}
+            {{#foreach tags}}
+                {{#match visibility "=" "public"}}
+                    <a href="/notes/{{slug}}/" class="hover:underline">#{{name}}</a>
+                {{/match}}
+            {{/foreach}}
         </footer>
-        {{/if}}
+        {{/has}}
 
         {{> "components/telegram-card"}}
     </div>

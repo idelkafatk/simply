@@ -41,16 +41,17 @@ routes:
     template: godo-notes-topic
     limit: 10
 
+collections:
   /notes/:
-    controller: channel
-    filter: 'tag:[hash-note]'
+    permalink: /{slug}/
     template: godo-notes
+    filter: 'tag:hash-note'
     limit: 10
 
-collections:
   /:
     permalink: /{slug}/
     template: index
+    filter: 'tag:-hash-note'
 
 taxonomies:
   tag: /tag/{slug}/

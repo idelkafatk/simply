@@ -6,6 +6,8 @@
 }
 
 .medium-zoom-image--opened {
+  object-fit: contain;
+  object-position: center;
   z-index: 51;
 }
 
