@@ -180,7 +180,7 @@
     {{{block "scripts"}}}
 
     {{!-- Main scripts --}}
-    <script src="{{#is "post, page"}}{{asset "scripts/post.js"}}{{else}}{{asset "scripts/main.js"}}{{/is}}"></script>
+    <script src="{{#is "post, page"}}{{asset "scripts/post.js"}}{{else}}{{asset "scripts/main.js"}}{{/is}}" defer></script>
     <script src="{{asset "scripts/pwa.js"}}" defer></script>
 
     {{!-- Pagination Infinite Scroll --}}

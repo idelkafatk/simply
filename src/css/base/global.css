@@ -11,18 +11,6 @@
   z-index: 51;
 }
 
-/* Img Blur lazyloaded
-/* ---------------------------------------------------------- */
-
-.blur-up {
-  opacity: 0;
-}
-
-.blur-up.lazyloaded {
-  opacity: 1;
-  transition: opacity 0.5s ease-in-out;
-}
-
 /* Loading Bar
 /* ---------------------------------------------------------- */
 

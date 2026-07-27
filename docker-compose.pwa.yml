@@ -36,7 +36,20 @@ services:
       - -c
       - |
         cat > /etc/nginx/conf.d/default.conf << 'EOF'
-        limit_req_zone $$binary_remote_addr zone=push_api:10m rate=10r/m;
+        # Upstreams are named blocks rather than variables in proxy_pass on
+        # purpose: a variable forces nginx to re-resolve the container name
+        # through Docker DNS on every single request, which stalls for seconds
+        # at a time whenever a UDP lookup is lost. Named blocks resolve once at
+        # startup and, unlike a variable, support connection reuse.
+        upstream ghost_backend {
+            server ghost:2368;
+            keepalive 32;
+        }
+
+        # Keyed on the reader's own address. Behind Cloudflare $$binary_remote_addr
+        # is the edge server, so every reader arriving through the same PoP would
+        # otherwise share a single 10-requests-per-minute bucket.
+        limit_req_zone $$http_cf_connecting_ip zone=push_api:10m rate=10r/m;
 
         server {
             listen 80;
@@ -45,15 +58,20 @@ services:
             set_real_ip_from 10.0.0.0/8;
             set_real_ip_from 172.16.0.0/12;
             set_real_ip_from 192.168.0.0/16;
-            real_ip_header X-Forwarded-For;
-            real_ip_recursive on;
+            real_ip_header CF-Connecting-IP;
 
-            resolver 127.0.0.11 valid=5s;
-            set $$upstream http://ghost:2368;
+            # The push service is a separate stack, so it stays behind a runtime
+            # lookup: a named upstream is resolved at startup and would stop nginx
+            # from booting at all whenever that stack is down. These two endpoints
+            # are called once per post view, so the lookup is not on the hot path.
+            # ipv6=off avoids a pointless AAAA query on every resolve.
+            resolver 127.0.0.11 valid=30s ipv6=off;
             set $$push_upstream http://idel-blog-push-service:3000;
 
             location = /sw.js {
-                proxy_pass $$upstream/assets/pwa/sw.js;
+                proxy_pass http://ghost_backend/assets/pwa/sw.js;
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
                 proxy_connect_timeout 5s;
                 proxy_next_upstream error timeout;
                 proxy_set_header Host $$host;
@@ -86,7 +104,10 @@ services:
             location /api/push/ {
                 limit_req zone=push_api burst=10 nodelay;
                 proxy_pass $$push_upstream;
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
                 proxy_connect_timeout 5s;
+                proxy_read_timeout 10s;
                 proxy_set_header Host $$host;
                 proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
                 proxy_set_header X-Forwarded-Proto https;
@@ -94,6 +115,8 @@ services:
 
             location = /webhooks/ghost/post-published {
                 proxy_pass $$push_upstream;
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
                 proxy_connect_timeout 5s;
                 proxy_read_timeout 30s;
                 proxy_set_header Host $$host;
@@ -103,7 +126,9 @@ services:
             }
 
             location / {
-                proxy_pass $$upstream;
+                proxy_pass http://ghost_backend;
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
                 proxy_connect_timeout 5s;
                 proxy_next_upstream error timeout;
                 proxy_set_header Host $$host;

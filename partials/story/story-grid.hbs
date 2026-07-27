@@ -2,13 +2,15 @@
     {{#if feature_image}}
         <figure class="story-image mb-5 h-52 relative border border-gray-300 bg-gray-200 overflow-hidden rounded-lg">
             <a href="{{url}}">
-                <img class="story-img inset-image block blur-up lazyload"
-                    src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-                    data-srcset="{{img_url feature_image size="xs"}} 100w,
+                <img class="story-img inset-image block"
+                    src="{{img_url feature_image size="m"}}"
+                    srcset="{{img_url feature_image size="xs"}} 100w,
                         {{img_url feature_image size="s"}} 300w,
                         {{img_url feature_image size="m"}} 600w,
                         {{img_url feature_image size="l"}} 1000w"
-                    data-sizes="auto"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    loading="lazy"
+                    decoding="async"
                     alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
                 />
                 {{!-- <noscript><img class="story-img absolute u-image block" src="{{img_url feature_image size="s"}}"/></noscript> --}}

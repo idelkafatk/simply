@@ -37,6 +37,9 @@ const isCacheableResponse = response => {
   return !/(private|no-store)/i.test(cacheControl)
 }
 
+const TRIM_INTERVAL = 10
+const writesSinceTrim = {}
+
 const trimCache = async (cacheName, maxEntries) => {
   const cache = await caches.open(cacheName)
   const keys = await cache.keys()
@@ -50,7 +53,18 @@ const storeResponse = async (cacheName, request, response, maxEntries) => {
   if (!isCacheableResponse(response)) return
 
   const cache = await caches.open(cacheName)
-  await cache.put(request, response.clone())
+  await cache.put(request, response)
+
+  // Listing every key is a disk read, so it is amortised over several writes
+  // instead of being paid on each cached response.
+  const pending = (writesSinceTrim[cacheName] || 0) + 1
+
+  if (pending < TRIM_INTERVAL) {
+    writesSinceTrim[cacheName] = pending
+    return
+  }
+
+  writesSinceTrim[cacheName] = 0
   await trimCache(cacheName, maxEntries)
 }
 
@@ -62,11 +76,24 @@ const tryStoreResponse = async (cacheName, request, response, maxEntries) => {
   }
 }
 
+// Caching happens in waitUntil so the page never waits on a cache write, and
+// navigations reuse the preload the browser started while the worker booted.
+const fetchAndCache = async (event, cacheName, cacheKey, maxEntries) => {
+  const preloaded = event.request.mode === 'navigate' && event.preloadResponse
+    ? await event.preloadResponse
+    : null
+  const response = preloaded || await fetch(event.request)
+
+  event.waitUntil(tryStoreResponse(cacheName, cacheKey, response.clone(), maxEntries))
+  return response
+}
+
 const tryPrecache = async (cache, url) => {
   try {
     const request = new Request(url, { cache: 'reload' })
     const response = await fetch(request)
-    if (isCacheableResponse(response)) await cache.put(request, response)
+    // Cloning first keeps the returned body readable, since put() consumes it.
+    if (isCacheableResponse(response)) await cache.put(request, response.clone())
     return response
   } catch (error) {
     return null
@@ -97,61 +124,76 @@ const precacheLaunchAssets = async () => {
 }
 
 const launchPage = async (event) => {
-  const cached = await caches.match(HOME_URL)
-  const update = (async () => {
-    const response = await fetch(event.request)
-    await tryStoreResponse(SHELL_CACHE, HOME_URL, response, 10)
-    return response
-  })().catch(async error => {
-    const offline = await caches.match(OFFLINE_URL)
-    if (offline) return offline
-    throw error
-  })
+  const shell = await caches.open(SHELL_CACHE)
+  const cached = await shell.match(HOME_URL)
 
-  event.waitUntil(update.then(() => undefined, () => undefined))
-  return cached || update
+  if (!cached) {
+    try {
+      return await fetchAndCache(event, SHELL_CACHE, HOME_URL, 10)
+    } catch (error) {
+      const offline = await shell.match(OFFLINE_URL)
+      if (offline) return offline
+      throw error
+    }
+  }
+
+  event.waitUntil((async () => {
+    try {
+      const preloaded = event.preloadResponse ? await event.preloadResponse : null
+      const response = preloaded || await fetch(event.request)
+      await tryStoreResponse(SHELL_CACHE, HOME_URL, response, 10)
+    } catch (error) {
+      // The cached shell stays usable when the refresh fails.
+    }
+  })())
+
+  return cached
 }
 
 const networkFirst = async (event) => {
   const request = event.request
 
   try {
-    const response = await fetch(request)
-    await tryStoreResponse(PAGE_CACHE, request, response, MAX_PAGE_ENTRIES)
-    return response
+    return await fetchAndCache(event, PAGE_CACHE, request, MAX_PAGE_ENTRIES)
   } catch (error) {
-    return (await caches.match(request, { ignoreSearch: true })) ||
-      (await caches.match(OFFLINE_URL))
+    const pages = await caches.open(PAGE_CACHE)
+    const shell = await caches.open(SHELL_CACHE)
+
+    return (await pages.match(request, { ignoreSearch: true })) ||
+      (await shell.match(OFFLINE_URL))
   }
 }
 
 const staleWhileRevalidate = async (event) => {
   const request = event.request
-  const cached = await caches.match(request)
-  const update = fetch(request).then(async response => {
-    await tryStoreResponse(ASSET_CACHE, request, response, MAX_ASSET_ENTRIES)
-    return response
-  }).catch(error => {
-    if (cached) return cached
-    throw error
-  })
+  const cache = await caches.open(ASSET_CACHE)
+  const cached = await cache.match(request)
 
-  event.waitUntil(update.then(() => undefined, () => undefined))
-  return cached || update
+  if (!cached) return fetchAndCache(event, ASSET_CACHE, request, MAX_ASSET_ENTRIES)
+
+  event.waitUntil((async () => {
+    try {
+      const response = await fetch(request)
+      await tryStoreResponse(ASSET_CACHE, request, response, MAX_ASSET_ENTRIES)
+    } catch (error) {
+      // The cached asset stays usable when revalidation fails.
+    }
+  })())
+
+  return cached
 }
 
 const cacheFirst = async (event) => {
-  const request = event.request
-  const cached = await caches.match(request)
+  const cache = await caches.open(IMAGE_CACHE)
+  const cached = await cache.match(event.request)
   if (cached) return cached
 
-  const response = await fetch(request)
-  await tryStoreResponse(IMAGE_CACHE, request, response, MAX_IMAGE_ENTRIES)
-  return response
+  return fetchAndCache(event, IMAGE_CACHE, event.request, MAX_IMAGE_ENTRIES)
 }
 
 const getNotificationIcon = async () => {
-  let response = await caches.match(MANIFEST_URL)
+  const shell = await caches.open(SHELL_CACHE)
+  let response = await shell.match(MANIFEST_URL)
 
   if (!response) {
     try {
@@ -197,7 +239,7 @@ self.addEventListener('activate', event => {
         )
       }),
       self.registration.navigationPreload
-        ? self.registration.navigationPreload.disable()
+        ? self.registration.navigationPreload.enable()
         : Promise.resolve(),
       self.clients.claim()
     ])

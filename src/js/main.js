@@ -3,7 +3,6 @@
 import './navigation'
 
 // lib
-import 'lazysizes'
 import mediumZoom from 'medium-zoom'
 
 // import loadScript from './util/load-script'

@@ -6,9 +6,11 @@
 
     {{#if feature_image}}
     <a href="{{url}}" class="prev-next-image-link relative w-4/12 bg-gray-200 flex-none border border-gray-100 rounded-lg overflow-hidden" aria-label="{{title}}">
-        <img class="inset-image blur-up lazyload"
-            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-            data-src="{{img_url feature_image size="s"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"/>
+        <img class="inset-image"
+            src="{{img_url feature_image size="s"}}"
+            loading="lazy"
+            decoding="async"
+            alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"/>
     </a>
     {{/if}}
 
