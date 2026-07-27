@@ -1,11 +1,13 @@
 /* global self caches fetch Request URL */
 
 const CACHE_PREFIX = 'idel-blog'
-const CACHE_VERSION = 'v1'
+const CACHE_VERSION = 'v6'
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`
 const PAGE_CACHE = `${CACHE_PREFIX}-pages-${CACHE_VERSION}`
 const ASSET_CACHE = `${CACHE_PREFIX}-assets-${CACHE_VERSION}`
 const IMAGE_CACHE = `${CACHE_PREFIX}-images-${CACHE_VERSION}`
+const HOME_URL = '/'
+const MANIFEST_URL = '/manifest/'
 const OFFLINE_URL = '/offline/'
 const MAX_PAGE_ENTRIES = 40
 const MAX_ASSET_ENTRIES = 80
@@ -60,6 +62,57 @@ const tryStoreResponse = async (cacheName, request, response, maxEntries) => {
   }
 }
 
+const tryPrecache = async (cache, url) => {
+  try {
+    const request = new Request(url, { cache: 'reload' })
+    const response = await fetch(request)
+    if (isCacheableResponse(response)) await cache.put(request, response)
+    return response
+  } catch (error) {
+    return null
+  }
+}
+
+const precacheLaunchAssets = async () => {
+  const cache = await caches.open(SHELL_CACHE)
+
+  await cache.add(new Request(OFFLINE_URL, { cache: 'reload' }))
+  await tryPrecache(cache, HOME_URL)
+
+  const manifestResponse = await tryPrecache(cache, MANIFEST_URL)
+  if (!manifestResponse) return
+
+  try {
+    const manifest = await manifestResponse.clone().json()
+    const icons = Array.isArray(manifest.icons) ? manifest.icons : []
+    const icon = icons.find(item => String(item.sizes).includes('192x192')) || icons[0]
+
+    if (icon && icon.src) {
+      const iconUrl = new URL(icon.src, self.location.origin)
+      if (iconUrl.origin === self.location.origin) await tryPrecache(cache, iconUrl.href)
+    }
+  } catch (error) {
+    // The offline page remains available even if manifest parsing fails.
+  }
+}
+
+const launchPage = async (event) => {
+  const cached = await caches.match(HOME_URL)
+  const update = (async () => {
+    const preloaded = await event.preloadResponse
+    const response = preloaded || await fetch(event.request)
+    await tryStoreResponse(SHELL_CACHE, HOME_URL, response, 10)
+    return response
+  })().catch(async error => {
+    const offline = await caches.match(OFFLINE_URL)
+    if (offline) return offline
+    throw error
+  })
+
+  event.waitUntil(update.then(() => undefined, () => undefined))
+  return cached || update
+}
+
 const networkFirst = async (event) => {
   const request = event.request
 
@@ -101,8 +154,7 @@ const cacheFirst = async (event) => {
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(SHELL_CACHE)
-      .then(cache => cache.add(new Request(OFFLINE_URL, { cache: 'reload' })))
+    precacheLaunchAssets()
       .then(() => self.skipWaiting())
   )
 })
@@ -134,6 +186,12 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin || isPrivatePath(url.pathname)) return
 
   if (request.mode === 'navigate') {
+    const isPwaLaunch = url.pathname === '/' && url.searchParams.get('source') === 'pwa'
+    if (isPwaLaunch) {
+      event.respondWith(launchPage(event))
+      return
+    }
+
     event.respondWith(networkFirst(event))
     return
   }
