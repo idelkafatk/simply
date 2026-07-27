@@ -1,7 +1,7 @@
 /* global self caches fetch Request URL */
 
 const CACHE_PREFIX = 'idel-blog'
-const CACHE_VERSION = 'v6'
+const CACHE_VERSION = 'v8'
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`
 const PAGE_CACHE = `${CACHE_PREFIX}-pages-${CACHE_VERSION}`
 const ASSET_CACHE = `${CACHE_PREFIX}-assets-${CACHE_VERSION}`
@@ -99,8 +99,7 @@ const precacheLaunchAssets = async () => {
 const launchPage = async (event) => {
   const cached = await caches.match(HOME_URL)
   const update = (async () => {
-    const preloaded = await event.preloadResponse
-    const response = preloaded || await fetch(event.request)
+    const response = await fetch(event.request)
     await tryStoreResponse(SHELL_CACHE, HOME_URL, response, 10)
     return response
   })().catch(async error => {
@@ -117,8 +116,7 @@ const networkFirst = async (event) => {
   const request = event.request
 
   try {
-    const preloaded = await event.preloadResponse
-    const response = preloaded || await fetch(request)
+    const response = await fetch(request)
     await tryStoreResponse(PAGE_CACHE, request, response, MAX_PAGE_ENTRIES)
     return response
   } catch (error) {
@@ -170,10 +168,62 @@ self.addEventListener('activate', event => {
         )
       }),
       self.registration.navigationPreload
-        ? self.registration.navigationPreload.enable()
+        ? self.registration.navigationPreload.disable()
         : Promise.resolve(),
       self.clients.claim()
     ])
+  )
+})
+
+self.addEventListener('push', event => {
+  let payload = {}
+
+  try {
+    payload = event.data ? event.data.json() : {}
+  } catch (error) {
+    payload = {}
+  }
+
+  const title = payload.title || 'Новая публикация'
+  const url = payload.url || HOME_URL
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: payload.body || '',
+      icon: payload.icon || '/assets/images/pwa/icon-192.png',
+      badge: payload.badge || '/assets/images/pwa/icon-192.png',
+      tag: payload.tag || 'idel-blog-publication',
+      data: { url }
+    })
+  )
+})
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close()
+
+  const targetUrl = new URL(
+    event.notification.data && event.notification.data.url
+      ? event.notification.data.url
+      : HOME_URL,
+    self.location.origin
+  )
+
+  if (targetUrl.origin !== self.location.origin) return
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(windowClients => {
+        const existingClient = windowClients.find(client => {
+          return new URL(client.url).pathname === targetUrl.pathname
+        })
+
+        if (existingClient) {
+          return existingClient.focus()
+            .then(() => existingClient.navigate(targetUrl.href))
+        }
+
+        return self.clients.openWindow(targetUrl.href)
+      })
   )
 })
 

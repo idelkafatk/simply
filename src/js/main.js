@@ -374,6 +374,27 @@ const simplySetup = () => {
 
   notesGalleries()
 
+  /* Notes card navigation
+  /* ---------------------------------------------------------- */
+  const notesCardNavigation = () => {
+    const notesFeed = document.querySelector('.notes-feed')
+    if (!notesFeed) return
+
+    notesFeed.addEventListener('click', event => {
+      const note = event.target.closest('[data-note-url]')
+      const interactiveTarget = event.target.closest(
+        'a, button, input, select, textarea, [data-note-gallery]'
+      )
+
+      if (!note || interactiveTarget || event.defaultPrevented) return
+      if (window.getSelection && window.getSelection().toString()) return
+
+      window.location.assign(note.dataset.noteUrl)
+    })
+  }
+
+  notesCardNavigation()
+
   /* Notes carousel
   /* ---------------------------------------------------------- */
   const notesCarousels = () => {

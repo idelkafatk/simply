@@ -1,6 +1,7 @@
 {{!--
-  Unified Telegram promo card. Replaces components/telegram-bot.hbs + components/telegram-discussion.hbs.
-  - Primary CTA ("join the channel") is always visible.
+  Unified publication subscription card.
+  - Telegram is always visible.
+  - Web Push is revealed by src/js/pwa.js on article and note pages.
   - Secondary "go to discussion" row ships hidden; revealed by telegramDiscussion() in
     src/js/post.js via [data-telegram-discussion-url] / [data-telegram-discussion] /
     [data-telegram-discussion-link]. Keep these three hooks stable — the sibling
@@ -11,17 +12,43 @@
     <div class="telegram-card border-t-3 border-primary bg-gray-100 p-8 rounded-lg">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-xl font-bold text-title mb-1">{{@site.title}} в Telegram</h2>
-                <p class="text-sm text-gray-500 m-0">Новые статьи, заметки и обсуждения.</p>
+                <h2 class="text-xl font-bold text-title mb-1">{{t "Follow new publications"}}</h2>
+                <p class="text-sm text-gray-500 m-0">{{t "New articles, notes and discussions."}}</p>
             </div>
 
-            <a class="button is-telegram rounded-full gap-2 shrink-0"
-               href="{{#if @custom.telegram_url}}{{@custom.telegram_url}}{{else}}https://t.me/idel_blog{{/if}}"
-               target="_blank"
-               rel="noopener noreferrer">
-                <svg class="w-5 h-5 fill-current" aria-hidden="true"><use xlink:href="#icon-send"></use></svg>
-                <span>Подписаться</span>
-            </a>
+            <div class="publication-subscribe-actions">
+                <div class="push-subscribe"
+                     data-push-subscribe
+                     data-message-enabled="{{t "Notifications are enabled."}}"
+                     data-message-install="{{t "Add the blog to your Home Screen first, then enable notifications from the installed app."}}"
+                     data-message-denied="{{t "Notifications are blocked. Allow them in your browser settings."}}"
+                     data-message-error="{{t "Could not enable notifications. Please try again."}}"
+                     data-message-disable-error="{{t "Could not disable notifications. Please try again."}}"
+                     hidden>
+                    <button class="button is-primary rounded-full shrink-0"
+                            type="button"
+                            data-push-enable>
+                        {{t "Enable notifications"}}
+                    </button>
+                    <button class="button is-white rounded-full shrink-0"
+                            type="button"
+                            data-push-disable
+                            hidden>
+                        {{t "Disable notifications"}}
+                    </button>
+                    <p class="push-subscribe-status text-sm text-gray-500 m-0"
+                       data-push-status
+                       aria-live="polite"></p>
+                </div>
+
+                <a class="button is-telegram rounded-full gap-2 shrink-0"
+                   href="{{#if @custom.telegram_url}}{{@custom.telegram_url}}{{else}}https://t.me/idel_blog{{/if}}"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <svg class="w-5 h-5 fill-current" aria-hidden="true"><use xlink:href="#icon-send"></use></svg>
+                    <span>Telegram</span>
+                </a>
+            </div>
         </div>
 
         {{#if access}}

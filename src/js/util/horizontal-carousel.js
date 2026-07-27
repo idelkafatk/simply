@@ -78,7 +78,9 @@ const initCarouselDrag = carousel => {
 
   carousel.addEventListener('pointerup', finishDrag)
   carousel.addEventListener('pointercancel', finishDrag)
-  carousel.addEventListener('dragstart', event => event.preventDefault())
+  carousel.addEventListener('dragstart', event => {
+    if (pointerId !== undefined) event.preventDefault()
+  })
   carousel.addEventListener('click', event => {
     if (!suppressClick) return
 
