@@ -38,6 +38,63 @@ document.addEventListener('click', event => {
 document.addEventListener('submit', () => setLoading(true))
 window.addEventListener('pageshow', () => setLoading(false))
 
+const setupSearchNavigation = () => {
+  const frameSelector = 'iframe[title="portal-popup"]'
+  const observedFrames = new WeakSet()
+  const observedDocuments = new WeakSet()
+
+  const bindDocument = frame => {
+    let frameDocument
+
+    try {
+      frameDocument = frame.contentDocument
+    } catch (error) {
+      return
+    }
+
+    if (!frameDocument || observedDocuments.has(frameDocument)) return
+    observedDocuments.add(frameDocument)
+
+    frameDocument.addEventListener('click', event => {
+      const target = event.target
+      const result = target && typeof target.closest === 'function'
+        ? target.closest('.cursor-pointer')
+        : null
+
+      if (result) setLoading(true)
+    }, true)
+
+    frameDocument.addEventListener('keydown', event => {
+      if (event.key !== 'Enter') return
+      if (frameDocument.querySelector('.cursor-pointer.bg-neutral-100')) setLoading(true)
+    }, true)
+  }
+
+  const bindFrame = frame => {
+    if (observedFrames.has(frame)) return
+    observedFrames.add(frame)
+    frame.addEventListener('load', () => bindDocument(frame))
+    bindDocument(frame)
+  }
+
+  const inspect = node => {
+    if (!(node instanceof window.Element)) return
+
+    if (node.matches(frameSelector)) bindFrame(node)
+    node.querySelectorAll(frameSelector).forEach(bindFrame)
+  }
+
+  inspect(document.documentElement)
+
+  const observer = new window.MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(inspect)
+    })
+  })
+
+  observer.observe(document.body, { childList: true, subtree: true })
+}
+
 const setupPullToRefresh = () => {
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true
@@ -143,4 +200,5 @@ const setupPullToRefresh = () => {
   document.addEventListener('touchcancel', reset, { passive: true })
 }
 
+setupSearchNavigation()
 setupPullToRefresh()
