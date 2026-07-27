@@ -110,10 +110,15 @@ const setupPushSubscription = async element => {
   let subscription = await registration.pushManager.getSubscription()
 
   if (subscription) {
-    setPushState(element, 'subscribed', element.dataset.messageEnabled)
-    saveSubscription(subscription).catch(error => {
+    setPushState(element, 'loading')
+
+    try {
+      await saveSubscription(subscription)
+      setPushState(element, 'subscribed', element.dataset.messageEnabled)
+    } catch (error) {
       console.error('Push subscription sync failed:', error)
-    })
+      setPushState(element, 'default', element.dataset.messageError)
+    }
   } else if (Notification.permission === 'denied') {
     setPushState(element, 'denied', element.dataset.messageDenied)
   }
@@ -127,24 +132,25 @@ const setupPushSubscription = async element => {
     setPushState(element, 'loading')
 
     try {
-      const permission = await Notification.requestPermission()
+      const permission = Notification.permission === 'granted'
+        ? Notification.permission
+        : await Notification.requestPermission()
 
       if (permission !== 'granted') {
         setPushState(element, permission === 'denied' ? 'denied' : 'default', element.dataset.messageDenied)
         return
       }
 
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(pushConfig.publicKey)
-      })
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(pushConfig.publicKey)
+        })
+      }
+
       await saveSubscription(subscription)
       setPushState(element, 'subscribed', element.dataset.messageEnabled)
     } catch (error) {
-      if (subscription) {
-        await subscription.unsubscribe().catch(() => {})
-        subscription = null
-      }
       console.error('Push subscription failed:', error)
       setPushState(element, 'default', element.dataset.messageError)
     }

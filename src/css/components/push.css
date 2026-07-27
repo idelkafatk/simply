@@ -24,7 +24,7 @@
 
 @media (min-width: 640px) {
   .publication-subscribe-actions {
-    align-items: center;
+    align-items: flex-start;
     flex-direction: row;
   }
 }
