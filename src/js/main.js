@@ -1,4 +1,4 @@
-/* global followSocialMedia menuDropdown localStorage MutationObserver NodeFilter requestAnimationFrame */
+/* global followSocialMedia menuDropdown localStorage MutationObserver */
 
 // lib
 import 'lazysizes'
@@ -254,86 +254,6 @@ const simplySetup = () => {
 
   removeButtonFocus()
 
-  /* Notes inline ellipsis
-  /* ---------------------------------------------------------- */
-  const notesInlineEllipsis = () => {
-    const notesFeed = document.querySelector('.notes-feed')
-    if (!notesFeed) return
-
-    const noteContent = new WeakMap()
-
-    const truncateContent = (noteBody, content, characterLimit) => {
-      noteBody.innerHTML = content
-
-      const walker = document.createTreeWalker(noteBody, NodeFilter.SHOW_TEXT)
-      let textNode = walker.nextNode()
-      let charactersSeen = 0
-
-      while (textNode) {
-        const nextCharactersSeen = charactersSeen + Array.from(textNode.data).length
-
-        if (nextCharactersSeen >= characterLimit) {
-          const charactersToKeep = characterLimit - charactersSeen
-          const keptText = Array.from(textNode.data).slice(0, charactersToKeep).join('').trimEnd()
-          const range = document.createRange()
-
-          textNode.data = `${keptText}...`
-          range.setStartAfter(textNode)
-          range.setEnd(noteBody, noteBody.childNodes.length)
-          range.deleteContents()
-          return
-        }
-
-        charactersSeen = nextCharactersSeen
-        textNode = walker.nextNode()
-      }
-    }
-
-    const updateNote = note => {
-      const noteBody = note.querySelector('.story-note-body')
-      if (!noteBody) return
-
-      if (!noteContent.has(noteBody)) noteContent.set(noteBody, noteBody.innerHTML)
-
-      const originalContent = noteContent.get(noteBody)
-      noteBody.classList.add('is-manual-clamp')
-      noteBody.innerHTML = originalContent
-
-      const characterCount = Array.from(noteBody.textContent.trim()).length
-
-      if (noteBody.scrollHeight <= noteBody.clientHeight + 1) return
-
-      let start = 0
-      let end = characterCount
-
-      while (start < end) {
-        const middle = Math.ceil((start + end) / 2)
-        truncateContent(noteBody, originalContent, middle)
-
-        if (noteBody.scrollHeight <= noteBody.clientHeight + 1) {
-          start = middle
-        } else {
-          end = middle - 1
-        }
-      }
-
-      truncateContent(noteBody, originalContent, start)
-    }
-
-    const updateNotes = () => {
-      notesFeed.querySelectorAll('.story-note').forEach(updateNote)
-    }
-
-    requestAnimationFrame(updateNotes)
-    window.addEventListener('resize', updateNotes)
-    if (document.fonts) document.fonts.ready.then(updateNotes)
-
-    const notesObserver = new MutationObserver(updateNotes)
-    notesObserver.observe(notesFeed, { childList: true })
-  }
-
-  notesInlineEllipsis()
-
   /* Notes galleries
   /* ---------------------------------------------------------- */
   const notesGalleries = () => {
@@ -398,39 +318,6 @@ const simplySetup = () => {
   /* Notes carousel
   /* ---------------------------------------------------------- */
   const notesCarousels = () => {
-    const noteText = new WeakMap()
-
-    const updateExcerpt = excerpt => {
-      if (!noteText.has(excerpt)) noteText.set(excerpt, excerpt.textContent.trim())
-
-      const originalText = noteText.get(excerpt)
-      const characters = Array.from(originalText)
-      excerpt.classList.add('is-manual-clamp')
-      excerpt.textContent = originalText
-
-      if (excerpt.scrollHeight <= excerpt.clientHeight + 1) return
-
-      let start = 0
-      let end = characters.length
-
-      while (start < end) {
-        const middle = Math.ceil((start + end) / 2)
-        excerpt.textContent = `${characters.slice(0, middle).join('').trimEnd()}...`
-
-        if (excerpt.scrollHeight <= excerpt.clientHeight + 1) {
-          start = middle
-        } else {
-          end = middle - 1
-        }
-      }
-
-      excerpt.textContent = `${characters.slice(0, start).join('').trimEnd()}...`
-    }
-
-    const updateExcerpts = () => {
-      document.querySelectorAll('.notes-carousel-excerpt').forEach(updateExcerpt)
-    }
-
     document.querySelectorAll('[data-notes-carousel]').forEach(carouselRoot => {
       const carousel = carouselRoot.querySelector('[data-notes-carousel-track]')
       const items = Array.from(carouselRoot.querySelectorAll('[data-notes-carousel-item]'))
@@ -447,10 +334,6 @@ const simplySetup = () => {
         nextButton
       })
     })
-
-    requestAnimationFrame(updateExcerpts)
-    window.addEventListener('resize', updateExcerpts)
-    if (document.fonts) document.fonts.ready.then(updateExcerpts)
   }
 
   notesCarousels()

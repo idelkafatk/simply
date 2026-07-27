@@ -78,12 +78,6 @@
   display: none;
 }
 
-.story-note-body.is-manual-clamp {
-  display: block;
-  max-height: 18em;
-  -webkit-line-clamp: unset;
-}
-
 .story-note-gallery:not(:empty) {
   --gallery-height: 20rem;
 
@@ -269,10 +263,8 @@
 .notes-carousel-excerpt {
   display: -webkit-box;
   font-size: 0.9375rem;
-  flex: 1;
   line-height: 1.5;
   margin: 0;
-  min-height: 0;
   overflow: hidden;
   overflow-wrap: anywhere;
   white-space: pre-line;
@@ -282,11 +274,6 @@
 
 .notes-carousel-card.has-image .notes-carousel-excerpt {
   -webkit-line-clamp: 3;
-}
-
-.notes-carousel-excerpt.is-manual-clamp {
-  display: block;
-  -webkit-line-clamp: unset;
 }
 
 .notes-carousel-pagination {

@@ -1,7 +1,7 @@
 /* global self caches fetch Request URL */
 
 const CACHE_PREFIX = 'idel-blog'
-const CACHE_VERSION = 'v8'
+const CACHE_VERSION = 'v10'
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`
 const PAGE_CACHE = `${CACHE_PREFIX}-pages-${CACHE_VERSION}`
 const ASSET_CACHE = `${CACHE_PREFIX}-assets-${CACHE_VERSION}`
@@ -150,6 +150,33 @@ const cacheFirst = async (event) => {
   return response
 }
 
+const getNotificationIcon = async () => {
+  let response
+
+  try {
+    response = await fetch(new Request(MANIFEST_URL, { cache: 'reload' }))
+  } catch (error) {
+    response = await caches.match(MANIFEST_URL)
+  }
+
+  if (!response || !response.ok) return null
+
+  try {
+    const manifest = await response.json()
+    const icons = Array.isArray(manifest.icons) ? manifest.icons : []
+    const icon = icons.find(item => String(item.sizes).includes('192x192')) || icons[0]
+
+    if (!icon || !icon.src) return null
+
+    const iconUrl = new URL(icon.src, self.location.origin)
+    return iconUrl.protocol === 'https:' || iconUrl.origin === self.location.origin
+      ? iconUrl.href
+      : null
+  } catch (error) {
+    return null
+  }
+}
+
 self.addEventListener('install', event => {
   event.waitUntil(
     precacheLaunchAssets()
@@ -187,15 +214,18 @@ self.addEventListener('push', event => {
   const title = payload.title || 'Новая публикация'
   const url = payload.url || HOME_URL
 
-  event.waitUntil(
-    self.registration.showNotification(title, {
+  event.waitUntil((async () => {
+    const icon = await getNotificationIcon()
+    const options = {
       body: payload.body || '',
-      icon: payload.icon || '/assets/images/pwa/icon-192.png',
-      badge: payload.badge || '/assets/images/pwa/icon-192.png',
       tag: payload.tag || 'idel-blog-publication',
       data: { url }
-    })
-  )
+    }
+
+    if (icon) options.icon = icon
+
+    return self.registration.showNotification(title, options)
+  })())
 })
 
 self.addEventListener('notificationclick', event => {

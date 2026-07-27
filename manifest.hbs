@@ -10,6 +10,20 @@
   "background_color": "#ffffff",
   "theme_color": "#151719",
   "icons": [
+    {{#if @site.icon}}
+    {
+      "src": "{{img_url @site.icon size="pwa_192"}}",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "{{img_url @site.icon size="pwa_512"}}",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+    {{else}}
     {
       "src": "{{asset "images/pwa/icon-192.png"}}",
       "sizes": "192x192",
@@ -22,6 +36,7 @@
       "type": "image/png",
       "purpose": "any"
     }
+    {{/if}}
   ],
   "categories": [
     "news",
