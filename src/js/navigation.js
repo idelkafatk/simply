@@ -2,6 +2,28 @@ const loadingBar = document.querySelector('.loadingBar')
 const rootElement = document.documentElement
 const pullToRefresh = document.querySelector('[data-pull-to-refresh]')
 
+const resetScrollAfterReload = () => {
+  const navigationEntry = window.performance.getEntriesByType
+    ? window.performance.getEntriesByType('navigation')[0]
+    : null
+  const legacyNavigation = window.performance.navigation
+  const isReload = navigationEntry
+    ? navigationEntry.type === 'reload'
+    : legacyNavigation && legacyNavigation.type === 1
+
+  if (!isReload) return
+
+  if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual'
+  }
+
+  const scrollToTop = () => window.scrollTo(0, 0)
+  scrollToTop()
+  window.addEventListener('pageshow', scrollToTop, { once: true })
+}
+
+resetScrollAfterReload()
+
 const setLoading = isLoading => {
   rootElement.classList.toggle('is-loading', isLoading)
 
@@ -113,6 +135,8 @@ const setupPullToRefresh = () => {
   let isRefreshing = false
   let resetTimer
 
+  const isMobileMenuOpen = () => document.body.classList.contains('has-mobile-menu')
+
   const setStatus = message => {
     if (status.textContent !== message) status.textContent = message
   }
@@ -139,7 +163,12 @@ const setupPullToRefresh = () => {
   }
 
   document.addEventListener('touchstart', event => {
-    if (isRefreshing || event.touches.length !== 1 || window.scrollY > 0) return
+    if (
+      isRefreshing ||
+      isMobileMenuOpen() ||
+      event.touches.length !== 1 ||
+      window.scrollY > 0
+    ) return
 
     if (resetTimer) window.clearTimeout(resetTimer)
     startX = event.touches[0].clientX
@@ -149,6 +178,11 @@ const setupPullToRefresh = () => {
   }, { passive: true })
 
   document.addEventListener('touchmove', event => {
+    if (isMobileMenuOpen()) {
+      reset()
+      return
+    }
+
     if (startY === undefined || event.touches.length !== 1 || isRefreshing) return
 
     const distanceX = event.touches[0].clientX - startX
@@ -181,6 +215,11 @@ const setupPullToRefresh = () => {
   }, { passive: false })
 
   const finish = () => {
+    if (isMobileMenuOpen()) {
+      reset()
+      return
+    }
+
     if (!isPulling || pullDistance < pullThreshold) {
       reset()
       return

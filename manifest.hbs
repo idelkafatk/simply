@@ -7,8 +7,13 @@
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  {{#match @custom.color_scheme "Dark"}}
+  "background_color": "#151719",
   "theme_color": "#151719",
+  {{else}}
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  {{/match}}
   "icons": [
     {{#if @site.icon}}
     {

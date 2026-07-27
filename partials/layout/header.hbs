@@ -36,7 +36,7 @@
             <a href="#/search"
                 role="button"
                 aria-label="Toggle Search"
-                class="godo-tracking button is-white mr-2"
+                class="godo-tracking button is-white mr-2 hidden lg:flex"
                 aria-haspopup="true"
                 data-event-category="Header"
                 data-event-action="Search"
@@ -48,12 +48,6 @@
 
             {{!-- Menu User Account --}}
             {{#if @site.members_enabled}}{{> "layout/account-menu"}}{{/if}}
-
-            {{!-- Toggle Menu --}}
-            <a href="javascript:;" role="button" aria-label="Show Navigation Menu" class="js-menu-toggle menu-burger button is-white relative lg:hidden"><span></span><span></span><span></span></a>
         </div>
     </div>
 </header>
-
-{{!-- Menu Mobile --}}
-{{>"sidenav"}}

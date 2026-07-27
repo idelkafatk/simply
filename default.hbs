@@ -19,8 +19,7 @@
     {{!-- Mobile Meta --}}
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#151719" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff" data-theme-color>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="{{@site.title}}">
@@ -33,36 +32,74 @@
     {{> "pwa/apple-startup-images"}}
 
     <script>
-    {{#match @custom.color_scheme "Auto"}}
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-			document.querySelector('html').classList.add('dark');
-			localStorage.theme = 'dark';
-		} else {
-			document.querySelector('html').classList.remove('dark');
-			localStorage.theme = '';
-		}
+    (function () {
+        var root = document.documentElement;
+        var themeColor = document.querySelector('[data-theme-color]');
+        var systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+        var configuredTheme = 'auto';
 
-		window.matchMedia('(prefers-color-scheme: dark)')
-		.addEventListener(
-			'change',
-			function (e) {
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					document.querySelector('html').classList.add('dark');
-					localStorage.theme = 'dark';
-				} else {
-					document.querySelector('html').classList.remove('dark');
-					localStorage.theme = '';
-				}
-			}
-		)
+        {{#match @custom.color_scheme "Dark"}}configuredTheme = 'dark';{{/match}}
+        {{#match @custom.color_scheme "Light"}}configuredTheme = 'light';{{/match}}
 
-    {{else}}
-        if (localStorage.theme === 'dark') {
-            document.querySelector('html').classList.add('dark');
-        } else if (localStorage.theme === 'light') {
-            document.querySelector('html').classList.remove('dark');
+        function readStoredTheme() {
+            try {
+                var storedTheme = window.localStorage.getItem('theme');
+                return storedTheme === 'dark' || storedTheme === 'light'
+                    ? storedTheme
+                    : null;
+            } catch (error) {
+                return null;
+            }
         }
-    {{/match}}
+
+        function applyTheme(theme) {
+            var isDark = theme === 'dark';
+            root.classList.toggle('dark', isDark);
+            root.dataset.theme = theme;
+            root.style.colorScheme = theme;
+
+            if (themeColor) {
+                themeColor.setAttribute('content', isDark ? '#151719' : '#ffffff');
+            }
+        }
+
+        function resolveTheme() {
+            var storedTheme = readStoredTheme();
+            if (storedTheme) return storedTheme;
+            if (configuredTheme !== 'auto') return configuredTheme;
+            return systemTheme.matches ? 'dark' : 'light';
+        }
+
+        window.simplyApplyTheme = function () {
+            applyTheme(resolveTheme());
+        };
+
+        window.simplySetTheme = function (theme) {
+            if (theme !== 'dark' && theme !== 'light') return;
+
+            try {
+                window.localStorage.setItem('theme', theme);
+            } catch (error) {
+                // Storage can be unavailable in private browsing modes.
+            }
+
+            applyTheme(theme);
+        };
+
+        function handleSystemThemeChange() {
+            if (configuredTheme === 'auto' && !readStoredTheme()) {
+                applyTheme(systemTheme.matches ? 'dark' : 'light');
+            }
+        }
+
+        window.simplyApplyTheme();
+
+        if (typeof systemTheme.addEventListener === 'function') {
+            systemTheme.addEventListener('change', handleSystemThemeChange);
+        } else if (typeof systemTheme.addListener === 'function') {
+            systemTheme.addListener(handleSystemThemeChange);
+        }
+    }());
     </script>
 
     {{!-- Fonts -> Rubik=400,500,600,700 PT Serift=400,700 --}}
@@ -106,6 +143,9 @@
         {{!-- Footer Not Menu ./partials/layout/footer-not-menu.hbs --}}
         {{#match @custom.footer "No Secondary Navigation"}}{{>"layout/footer-not-menu"}}{{/match}}
     </div>
+
+    {{!-- Mobile Navigation stays outside the pull-to-refresh transform container. --}}
+    {{> "mobile-navigation"}}
 
     {{!-- Loading Bar --}}
     <div class="loadingBar top-0 fixed right-0 left-0 hidden" role="progressbar" aria-label="{{t "Loading..."}}" aria-hidden="true"></div>

@@ -1,4 +1,4 @@
-/* global followSocialMedia menuDropdown localStorage MutationObserver */
+/* global followSocialMedia menuDropdown MutationObserver */
 
 import './navigation'
 
@@ -177,13 +177,8 @@ const simplySetup = () => {
     $toggleDarkMode.forEach(item => item.addEventListener('click', function (event) {
       event.preventDefault()
 
-      if (!rootEl.classList.contains('dark')) {
-        rootEl.classList.add('dark')
-        localStorage.theme = 'dark'
-      } else {
-        rootEl.classList.remove('dark')
-        localStorage.theme = 'light'
-      }
+      const nextTheme = rootEl.classList.contains('dark') ? 'light' : 'dark'
+      window.simplySetTheme(nextTheme)
 
       // Update icons after theme change
       updateThemeIcons()
@@ -225,12 +220,135 @@ const simplySetup = () => {
 
   dropDownMenuToggle()
 
-  /* Toggle Menu
+  /* Mobile Navigation
   /* ---------------------------------------------------------- */
-  document.querySelector('.js-menu-toggle').addEventListener('click', function (e) {
-    e.preventDefault()
-    documentBody.classList.toggle('has-menu')
-  })
+  const mobileNavigation = () => {
+    const navigation = document.querySelector('[data-mobile-navigation]')
+    if (!navigation) return
+
+    const toggle = navigation.querySelector('[data-mobile-navigation-toggle]')
+    const sheet = navigation.querySelector('[data-mobile-navigation-sheet]')
+    const closeControls = navigation.querySelectorAll('[data-mobile-navigation-close]')
+    const notesLink = navigation.querySelector('[data-mobile-navigation-notes]')
+    const desktopMedia = window.matchMedia('(min-width: 1000px)')
+    let lastFocusedElement
+    let lastScrollY = Math.max(window.scrollY, 0)
+    let scrollFrame
+
+    navigation.querySelectorAll('.mobile-navigation-links a[href]').forEach(link => {
+      const url = new URL(link.href, window.location.href)
+      const isPrimaryDestination = url.origin === window.location.origin &&
+        ['/', '/notes/'].includes(url.pathname)
+
+      if (isPrimaryDestination) link.closest('li').remove()
+    })
+
+    const isOpen = () => documentBody.classList.contains('has-mobile-menu')
+
+    const setTabBarHidden = hidden => {
+      documentBody.classList.toggle('is-mobile-tab-bar-hidden', hidden && !isOpen())
+    }
+
+    const setOpen = (open, restoreFocus = true, showKeyboardFocus = false) => {
+      if (open) setTabBarHidden(false)
+      documentBody.classList.toggle('has-mobile-menu', open)
+      toggle.setAttribute('aria-expanded', String(open))
+      sheet.setAttribute('aria-hidden', String(!open))
+      sheet.inert = !open
+
+      closeControls.forEach(control => {
+        control.setAttribute('aria-hidden', String(!open))
+      })
+
+      if (open) {
+        lastFocusedElement = document.activeElement
+        const closeButton = sheet.querySelector('[data-mobile-navigation-close]')
+        const focusTarget = showKeyboardFocus ? closeButton : sheet
+        window.requestAnimationFrame(() => focusTarget.focus())
+      } else if (restoreFocus && lastFocusedElement) {
+        lastFocusedElement.focus()
+      }
+    }
+
+    const focusableElements = () => Array.from(sheet.querySelectorAll(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ))
+
+    toggle.addEventListener('click', event => {
+      setOpen(!isOpen(), true, event.detail === 0)
+    })
+
+    closeControls.forEach(control => {
+      control.addEventListener('click', () => setOpen(false))
+    })
+
+    sheet.addEventListener('click', event => {
+      if (event.target.closest('a[href]')) setOpen(false, false)
+    })
+
+    document.addEventListener('keydown', event => {
+      if (!isOpen()) return
+
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setOpen(false)
+        return
+      }
+
+      if (event.key !== 'Tab') return
+
+      const focusable = focusableElements()
+      if (!focusable.length) return
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+
+      if (event.shiftKey && (
+        document.activeElement === first ||
+        document.activeElement === sheet
+      )) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    })
+
+    const updateTabBarVisibility = () => {
+      const currentScrollY = Math.max(window.scrollY, 0)
+      const delta = currentScrollY - lastScrollY
+
+      if (currentScrollY <= 64 || delta < -6) {
+        setTabBarHidden(false)
+      } else if (delta > 6 && currentScrollY > 96) {
+        setTabBarHidden(true)
+      }
+
+      lastScrollY = currentScrollY
+      scrollFrame = undefined
+    }
+
+    window.addEventListener('scroll', () => {
+      if (scrollFrame) return
+      scrollFrame = window.requestAnimationFrame(updateTabBarVisibility)
+    }, { passive: true })
+
+    navigation.addEventListener('focusin', () => setTabBarHidden(false))
+
+    desktopMedia.addEventListener('change', event => {
+      if (event.matches && isOpen()) setOpen(false, false)
+    })
+
+    if (notesLink && (
+      documentBody.classList.contains('is-notes') ||
+      documentBody.classList.contains('is-note')
+    )) {
+      notesLink.setAttribute('aria-current', 'page')
+    }
+  }
+
+  mobileNavigation()
 
   /* Remove focus from buttons after click
   /* ---------------------------------------------------------- */

@@ -1,7 +1,7 @@
 /* global self caches fetch Request URL */
 
 const CACHE_PREFIX = 'idel-blog'
-const CACHE_VERSION = 'v11'
+const CACHE_VERSION = 'v18'
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`
 const PAGE_CACHE = `${CACHE_PREFIX}-pages-${CACHE_VERSION}`
 const ASSET_CACHE = `${CACHE_PREFIX}-assets-${CACHE_VERSION}`

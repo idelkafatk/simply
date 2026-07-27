@@ -1,0 +1,104 @@
+<div class="mobile-navigation lg:hidden" data-mobile-navigation>
+    <button
+        class="mobile-navigation-backdrop"
+        type="button"
+        tabindex="-1"
+        aria-label="{{t "Close menu"}}"
+        aria-hidden="true"
+        data-mobile-navigation-close
+    ></button>
+
+    <aside
+        class="mobile-navigation-sheet"
+        id="mobile-navigation-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobile-navigation-title"
+        aria-hidden="true"
+        data-mobile-navigation-sheet
+        tabindex="-1"
+        inert
+    >
+        <header class="mobile-navigation-sheet-header">
+            <h2 id="mobile-navigation-title">{{t "Menu"}}</h2>
+            <button
+                class="mobile-navigation-close"
+                type="button"
+                aria-label="{{t "Close menu"}}"
+                title="{{t "Close menu"}}"
+                data-mobile-navigation-close
+            >
+                <svg class="icon"><use xlink:href="#icon-close"></use></svg>
+            </button>
+        </header>
+
+        <div class="mobile-navigation-sheet-content">
+            {{#if @site.members_enabled}}
+                <div class="mobile-navigation-account">
+                    {{#if @member}}
+                        <a data-portal="account" class="button is-black" href="#">{{t "Account"}}</a>
+                        <a data-members-signout class="button is-white" href="#signout">{{t "Log out"}}</a>
+                    {{else}}
+                        <a data-portal="signin" class="button is-white" href="#/portal/signin">{{t "Log in"}}</a>
+                        <a data-portal="signup" class="button is-primary" href="#/portal/signup">{{t "Subscribe"}}</a>
+                    {{/if}}
+                </div>
+            {{/if}}
+
+            <nav class="mobile-navigation-links" aria-label="{{t "Menu"}}">
+                {{#if @site.navigation}}
+                    {{navigation navigationMobile=true}}
+                {{/if}}
+            </nav>
+
+            {{> "widget/social-media" class="mobile-navigation-social social-media is-inline"}}
+        </div>
+    </aside>
+
+    <nav class="mobile-tab-bar" aria-label="{{t "Menu"}}">
+        <a
+            href="{{@site.url}}"
+            class="mobile-tab-item {{#is "home"}}is-active{{/is}}"
+            {{#is "home"}}aria-current="page"{{/is}}
+        >
+            {{> "icons/home"}}
+            <span>{{t "Home"}}</span>
+        </a>
+
+        <a
+            href="{{@site.url}}/notes/"
+            class="mobile-tab-item mobile-tab-item-notes"
+            data-mobile-navigation-notes
+        >
+            {{> "icons/notebook"}}
+            <span>{{t "Notes"}}</span>
+        </a>
+
+        <a
+            href="#/search"
+            role="button"
+            class="mobile-tab-item godo-tracking"
+            aria-label="{{t "Search"}}"
+            aria-haspopup="true"
+            data-event-category="Mobile Navigation"
+            data-event-action="Search"
+            data-event-label="Click"
+            data-event-non-interaction="true"
+            data-ghost-search
+        >
+            {{> "icons/search"}}
+            <span>{{t "Search"}}</span>
+        </a>
+
+        <button
+            class="mobile-tab-item mobile-tab-item-more"
+            type="button"
+            aria-controls="mobile-navigation-sheet"
+            aria-expanded="false"
+            data-mobile-navigation-toggle
+        >
+            {{> "icons/ellipsis"}}
+            <span>{{t "More"}}</span>
+        </button>
+    </nav>
+</div>

@@ -30,7 +30,7 @@
   background-color: var(--ghost-accent-color);
   height: 3px;
   transform: translateX(100%);
-  z-index: 800;
+  z-index: 4000000;
 }
 
 .is-loading .loadingBar,
