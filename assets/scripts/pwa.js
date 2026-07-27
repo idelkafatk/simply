@@ -1,0 +1,5 @@
+/*!
+ * simply v0.6.1
+ * Copyright 2026 GodoFredo <hello@godofredo.ninja> (https://github.com/godofredoninja/simply)
+ * Licensed under GPL-3.0-or-later
+ */!function o(t,i,u){function a(e,r){if(!i[e]){if(!t[e]){var n="function"==typeof require&&require;if(!r&&n)return n(e,!0);if(c)return c(e,!0);throw(r=new Error("Cannot find module '"+e+"'")).code="MODULE_NOT_FOUND",r}n=i[e]={exports:{}},t[e][0].call(n.exports,function(r){return a(t[e][1][r]||r)},n,n.exports,o,t,i,u)}return i[e].exports}for(var c="function"==typeof require&&require,r=0;r<u.length;r++)a(u[r]);return a}({1:[function(r,e,n){"serviceWorker"in navigator&&window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js",{scope:"/",updateViaCache:"none"}).catch(r=>{console.error("Service worker registration failed:",r)})})},{}]},{},[1]);

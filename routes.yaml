@@ -1,4 +1,11 @@
 routes:
+  /manifest/:
+    template: manifest
+    content_type: application/manifest+json
+
+  /offline/:
+    template: offline
+
   /notes/guides/:
     controller: channel
     filter: 'tag:hash-note+tag:guides'

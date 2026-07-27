@@ -111,7 +111,7 @@ function styles (done) {
 
 // Scripts
 function scripts (done) {
-  const files = ['main', 'post', 'prismjs', 'kusi-doc-post', 'pagination']
+  const files = ['main', 'post', 'prismjs', 'kusi-doc-post', 'pagination', 'pwa']
 
   merge(files.map(function (file) {
     return pump([
@@ -140,8 +140,16 @@ function scripts (done) {
 // Image
 function images (done) {
   pump([
-    src('src/img/**/*.*'),
+    src(['src/img/**/*.*', '!src/img/pwa/icon-1024.png']),
     dest('assets/images'),
+    livereload()
+  ], handleError(done))
+}
+
+function pwa (done) {
+  pump([
+    src('src/pwa/**/*'),
+    dest('assets/pwa'),
     livereload()
   ], handleError(done))
 }
@@ -176,7 +184,7 @@ function zipper (done) {
       'locales/*.json',
       '*.hbs',
       'partials/**',
-      'podcast/**',      
+      'podcast/**',
       'LICENSE',
       'package.json',
       'README.md',
@@ -196,9 +204,6 @@ function copyProductionRoutes (done) {
     dest('dist')
   ], handleError(done))
 }
-
-
-
 
 // TryGhost Admin
 const dotenv = require('dotenv')
@@ -238,15 +243,15 @@ async function deploy (done) {
   }
 }
 
-
 const cssWatcher = () => watch('src/css/**', styles)
 const jsWatcher = () => watch(['src/js/**', '*.js'], scripts)
 const imgWatcher = () => watch('src/img/**', images)
+const pwaWatcher = () => watch('src/pwa/**', pwa)
 // const hbsWatcher = () => watch(['*.hbs', 'partials/**/*.hbs'], hbs)
 const hbsWatcher = () => watch(['*.hbs', 'partials/**/*.hbs'], styles)
 
-const compile = parallel(styles, scripts, images)
-const watcher = parallel(cssWatcher, jsWatcher, imgWatcher, hbsWatcher)
+const compile = parallel(styles, scripts, images, pwa)
+const watcher = parallel(cssWatcher, jsWatcher, imgWatcher, pwaWatcher, hbsWatcher)
 
 const build = series(clean, compile)
 const production = series(build, copyAmpStyle, copyMainStyle, zipper, copyProductionRoutes)
