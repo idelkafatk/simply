@@ -1,4 +1,4 @@
-/* global followSocialMedia menuDropdown localStorage MutationObserver requestAnimationFrame */
+/* global followSocialMedia menuDropdown localStorage MutationObserver NodeFilter requestAnimationFrame */
 
 // lib
 import 'lazysizes'
@@ -260,27 +260,55 @@ const simplySetup = () => {
     const notesFeed = document.querySelector('.notes-feed')
     if (!notesFeed) return
 
-    const noteText = new WeakMap()
+    const noteContent = new WeakMap()
+
+    const truncateContent = (noteBody, content, characterLimit) => {
+      noteBody.innerHTML = content
+
+      const walker = document.createTreeWalker(noteBody, NodeFilter.SHOW_TEXT)
+      let textNode = walker.nextNode()
+      let charactersSeen = 0
+
+      while (textNode) {
+        const nextCharactersSeen = charactersSeen + Array.from(textNode.data).length
+
+        if (nextCharactersSeen >= characterLimit) {
+          const charactersToKeep = characterLimit - charactersSeen
+          const keptText = Array.from(textNode.data).slice(0, charactersToKeep).join('').trimEnd()
+          const range = document.createRange()
+
+          textNode.data = `${keptText}...`
+          range.setStartAfter(textNode)
+          range.setEnd(noteBody, noteBody.childNodes.length)
+          range.deleteContents()
+          return
+        }
+
+        charactersSeen = nextCharactersSeen
+        textNode = walker.nextNode()
+      }
+    }
 
     const updateNote = note => {
       const noteBody = note.querySelector('.story-note-body')
       if (!noteBody) return
 
-      if (!noteText.has(noteBody)) noteText.set(noteBody, noteBody.textContent.trim())
+      if (!noteContent.has(noteBody)) noteContent.set(noteBody, noteBody.innerHTML)
 
-      const originalText = noteText.get(noteBody)
-      const characters = Array.from(originalText)
+      const originalContent = noteContent.get(noteBody)
       noteBody.classList.add('is-manual-clamp')
-      noteBody.textContent = originalText
+      noteBody.innerHTML = originalContent
+
+      const characterCount = Array.from(noteBody.textContent.trim()).length
 
       if (noteBody.scrollHeight <= noteBody.clientHeight + 1) return
 
       let start = 0
-      let end = characters.length
+      let end = characterCount
 
       while (start < end) {
         const middle = Math.ceil((start + end) / 2)
-        noteBody.textContent = `${characters.slice(0, middle).join('').trimEnd()}...`
+        truncateContent(noteBody, originalContent, middle)
 
         if (noteBody.scrollHeight <= noteBody.clientHeight + 1) {
           start = middle
@@ -289,7 +317,7 @@ const simplySetup = () => {
         }
       }
 
-      noteBody.textContent = `${characters.slice(0, start).join('').trimEnd()}...`
+      truncateContent(noteBody, originalContent, start)
     }
 
     const updateNotes = () => {

@@ -23,18 +23,18 @@
   }
 }
 
-.story-note-main:focus-visible {
+.story-note-permalink:focus-visible {
   background-color: var(--gray-100);
   outline: 2px solid var(--ghost-accent-color);
   outline-offset: 2px;
 }
 
 @media (hover: none) and (pointer: coarse) {
-  .story-note-main {
+  .story-note-permalink {
     -webkit-tap-highlight-color: transparent;
   }
 
-  .story-note-main:focus-visible {
+  .story-note-permalink:focus-visible {
     background-color: transparent;
     outline: none;
   }
@@ -46,6 +46,36 @@
   white-space: pre-line;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 12;
+}
+
+.story-note-body > * {
+  margin-bottom: 0;
+}
+
+.story-note-body > * + * {
+  margin-top: 4vmin;
+}
+
+.story-note-body a {
+  color: var(--ghost-accent-color);
+  text-decoration: underline;
+  text-underline-offset: .2em;
+  overflow-wrap: anywhere;
+}
+
+.story-note-body a:hover {
+  text-decoration-thickness: .12em;
+}
+
+.story-note-body a:focus-visible {
+  border-radius: .125rem;
+  outline: 2px solid var(--ghost-accent-color);
+  outline-offset: 2px;
+}
+
+/* Ghost cards are handled separately from the text preview. */
+.story-note-body .kg-card {
+  display: none;
 }
 
 .story-note-body.is-manual-clamp {
