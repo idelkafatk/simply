@@ -1,7 +1,7 @@
 /* global self caches fetch Request URL */
 
 const CACHE_PREFIX = 'idel-blog'
-const CACHE_VERSION = 'v10'
+const CACHE_VERSION = 'v11'
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`
 const PAGE_CACHE = `${CACHE_PREFIX}-pages-${CACHE_VERSION}`
 const ASSET_CACHE = `${CACHE_PREFIX}-assets-${CACHE_VERSION}`
@@ -151,12 +151,14 @@ const cacheFirst = async (event) => {
 }
 
 const getNotificationIcon = async () => {
-  let response
+  let response = await caches.match(MANIFEST_URL)
 
-  try {
-    response = await fetch(new Request(MANIFEST_URL, { cache: 'reload' }))
-  } catch (error) {
-    response = await caches.match(MANIFEST_URL)
+  if (!response) {
+    try {
+      response = await fetch(MANIFEST_URL)
+    } catch (error) {
+      return null
+    }
   }
 
   if (!response || !response.ok) return null
@@ -224,7 +226,13 @@ self.addEventListener('push', event => {
 
     if (icon) options.icon = icon
 
-    return self.registration.showNotification(title, options)
+    try {
+      return await self.registration.showNotification(title, options)
+    } catch (error) {
+      if (!icon) throw error
+      delete options.icon
+      return self.registration.showNotification(title, options)
+    }
   })())
 })
 
