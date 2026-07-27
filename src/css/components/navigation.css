@@ -1,0 +1,76 @@
+.pull-to-refresh {
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--gray-300);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 14%);
+  color: var(--ghost-accent-color);
+  display: flex;
+  height: 2.75rem;
+  justify-content: center;
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  top: max(.5rem, env(safe-area-inset-top));
+  transform: translate(-50%, -4rem) scale(.85);
+  transition: opacity 120ms ease, transform 120ms ease;
+  width: 2.75rem;
+  z-index: 799;
+}
+
+.pull-to-refresh .button-loader {
+  animation: none;
+  display: block;
+  height: 1.375rem;
+  width: 1.375rem;
+}
+
+.pull-to-refresh.is-pulling {
+  opacity: 1;
+  transform: translate(-50%, calc(-3.5rem + var(--pull-distance))) scale(1);
+}
+
+.pull-to-refresh.is-armed {
+  box-shadow: 0 4px 16px rgb(0 0 0 / 20%);
+}
+
+.pull-to-refresh.is-pulling .button-loader,
+.pull-to-refresh.is-refreshing .button-loader {
+  animation: pull-to-refresh-spin .8s linear infinite;
+}
+
+.is-pull-active .simply-viewport {
+  transform: translateY(var(--pull-distance));
+  transition: none;
+}
+
+.is-pull-resetting .simply-viewport {
+  transform: translateY(0);
+  transition: transform 200ms ease-out;
+}
+
+.is-pull-refreshing .simply-viewport {
+  transform: translateY(var(--pull-distance));
+  transition: transform 160ms ease-out;
+}
+
+@keyframes pull-to-refresh-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pull-to-refresh {
+    transition: none;
+  }
+
+  .pull-to-refresh.is-pulling .button-loader,
+  .pull-to-refresh.is-refreshing .button-loader {
+    animation: none;
+  }
+
+  .is-pull-resetting .simply-viewport,
+  .is-pull-refreshing .simply-viewport {
+    transition: none;
+  }
+}

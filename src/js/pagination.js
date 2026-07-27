@@ -10,8 +10,36 @@ import InfiniteScroll from 'infinite-scroll'
   if (!$feedElement) return
 
   const $viewMoreButton = document.querySelector('.load-more-btn')
-  // const $iconLoader = $viewMoreButton.querySelector('.icon')
-  // const $label = $viewMoreButton.querySelector('.label')
+  const $buttonLabel = $viewMoreButton.querySelector('.load-more-label')
+  const $loadingStatus = document.querySelector('.feed-loading-status')
+  const $errorStatus = document.querySelector('.feed-load-error')
+  const $retryButton = $errorStatus.querySelector('.feed-load-retry')
+
+  const setButtonState = state => {
+    const isLoading = state === 'loading'
+    $viewMoreButton.classList.toggle('is-loading', isLoading)
+    $viewMoreButton.setAttribute('aria-busy', String(isLoading))
+    $buttonLabel.textContent = isLoading
+      ? $viewMoreButton.dataset.labelLoading
+      : $viewMoreButton.dataset.labelDefault
+  }
+
+  const showButton = () => {
+    setButtonState('default')
+    $viewMoreButton.classList.add('flex')
+    $viewMoreButton.classList.remove('hidden')
+  }
+
+  const hideButton = () => {
+    $viewMoreButton.classList.add('hidden')
+    $viewMoreButton.classList.remove('flex')
+  }
+
+  const finishLoading = () => {
+    document.documentElement.classList.remove('is-feed-loading')
+    setButtonState('default')
+    $loadingStatus.hidden = true
+  }
 
   const infScroll = new InfiniteScroll($feedElement, {
     append: '.js-story',
@@ -22,37 +50,48 @@ import InfiniteScroll from 'infinite-scroll'
     path: '.pagination .older-posts'
   })
 
-  infScroll.on('load', onPageLoad)
+  infScroll.on('request', function () {
+    document.documentElement.classList.add('is-feed-loading')
+    $errorStatus.hidden = true
 
-  function onPageLoad () {
-    if (infScroll.loadCount === 1) {
-      // after 3nd page loaded
-      // disable loading on scroll
-      infScroll.options.loadOnScroll = false
-      // show button
-      $viewMoreButton.classList.add('flex')
-      $viewMoreButton.classList.remove('hidden')
-      // remove event listener
-      infScroll.off(onPageLoad)
+    if ($viewMoreButton.classList.contains('hidden')) {
+      $loadingStatus.hidden = false
+    } else {
+      setButtonState('loading')
     }
-  }
+  })
 
-  // infScroll.on('request', function () {
-  //   $label.classList.add('hidden')
-  //   $iconLoader.classList.remove('hidden')
-  // })
+  infScroll.on('append', function () {
+    finishLoading()
 
-  // infScroll.on('append', function () {
-  //   $label.classList.remove('hidden')
-  //   $iconLoader.classList.add('hidden')
-  // })
+    if (!infScroll.canLoad) {
+      hideButton()
+    } else if (infScroll.loadCount === 1) {
+      infScroll.options.loadOnScroll = false
+      showButton()
+    } else if (infScroll.options.loadOnScroll) {
+      hideButton()
+    }
+  })
+
+  infScroll.on('last', function () {
+    finishLoading()
+    hideButton()
+  })
+
+  infScroll.on('error', function () {
+    finishLoading()
+    hideButton()
+    $errorStatus.hidden = false
+  })
 
   $viewMoreButton.addEventListener('click', function () {
-    // load next page
-    infScroll.loadNextPage()
-    // enable loading on scroll
     infScroll.options.loadOnScroll = true
-    // hide page
-    this.classList.add('hidden')
+  })
+
+  $retryButton.addEventListener('click', function (event) {
+    event.preventDefault()
+    infScroll.canLoad = true
+    infScroll.loadNextPage()
   })
 })(document)

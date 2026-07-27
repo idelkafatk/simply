@@ -22,6 +22,9 @@ const simplyPost = () => {
 
       link.href = url.toString()
       container.hidden = false
+
+      const actions = container.closest('[data-publication-actions]')
+      if (actions) actions.hidden = false
     } catch {
       // Invalid metadata leaves the discussion block hidden.
     }

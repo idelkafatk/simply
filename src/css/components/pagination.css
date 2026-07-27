@@ -1,0 +1,50 @@
+.load-more-btn {
+  gap: .5rem;
+}
+
+.load-more-btn .button-loader {
+  display: none;
+  flex: none;
+}
+
+.feed-loading-status .button-loader {
+  display: block;
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.load-more-btn.is-loading .button-loader {
+  display: block;
+}
+
+.load-more-btn:disabled {
+  cursor: wait;
+  opacity: .85;
+}
+
+.feed-loading-status,
+.feed-load-error {
+  align-items: center;
+  justify-content: center;
+  margin: 5rem auto 0;
+  min-height: 3rem;
+}
+
+.feed-loading-status {
+  color: var(--gray-500);
+  display: flex;
+  gap: .625rem;
+}
+
+.feed-loading-status[hidden],
+.feed-load-error[hidden] {
+  display: none;
+}
+
+.feed-load-error {
+  color: var(--gray-500);
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  text-align: center;
+}

@@ -23,19 +23,19 @@
   transition: opacity 0.5s ease-in-out;
 }
 
-/* Loanding Bar
+/* Loading Bar
 /* ---------------------------------------------------------- */
 
 .loadingBar {
-  background-color: #48e79a;
-  height: 2px;
+  background-color: var(--ghost-accent-color);
+  height: 3px;
   transform: translateX(100%);
   z-index: 800;
 }
 
-.is-loading .loadingBar {
-  animation: loading-bar 1s ease-in-out infinite;
-  animation-delay: 0.8s;
+.is-loading .loadingBar,
+.is-feed-loading .loadingBar {
+  animation: loading-bar 1.1s ease-in-out infinite;
   display: block;
 }
 
@@ -45,7 +45,16 @@
   60% { transform: translateX(0); }
   100% { transform: translateX(100%); }
 }
-/* Loanding Bar
+
+@media (prefers-reduced-motion: reduce) {
+  .is-loading .loadingBar,
+  .is-feed-loading .loadingBar {
+    animation: none;
+    transform: translateX(0);
+  }
+}
+
+/* Image zoom
 /* ---------------------------------------------------------- */
 
 .medium-zoom--opened .header {

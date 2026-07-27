@@ -42,11 +42,26 @@ const setPushState = (element, state, message = '') => {
   const isSubscribed = state === 'subscribed'
   const isDenied = state === 'denied'
 
+  element.dataset.pushState = state
   enableButton.hidden = isSubscribed || isDenied
   disableButton.hidden = !isSubscribed
   enableButton.disabled = isLoading
   disableButton.disabled = isLoading
   status.textContent = message
+}
+
+const setPushVisibility = (element, isVisible) => {
+  element.hidden = !isVisible
+
+  const card = element.closest('[data-push-card]')
+  if (card) card.hidden = !isVisible
+
+  const actions = element.closest('[data-publication-actions]')
+  if (actions) {
+    actions.hidden = !actions.querySelector(
+      '[data-push-card]:not([hidden]), [data-telegram-discussion]:not([hidden])'
+    )
+  }
 }
 
 const getPushConfig = async () => {
@@ -90,7 +105,7 @@ const setupPushSubscription = async element => {
 
   if (!supportsPush) {
     if (isIos && !isStandalone) {
-      element.hidden = false
+      setPushVisibility(element, true)
       enableButton.addEventListener('click', () => {
         setPushState(element, 'default', element.dataset.messageInstall)
       })
@@ -171,7 +186,7 @@ const setupPushSubscription = async element => {
     }
   })
 
-  element.hidden = false
+  setPushVisibility(element, true)
 }
 
 const pushElements = [...document.querySelectorAll('[data-push-subscribe]')]
@@ -180,7 +195,7 @@ if (pushElements.length) {
   pushElements.forEach(element => {
     setupPushSubscription(element).catch(error => {
       console.error('Push controls failed:', error)
-      element.hidden = true
+      setPushVisibility(element, false)
     })
   })
 }

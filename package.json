@@ -167,11 +167,6 @@
         "type": "text",
         "default": "Sign up for more like this",
         "group": "post"
-      },
-      "telegram_url": {
-        "type": "text",
-        "default": "https://t.me/idel_blog",
-        "group": "post"
       }
     }
   },

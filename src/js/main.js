@@ -1,5 +1,7 @@
 /* global followSocialMedia menuDropdown localStorage MutationObserver */
 
+import './navigation'
+
 // lib
 import 'lazysizes'
 import mediumZoom from 'medium-zoom'
@@ -309,6 +311,7 @@ const simplySetup = () => {
       if (!note || interactiveTarget || event.defaultPrevented) return
       if (window.getSelection && window.getSelection().toString()) return
 
+      if (window.simplyStartNavigation) window.simplyStartNavigation()
       window.location.assign(note.dataset.noteUrl)
     })
   }

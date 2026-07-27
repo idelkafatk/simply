@@ -107,8 +107,22 @@
         {{#match @custom.footer "No Secondary Navigation"}}{{>"layout/footer-not-menu"}}{{/match}}
     </div>
 
-    {{!-- Loandig Bar --}}
-    <div class="loadingBar top-0 fixed right-0 left-0 hidden"></div>
+    {{!-- Loading Bar --}}
+    <div class="loadingBar top-0 fixed right-0 left-0 hidden" role="progressbar" aria-label="{{t "Loading..."}}" aria-hidden="true"></div>
+
+    <div
+        class="pull-to-refresh"
+        data-pull-to-refresh
+        data-message-pull="{{t "Pull to refresh"}}"
+        data-message-release="{{t "Release to refresh"}}"
+        data-message-refreshing="{{t "Refreshing..."}}"
+        role="status"
+        aria-live="polite"
+        aria-hidden="true"
+    >
+        {{> "icons/loader"}}
+        <span class="sr-only" data-pull-to-refresh-status>{{t "Pull to refresh"}}</span>
+    </div>
 
     {{!-- Icons --}}
     {{> "icons/icons-symbol-defs"}}

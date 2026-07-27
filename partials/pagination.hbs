@@ -56,7 +56,26 @@
 {{#if next}}
 <nav class="pagination hidden"><a class="older-posts" href="{{page_url next}}"></a></nav>
 
-<button class="button is-primary load-more-btn h-12 w-56 mt-20 hidden mx-auto">{{t "Load More"}}</button>
+<button
+    class="button is-primary load-more-btn h-12 w-56 mt-20 hidden mx-auto"
+    type="button"
+    aria-busy="false"
+    data-label-default="{{t "Load More"}}"
+    data-label-loading="{{t "Loading..."}}"
+>
+    <span class="load-more-label">{{t "Load More"}}</span>
+    {{> "icons/loader"}}
+</button>
+
+<div class="feed-loading-status" role="status" aria-live="polite" hidden>
+    {{> "icons/loader"}}
+    <span>{{t "Loading..."}}</span>
+</div>
+
+<div class="feed-load-error" role="alert" hidden>
+    <span>{{t "Could not load posts."}}</span>
+    <a class="button feed-load-retry" href="{{page_url next}}">{{t "Try again"}}</a>
+</div>
 {{/if}}
 
 {{/match}}
