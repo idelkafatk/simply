@@ -409,6 +409,11 @@ const setupInstallPrompt = element => {
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault()
     deferredEvent = event
+
+    // Browsers only fire this while the app is NOT installed, so its arrival
+    // proves a stored "installed" flag is stale — the app was uninstalled.
+    if (state.installed) updateState({ installed: false })
+
     // The reader may already be past the goal from earlier visits.
     if (counted) show()
   })
@@ -431,7 +436,10 @@ const setupInstallPrompt = element => {
     window.addEventListener('beforeinstallprompt', logDebug)
   }
 
-  if (isStandalone || state.installed) return
+  // Deliberately not bailing out on state.installed: the app may have been
+  // uninstalled since, and only a later beforeinstallprompt can tell us so. The
+  // flag still suppresses the card through blockingReason() until then.
+  if (isStandalone) return
 
   if (element.hasAttribute('data-pwa-article')) {
     if (state.reads >= INSTALL_READ_GOAL) {
