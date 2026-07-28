@@ -83,31 +83,24 @@
 
   ul,
   ol {
-    counter-reset: post;
-
-    li {
-      margin-left: 2rem;
-
-      &::before {
-        box-sizing: border-box;
-        display: inline-block;
-        margin-left: -1.25rem;
-        position: absolute;
-        text-align: right;
-      }
-    }
+    list-style-position: outside;
+    padding-left: 2rem;
   }
 
-  ul > li::before {
-    content: "\2022";
-    opacity: .9;
-    transform: scale(1.1);
+  ul {
+    list-style-type: disc;
   }
 
-  ol > li::before {
-    content: counter(post) ".";
-    counter-increment: post;
-    padding-right: 0.75rem;
+  ol {
+    list-style-type: decimal;
+  }
+
+  ul ul {
+    list-style-type: circle;
+  }
+
+  ul ul ul {
+    list-style-type: square;
   }
 }
 

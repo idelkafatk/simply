@@ -56,6 +56,40 @@
   margin-top: 4vmin;
 }
 
+.story-note-body ul,
+.story-note-body ol,
+.note-single-body ul,
+.note-single-body ol {
+  list-style-position: outside;
+  padding-left: 2rem;
+  white-space: normal;
+}
+
+.story-note-body ul,
+.note-single-body ul {
+  list-style-type: disc;
+}
+
+.story-note-body ol,
+.note-single-body ol {
+  list-style-type: decimal;
+}
+
+.story-note-body ul ul,
+.note-single-body ul ul {
+  list-style-type: circle;
+}
+
+.story-note-body ul ul ul,
+.note-single-body ul ul ul {
+  list-style-type: square;
+}
+
+.story-note-body li + li,
+.note-single-body li + li {
+  margin-top: .5em;
+}
+
 .story-note-body a {
   color: var(--ghost-accent-color);
   text-decoration: underline;
