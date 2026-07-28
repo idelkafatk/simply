@@ -199,3 +199,253 @@ if (pushElements.length) {
     })
   })
 }
+
+/* Install invitation
+/* ----------------------------------------------------------
+   Asking to install on the first visit gets dismissed reflexively, so the
+   prompt waits until the reader has actually finished a few articles. A read
+   counts once per page view, after either enough attentive time on the page or
+   enough scrolling — whichever comes first. */
+
+const INSTALL_STORAGE_KEY = 'simply:pwa-install'
+const INSTALL_READ_GOAL = 3
+const INSTALL_DWELL_MS = 25000
+const INSTALL_SCROLL_RATIO = 0.6
+const INSTALL_SNOOZE_MS = 30 * 24 * 60 * 60 * 1000
+const INSTALL_MAX_DISMISSALS = 2
+const INSTALL_REVEAL_DELAY_MS = 1500
+
+const readInstallState = () => {
+  const empty = { reads: 0, dismissals: 0, dismissedAt: 0, installed: false }
+
+  try {
+    const stored = window.localStorage.getItem(INSTALL_STORAGE_KEY)
+    return stored ? { ...empty, ...JSON.parse(stored) } : empty
+  } catch (error) {
+    return empty
+  }
+}
+
+const writeInstallState = state => {
+  try {
+    window.localStorage.setItem(INSTALL_STORAGE_KEY, JSON.stringify(state))
+  } catch (error) {
+    // Private mode or a full quota — the prompt just never reaches its goal.
+  }
+}
+
+/* The prompt is invisible by design until several conditions line up, which makes
+   "nothing happened" impossible to tell from "not yet". These URL flags make it
+   inspectable: ?pwa=debug logs the gate, ?pwa=preview forces the card on screen,
+   ?pwa=reset clears the stored counters. */
+const installDebugFlag = (() => {
+  try {
+    return new URL(window.location.href).searchParams.get('pwa') || ''
+  } catch (error) {
+    return ''
+  }
+})()
+
+const setupInstallPrompt = element => {
+  const iosActions = element.querySelector('[data-pwa-ios]')
+  const browserActions = element.querySelector('[data-pwa-actions]')
+  const acceptButton = element.querySelector('[data-pwa-accept]')
+  const dismissButtons = [...element.querySelectorAll('[data-pwa-dismiss]')]
+
+  // Every iOS browser installs through Safari's own Share menu, but only Safari
+  // shows the entry we describe, so keep the instructions to Safari.
+  const isIosSafari = isIos && !/crios|fxios|edgios|opt\//i.test(window.navigator.userAgent)
+
+  if (installDebugFlag === 'reset') {
+    try {
+      window.localStorage.removeItem(INSTALL_STORAGE_KEY)
+    } catch (error) {
+      // Nothing was stored to begin with.
+    }
+  }
+
+  let state = readInstallState()
+  // Picked up from the inline catcher in default.hbs, which runs early enough to
+  // see the event; null here means it simply has not fired yet.
+  let deferredEvent = window.__pwaInstallEvent || null
+  let isVisible = false
+  let counted = false
+  let dwellTimer = null
+  let dwellStartedAt = 0
+  let dwellElapsed = 0
+
+  const updateState = changes => {
+    state = { ...state, ...changes }
+    writeInstallState(state)
+  }
+
+  const isSnoozed = () => state.dismissals >= INSTALL_MAX_DISMISSALS ||
+    (state.dismissedAt > 0 && Date.now() - state.dismissedAt < INSTALL_SNOOZE_MS)
+
+  const hide = () => {
+    if (!isVisible) return
+    isVisible = false
+    element.classList.remove('is-visible')
+    window.setTimeout(() => { element.hidden = !isVisible }, 250)
+  }
+
+  // Null means "nothing is holding the prompt back".
+  const blockingReason = () => {
+    if (isStandalone) return 'the page is already running as an installed app'
+    if (state.installed) return 'stored state says the app was installed'
+    if (state.dismissals >= INSTALL_MAX_DISMISSALS) return `dismissed ${state.dismissals} times`
+    if (isSnoozed()) return `snoozed until ${new Date(state.dismissedAt + INSTALL_SNOOZE_MS).toISOString()}`
+    if (state.reads < INSTALL_READ_GOAL) return `${state.reads} of ${INSTALL_READ_GOAL} articles read`
+    if (!deferredEvent && !isIosSafari) {
+      return 'no beforeinstallprompt event — the browser either cannot install this ' +
+        'site, or it is installed already; only iOS Safari gets manual instructions instead'
+    }
+    return null
+  }
+
+  const logDebug = () => {
+    if (installDebugFlag !== 'debug') return
+    const reason = blockingReason()
+    console.info('[pwa] install prompt:', reason ? `blocked — ${reason}` : 'ready to show', {
+      reads: state.reads,
+      goal: INSTALL_READ_GOAL,
+      countedThisPage: counted,
+      isArticle: element.hasAttribute('data-pwa-article'),
+      hasInstallEvent: Boolean(deferredEvent),
+      isIosSafari,
+      isStandalone,
+      state
+    })
+  }
+
+  const show = () => {
+    if (isVisible) return
+
+    const isPreview = installDebugFlag === 'preview'
+    logDebug()
+    if (!isPreview && blockingReason()) return
+
+    // In preview there is no install event, so pick the variant the platform
+    // would really get rather than falling back to the iOS instructions.
+    const useBrowserVariant = isPreview ? !isIosSafari : Boolean(deferredEvent)
+    browserActions.hidden = !useBrowserVariant
+    iosActions.hidden = useBrowserVariant
+
+    isVisible = true
+    element.hidden = false
+    // Let the browser paint the hidden state first so the transition runs.
+    window.requestAnimationFrame(() => element.classList.add('is-visible'))
+  }
+
+  const dismiss = () => {
+    updateState({ dismissals: state.dismissals + 1, dismissedAt: Date.now() })
+    hide()
+  }
+
+  const stopCounting = () => {
+    if (dwellTimer) window.clearTimeout(dwellTimer)
+    dwellTimer = null
+    document.removeEventListener('visibilitychange', onVisibilityChange)
+    window.removeEventListener('scroll', onScroll)
+  }
+
+  const countRead = () => {
+    if (counted) return
+    counted = true
+    stopCounting()
+    updateState({ reads: state.reads + 1 })
+    window.setTimeout(show, INSTALL_REVEAL_DELAY_MS)
+  }
+
+  const startDwell = () => {
+    if (counted || dwellTimer) return
+    dwellStartedAt = Date.now()
+    dwellTimer = window.setTimeout(countRead, INSTALL_DWELL_MS - dwellElapsed)
+  }
+
+  const pauseDwell = () => {
+    if (!dwellTimer) return
+    window.clearTimeout(dwellTimer)
+    dwellTimer = null
+    dwellElapsed += Date.now() - dwellStartedAt
+  }
+
+  function onVisibilityChange () {
+    if (document.visibilityState === 'hidden') pauseDwell()
+    else startDwell()
+  }
+
+  function onScroll () {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight
+    if (scrollable <= 0) return
+    if (window.scrollY / scrollable >= INSTALL_SCROLL_RATIO) countRead()
+  }
+
+  acceptButton.addEventListener('click', async () => {
+    if (!deferredEvent) return
+
+    const installEvent = deferredEvent
+    deferredEvent = null
+    window.__pwaInstallEvent = null
+    hide()
+
+    try {
+      installEvent.prompt()
+      const choice = await installEvent.userChoice
+
+      if (choice.outcome === 'accepted') updateState({ installed: true })
+      else updateState({ dismissals: state.dismissals + 1, dismissedAt: Date.now() })
+    } catch (error) {
+      console.error('Install prompt failed:', error)
+    }
+  })
+
+  dismissButtons.forEach(button => button.addEventListener('click', dismiss))
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && isVisible) dismiss()
+  })
+
+  window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault()
+    deferredEvent = event
+    // The reader may already be past the goal from earlier visits.
+    if (counted) show()
+  })
+
+  window.addEventListener('appinstalled', () => {
+    deferredEvent = null
+    window.__pwaInstallEvent = null
+    updateState({ installed: true })
+    hide()
+  })
+
+  if (installDebugFlag === 'preview') {
+    counted = true
+    window.setTimeout(show, INSTALL_REVEAL_DELAY_MS)
+    return
+  }
+
+  if (installDebugFlag === 'debug') {
+    logDebug()
+    window.addEventListener('beforeinstallprompt', logDebug)
+  }
+
+  if (isStandalone || state.installed) return
+
+  if (element.hasAttribute('data-pwa-article')) {
+    if (state.reads >= INSTALL_READ_GOAL) {
+      // Goal already met — treat this page view as the trigger.
+      counted = true
+      window.setTimeout(show, INSTALL_REVEAL_DELAY_MS)
+    } else {
+      document.addEventListener('visibilitychange', onVisibilityChange)
+      window.addEventListener('scroll', onScroll, { passive: true })
+      if (document.visibilityState !== 'hidden') startDwell()
+    }
+  }
+}
+
+const installElement = document.querySelector('[data-pwa-install]')
+
+if (installElement) setupInstallPrompt(installElement)

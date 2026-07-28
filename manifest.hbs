@@ -15,6 +15,16 @@
   "theme_color": "#ffffff",
   {{/match}}
   "icons": [
+    {{!--
+      The 512 slot deliberately does not use @site.icon. Ghost only downsizes
+      images, so size="pwa_512" silently returns the original when the uploaded
+      icon is smaller — the site icon is 500x500 today, which made this manifest
+      claim a 512x512 that did not exist. Chrome decodes the icon and checks its
+      real dimensions, so the site failed the install criteria and never fired
+      beforeinstallprompt. The bundled asset is a true 512x512 of the same
+      artwork. Once a >=512px icon is uploaded in Ghost, this can go back to
+      img_url for both sizes.
+    --}}
     {{#if @site.icon}}
     {
       "src": "{{img_url @site.icon size="pwa_192"}}",
@@ -22,12 +32,6 @@
       "type": "image/png",
       "purpose": "any"
     },
-    {
-      "src": "{{img_url @site.icon size="pwa_512"}}",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
     {{else}}
     {
       "src": "{{asset "images/pwa/icon-192.png"}}",
@@ -35,13 +39,13 @@
       "type": "image/png",
       "purpose": "any"
     },
+    {{/if}}
     {
       "src": "{{asset "images/pwa/icon-512.png"}}",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     }
-    {{/if}}
   ],
   "categories": [
     "news",

@@ -31,6 +31,20 @@
     {{/if}}
     {{> "pwa/apple-startup-images"}}
 
+    {{!--
+      Chrome fires beforeinstallprompt once and never replays it, and on a repeat
+      visit it can fire before the deferred scripts/pwa.js has even parsed. Catch it
+      here, at the earliest possible point, and let pwa.js collect it from window.
+    --}}
+    <script>
+    (function () {
+        window.addEventListener('beforeinstallprompt', function (event) {
+            event.preventDefault();
+            window.__pwaInstallEvent = event;
+        });
+    })();
+    </script>
+
     <script>
     (function () {
         var root = document.documentElement;
@@ -168,6 +182,9 @@
 
     {{!-- Search --}}
     {{> "search"}}
+
+    {{!-- PWA install invitation, revealed after a few articles --}}
+    {{> "pwa/install-prompt"}}
 
     {{!-- Icons --}}
     {{> "icons/icons-symbol-defs"}}

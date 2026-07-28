@@ -1,0 +1,75 @@
+{{!--
+    PWA install invitation.
+
+    Rendered on every page but kept hidden. src/js/pwa.js reveals it only after the
+    reader has finished several articles (READ_GOAL) and only when the app can
+    actually be installed — either a captured beforeinstallprompt event, or iOS
+    Safari, which has no such event and gets manual instructions instead.
+
+    data-pwa-article marks pages that count towards the read goal. Keep the data-pwa-*
+    hooks stable; the JS relies on them, not on the surrounding DOM.
+--}}
+<div class="pwa-install"
+     data-pwa-install
+     {{#is "post"}}data-pwa-article{{/is}}
+     role="dialog"
+     aria-labelledby="pwa-install-title"
+     aria-describedby="pwa-install-text"
+     hidden>
+    <div class="pwa-install-card">
+        <button class="pwa-install-close"
+                type="button"
+                aria-label="{{t "Close"}}"
+                title="{{t "Close"}}"
+                data-pwa-dismiss>
+            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-close"></use></svg>
+        </button>
+
+        <div class="pwa-install-head">
+            {{#if @site.icon}}
+            <img class="pwa-install-icon" src="{{img_url @site.icon size="pwa_192"}}" alt="" width="48" height="48">
+            {{else}}
+            <img class="pwa-install-icon" src="{{asset "images/pwa/icon-192.png"}}" alt="" width="48" height="48">
+            {{/if}}
+
+            <div class="pwa-install-copy">
+                <h2 class="pwa-install-title" id="pwa-install-title">{{t "Keep the blog one tap away"}}</h2>
+                <p class="pwa-install-text" id="pwa-install-text">{{t "Add it to your Home Screen — it opens from an icon, without browser tabs and address bar."}}</p>
+            </div>
+        </div>
+
+        {{!-- Chromium and friends: the browser install flow. --}}
+        <div class="pwa-install-actions" data-pwa-actions hidden>
+            <button class="button is-primary" type="button" data-pwa-accept>{{t "Install"}}</button>
+            <button class="button is-white" type="button" data-pwa-dismiss>{{t "Not now"}}</button>
+        </div>
+
+        {{!-- iOS Safari has no install API, so walk the reader through the menu. --}}
+        <div class="pwa-install-steps" data-pwa-ios hidden>
+            <p class="pwa-install-step">
+                <span class="pwa-install-step-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 15V3"></path>
+                        <path d="M8 7l4-4 4 4"></path>
+                        <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"></path>
+                    </svg>
+                </span>
+                {{t "Tap the Share button in the browser bar"}}
+            </p>
+            <p class="pwa-install-step">
+                <span class="pwa-install-step-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                        <path d="M12 8v8"></path>
+                        <path d="M8 12h8"></path>
+                    </svg>
+                </span>
+                {{t "Choose “Add to Home Screen”"}}
+            </p>
+
+            <div class="pwa-install-actions">
+                <button class="button is-white" type="button" data-pwa-dismiss>{{t "Got it"}}</button>
+            </div>
+        </div>
+    </div>
+</div>
