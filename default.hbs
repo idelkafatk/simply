@@ -117,8 +117,10 @@
     <link rel="stylesheet" type="text/css" href="{{asset "styles/main.css"}}"/>
     {{!-- <style>{{> "main-styles"}}</style> --}}
 
-    {{!-- Ghost outputs important style and meta data with this tag --}}
-    {{ghost_head}}
+    {{!-- Ghost outputs important style and meta data with this tag.
+          "search" is excluded because the theme ships its own search UI
+          (partials/search.hbs) instead of loading sodo-search. --}}
+    {{ghost_head exclude="search"}}
 
     {{!-- Block for Headers --}}
     {{{block "header"}}}
@@ -163,6 +165,9 @@
         {{> "icons/loader"}}
         <span class="sr-only" data-pull-to-refresh-status>{{t "Pull to refresh"}}</span>
     </div>
+
+    {{!-- Search --}}
+    {{> "search"}}
 
     {{!-- Icons --}}
     {{> "icons/icons-symbol-defs"}}

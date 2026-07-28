@@ -1,7 +1,8 @@
 /* global self caches fetch Request URL */
 
 const CACHE_PREFIX = 'idel-blog'
-const CACHE_VERSION = 'v18'
+const CACHE_VERSION = 'v19'
+const SEARCH_INDEX_PATH = '/ghost/api/content/posts/'
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`
 const PAGE_CACHE = `${CACHE_PREFIX}-pages-${CACHE_VERSION}`
 const ASSET_CACHE = `${CACHE_PREFIX}-assets-${CACHE_VERSION}`
@@ -313,6 +314,14 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET' || request.headers.has('range')) return
 
   const url = new URL(request.url)
+
+  // The search index lives under /ghost/api/, which isPrivatePath would
+  // otherwise skip. Caching it is what makes search work offline.
+  if (url.origin === self.location.origin && url.pathname === SEARCH_INDEX_PATH) {
+    event.respondWith(staleWhileRevalidate(event))
+    return
+  }
+
   if (url.origin !== self.location.origin || isPrivatePath(url.pathname)) return
 
   if (request.mode === 'navigate') {

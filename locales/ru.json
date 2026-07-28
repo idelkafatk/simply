@@ -120,5 +120,9 @@
   "Welcome back! You've successfully signed in.": "С возвращением! Вы успешно вошли в систему.",
   "You don't have access to this post on <strong>{siteTitle}</strong> at the moment, but if you upgrade your account you'll be able to see the whole thing, as well as all the other posts in the archive! Subscribing only takes a few seconds and will give you immediate access.": "Сейчас у вас нет доступа к посту <strong>{siteTitle}</strong>, но если вы обновите свой аккаунт, то сможете увидеть его целиком, а также все остальные посты в архиве! Подписка займет всего несколько секунд и даст вам немедленный доступ.",
   "youremail@example.com": "youremail@example.com",
-  "You've successfully subscribed to": "Вы успешно подписались на"
+  "You've successfully subscribed to": "Вы успешно подписались на",
+  "Latest posts": "Последние публикации",
+  "Nothing found": "Ничего не найдено",
+  "Loading": "Загрузка…",
+  "Search is unavailable": "Поиск временно недоступен"
 }

@@ -1,0 +1,86 @@
+{{!--
+    Custom search UI, replacing Ghost's sodo-search.
+
+    sodo-search is excluded in default.hbs via {{ghost_head exclude="search"}},
+    so this partial owns the whole search experience. The Content API key below
+    is public and read-only — Ghost already exposes it in page source.
+--}}
+<div
+    class="search"
+    data-search
+    data-search-key="600308f3be3b0785a81df2b8a8"
+    data-search-recent="{{t "Latest posts"}}"
+    data-search-empty="{{t "Nothing found"}}"
+    data-search-loading="{{t "Loading"}}"
+    data-search-error="{{t "Search is unavailable"}}"
+    hidden
+>
+    <button
+        class="search-backdrop"
+        type="button"
+        tabindex="-1"
+        aria-label="{{t "Close search"}}"
+        aria-hidden="true"
+        data-search-close
+    ></button>
+
+    <div
+        class="search-sheet"
+        id="search-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-label="{{t "Search"}}"
+        data-search-sheet
+        tabindex="-1"
+    >
+        <div class="search-field">
+            <svg class="search-field-icon icon" aria-hidden="true"><use xlink:href="#icon-search"></use></svg>
+
+            <input
+                class="search-input"
+                type="search"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                enterkeyhint="search"
+                placeholder="{{t "Search"}}"
+                aria-label="{{t "Search"}}"
+                aria-controls="search-results"
+                data-search-input
+            />
+
+            <button
+                class="search-clear"
+                type="button"
+                aria-label="{{t "Close search"}}"
+                data-search-clear
+                hidden
+            >
+                <svg class="icon" aria-hidden="true"><use xlink:href="#icon-close"></use></svg>
+            </button>
+
+            <button
+                class="search-cancel"
+                type="button"
+                aria-label="{{t "Close search"}}"
+                title="{{t "Close search"}}"
+                data-search-close
+            >
+                <svg class="icon" aria-hidden="true"><use xlink:href="#icon-close"></use></svg>
+            </button>
+        </div>
+
+        <p class="search-section" data-search-section hidden></p>
+
+        <div
+            class="search-results"
+            id="search-results"
+            role="listbox"
+            aria-label="{{t "Search"}}"
+            data-search-results
+        ></div>
+
+        <p class="search-message" data-search-message></p>
+    </div>
+</div>

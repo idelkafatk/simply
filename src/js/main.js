@@ -10,6 +10,7 @@ import urlRegexp from './util/url-regular-expression'
 import docSelectorAll from './util/document-query-selector-all'
 import { initGalleryCards } from './util/gallery'
 import { initHorizontalCarousel } from './util/horizontal-carousel'
+import { initSearch } from './search'
 
 const simplySetup = () => {
   const rootEl = document.documentElement
@@ -476,6 +477,10 @@ const simplySetup = () => {
   }
 
   relatedArticlesCarousels()
+
+  /* Search
+  /* ---------------------------------------------------------- */
+  initSearch()
 }
 
 document.addEventListener('DOMContentLoaded', simplySetup)

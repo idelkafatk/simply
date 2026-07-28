@@ -106,5 +106,9 @@
   "Related <span class='text-primary'>Articles</span>": "Related <span class='text-primary'>Articles</span>",
   "Please enter a valid email address!": "Please enter a valid email address!",
   "<strong>Great!</strong> Check your inbox and click the link to confirm your subscription": "<strong>Great!</strong> Check your inbox and click the link to confirm your subscription",
-  "Discussion": "Discussion"
+  "Discussion": "Discussion",
+  "Latest posts": "Latest posts",
+  "Nothing found": "Nothing found",
+  "Loading": "Loading…",
+  "Search is unavailable": "Search is unavailable"
 }
