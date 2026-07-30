@@ -37,3 +37,12 @@ except for when immediately preceeded by a heading */
 .kg-image-card img {
   margin: auto;
 }
+
+@media (min-width: 769px) {
+  .post-body .kg-image-card img {
+    width: auto;
+    max-width: 100%;
+    max-height: min(75vh, 720px);
+    object-fit: contain;
+  }
+}

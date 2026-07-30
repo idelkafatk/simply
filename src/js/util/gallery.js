@@ -10,6 +10,19 @@ const setGalleryImageSizes = root => {
     if (!container || !width || !height) return
 
     container.style.setProperty('--gallery-image-width', `${galleryHeight * width / height}rem`)
+    container.style.setProperty('--gallery-image-ratio', `${width} / ${height}`)
+
+    if (height > width) {
+      container.classList.add('is-portrait')
+    }
+  })
+
+  root.querySelectorAll('.kg-gallery-row').forEach(row => {
+    const images = Array.from(row.querySelectorAll('.kg-gallery-image'))
+
+    if (images.length && images.every(image => image.classList.contains('is-portrait'))) {
+      row.classList.add('is-portrait-row')
+    }
   })
 }
 
