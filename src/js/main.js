@@ -166,6 +166,61 @@ const simplySetup = () => {
     })
   }
 
+  // Первичную схему комментариев ставит инлайн-скрипт в article-comments.hbs —
+  // он успевает до отложенного бандла comments-ui. Здесь только догоняем
+  // последующие переключения: бандл следит за атрибутами своего script-тега
+  // и перечитывает конфиг на каждое изменение.
+  const updateCommentsTheme = () => {
+    const commentsTheme = rootEl.classList.contains('dark') ? 'dark' : 'light'
+
+    docSelectorAll('script[data-ghost-comments]').forEach(script => {
+      if (script.dataset.colorScheme !== commentsTheme) {
+        script.dataset.colorScheme = commentsTheme
+      }
+    })
+  }
+
+  // comments-ui рисует себя внутри srcdoc-iframe, документ которого полностью
+  // прозрачный — поэтому Chrome заливает холст фрейма непрозрачным белым. В тёмной
+  // теме это белое полотно вылезает под светлым текстом виджета. Достать до него
+  // из CSS нельзя: фон самого элемента <iframe> закрашивается сверху, а
+  // color-scheme в дочерний документ не пробрасывается. Единственное, что
+  // работает — записать цвет панели в документ фрейма; srcdoc same-origin.
+  const paintCommentsFrame = () => {
+    const panel = document.querySelector('.post-comments')
+
+    if (!panel) return
+
+    const frame = panel.querySelector('iframe[title="comments-frame"]')
+
+    if (!frame || !frame.contentDocument) return
+
+    frame.contentDocument.documentElement.style.backgroundColor =
+      window.getComputedStyle(panel).backgroundColor
+  }
+
+  const watchCommentsFrame = () => {
+    const panel = document.querySelector('.post-comments')
+
+    if (!panel) return
+
+    // Виджет монтируется лениво, по IntersectionObserver, так что фрейм может
+    // появиться сильно позже DOMContentLoaded — и пересоздаться при ре-рендере.
+    const frameObserver = new MutationObserver(() => {
+      const frame = panel.querySelector('iframe[title="comments-frame"]')
+
+      if (frame && !frame.dataset.simplyPainted) {
+        frame.dataset.simplyPainted = 'true'
+        frame.addEventListener('load', paintCommentsFrame)
+      }
+
+      paintCommentsFrame()
+    })
+
+    frameObserver.observe(panel, { childList: true, subtree: true })
+    paintCommentsFrame()
+  }
+
   const darkMode = () => {
     const $toggleDarkMode = docSelectorAll('.js-dark-mode')
 
@@ -173,6 +228,8 @@ const simplySetup = () => {
 
     // Update icons on page load
     updateThemeIcons()
+    updateCommentsTheme()
+    paintCommentsFrame()
 
     $toggleDarkMode.forEach(item => item.addEventListener('click', function (event) {
       event.preventDefault()
@@ -182,14 +239,19 @@ const simplySetup = () => {
 
       // Update icons after theme change
       updateThemeIcons()
+      updateCommentsTheme()
+      paintCommentsFrame()
     }))
   }
 
   darkMode()
+  watchCommentsFrame()
 
   // Watch for theme changes (e.g., from system preference)
   const observer = new MutationObserver(() => {
     updateThemeIcons()
+    updateCommentsTheme()
+    paintCommentsFrame()
   })
   observer.observe(rootEl, {
     attributes: true,
