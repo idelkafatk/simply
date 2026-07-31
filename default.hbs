@@ -13,8 +13,15 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    {{!-- Page Meta --}}
-    <title>{{meta_title}}</title>
+    {{!--
+      Page Meta
+
+      Collections from routes.yaml have no title of their own, so {{meta_title}} drops to its
+      fallback branch: the site title plus a page suffix that Ghost adds whenever the collection
+      holds more than one post — even on the first page. That turns /notes/ into "Idel.Blog
+      (Page 1)". Name the notes section explicitly and keep the page number from page two on.
+    --}}
+    <title>{{#match relativeUrl "~^" "/notes/"}}{{t "Notes"}}{{#is "paged"}} ({{t "Page"}} {{pagination.page}}){{/is}} - {{@site.title}}{{else}}{{#is "paged"}}{{meta_title}}{{else}}{{meta_title page=""}}{{/is}}{{/match}}</title>
 
     {{!-- Mobile Meta --}}
     <meta name="HandheldFriendly" content="True" />
