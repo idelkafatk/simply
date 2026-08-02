@@ -3,8 +3,12 @@
 
 {{#post}}
 
-{{!-- Class for <body> --}}
-{{#contentFor "special_body_class"}}is-article is-sidebar is-canvas-full{{/contentFor}}
+{{!-- Class for <body>. Preserve the note marker when a note uses this custom template. --}}
+{{#has tag="#note, hash-note"}}
+    {{#contentFor "special_body_class"}}is-article is-note is-sidebar is-canvas-full{{/contentFor}}
+{{else}}
+    {{#contentFor "special_body_class"}}is-article is-sidebar is-canvas-full{{/contentFor}}
+{{/has}}
 
 <div class="container mx-auto px-4 py-vmin8">
     <div class="max-w-1100 max-w mx-auto grid gap-10 xl:gap-20 lg:grid-cols-sidebar">
