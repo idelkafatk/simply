@@ -198,9 +198,9 @@
   width: 100%;
 }
 
-/* Notes using the Post Sidebar template keep the gallery carousel on desktop. */
+/* Keep gallery cards as carousels on desktop note pages too. */
 @media (min-width: 769px) {
-  .is-note.is-sidebar .post-body .kg-gallery-container {
+  .is-note .post-body .kg-gallery-container {
     -webkit-overflow-scrolling: touch;
     align-items: flex-start;
     display: flex;
@@ -216,16 +216,16 @@
     width: 100%;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-container::-webkit-scrollbar {
+  .is-note .post-body .kg-gallery-container::-webkit-scrollbar {
     display: none;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-row {
+  .is-note .post-body .kg-gallery-row {
     display: contents;
     margin: 0 !important;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-image {
+  .is-note .post-body .kg-gallery-row .kg-gallery-image {
     border-radius: 0.5rem;
     flex: 0 0 min(var(--gallery-image-width, 13.333rem), calc(100% - 2.5rem)) !important;
     height: var(--gallery-height, 25rem) !important;
@@ -237,11 +237,11 @@
     width: min(var(--gallery-image-width, 13.333rem), calc(100% - 2.5rem));
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-row:last-child .kg-gallery-image:last-child {
+  .is-note .post-body .kg-gallery-row:last-child .kg-gallery-image:last-child {
     margin-right: 0 !important;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-image img {
+  .is-note .post-body .kg-gallery-row .kg-gallery-image img {
     height: var(--gallery-height, 25rem) !important;
     max-height: var(--gallery-height, 25rem);
     min-height: var(--gallery-height, 25rem);
@@ -249,7 +249,7 @@
     width: 100%;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-pagination {
+  .is-note .post-body .kg-gallery-pagination:not([hidden]) {
     align-items: center;
     display: flex;
     gap: 0.375rem;
@@ -261,26 +261,26 @@
 }
 
 @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
-  .is-note.is-sidebar .post-body .kg-gallery-container,
-  .is-note.is-sidebar .post-body .kg-gallery-container .medium-zoom-image {
+  .is-note .post-body .kg-gallery-container,
+  .is-note .post-body .kg-gallery-container .medium-zoom-image {
     cursor: grab;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-container {
+  .is-note .post-body .kg-gallery-container {
     scroll-snap-type: none;
     user-select: none;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-container.is-dragging,
-  .is-note.is-sidebar .post-body .kg-gallery-container.is-dragging .medium-zoom-image {
+  .is-note .post-body .kg-gallery-container.is-dragging,
+  .is-note .post-body .kg-gallery-container.is-dragging .medium-zoom-image {
     cursor: grabbing;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-image {
+  .is-note .post-body .kg-gallery-row .kg-gallery-image {
     scroll-snap-align: none;
   }
 
-  .is-note.is-sidebar .post-body .kg-gallery-image img {
+  .is-note .post-body .kg-gallery-row .kg-gallery-image img {
     -webkit-user-drag: none;
   }
 }
