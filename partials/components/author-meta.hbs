@@ -1,5 +1,6 @@
 <div class="hh flex items-center flex-auto relative leading-snug z-4">
 
+    {{#unless hide_author}}
     {{#unless hide_avatar}}
     <ul class="flex flex-wrap flex-none mr-3 -space-x-2">
         {{#foreach authors}}
@@ -16,11 +17,14 @@
         {{/foreach}}
     </ul>
     {{/unless}}
+    {{/unless}}
 
     <div class="flex-auto overflow-hidden">
+        {{#unless hide_author}}
         <div class="hh-author-name text-sm truncate">
         {{#has author="count:>2"}}{{t "Multiple authors"}}{{else}}{{authors class="false"}}{{/has}}
         </div>
+        {{/unless}}
 
         {{!-- Date Time and reading Time - ./partials/components/datetime.hbs --}}
         {{> "components/datetime"}}

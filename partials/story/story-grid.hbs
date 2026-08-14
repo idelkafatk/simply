@@ -34,7 +34,7 @@
 
             {{#match @custom.story_meta "Author"}}
             {{!-- Author - Primary Tag - Datetime - Read time - ./partials/components/author-meta.hbs --}}
-            <div class="mt-auto">{{> "components/author-meta"}}</div>
+            <div class="mt-auto">{{> "components/author-meta" hide_author=true}}</div>
 
             {{else}}
 
@@ -61,7 +61,7 @@
 
             {{#match @custom.story_meta "Author"}}
             {{!-- Author - Primary Tag - Datetime - Read time - ./partials/components/author-meta.hbs --}}
-            <div class="mt-auto">{{> "components/author-meta"}}</div>
+            <div class="mt-auto">{{> "components/author-meta" hide_author=true}}</div>
 
             {{else}}
 

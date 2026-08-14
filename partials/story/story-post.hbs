@@ -2,7 +2,7 @@
     <header class="story-post-header mb-5">
         <h2 class="text-4xl leading-tight text-title mb-5 hover:text-primary"><a href="{{url}}">{{title}}</a></h2>
         {{!-- Author - Primary Tag - Datetime - Read time - ./partials/components/author-meta.hbs --}}
-        {{> "components/author-meta"}}
+        {{> "components/author-meta" hide_author=true}}
     </header>
 
     {{#if feature_image}}

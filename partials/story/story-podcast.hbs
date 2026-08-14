@@ -1,7 +1,7 @@
 <article class="podcast-card js-story flex flex-col md:flex-row w-full relative overflow-hidden mb-12">
     <header class="podcast-card-header md:ml-4 p-5 order-2">
         {{!-- Author - Datetime - Read time - ./partials/components/author-meta.hbs --}}
-        {{> "components/author-meta"}}
+        {{> "components/author-meta" hide_author=true}}
 
         <h2 class="spc-c-title my-5 text-2xl text-title font-sans"><a href="{{url}}" class="relative z-3">{{title}}</a></h2>
         <p class="spc-c-excerpt mb-5">{{excerpt words="30"}}</p>
