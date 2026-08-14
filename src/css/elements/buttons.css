@@ -63,6 +63,16 @@
   color: #fff;
 }
 
+.button.is-static {
+  cursor: default;
+  user-select: text;
+
+  &:hover {
+    background-color: transparent;
+    color: #fff;
+  }
+}
+
 .button.is-telegram {
   background-color: var(--button-telegram-bg);
   color: var(--button-telegram-color);
