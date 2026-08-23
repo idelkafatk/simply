@@ -42,10 +42,11 @@
 
             {{!-- Tags - ./partials/components/tags,hbs --}}
             <footer class="post-footer godo-canvas pt-10">
-                {{> "components/tags"}}
-
-                {{!-- Social Share - ./partials/components/social-share --}}
-                {{> "components/social-share" Tracking_name="Footer" class="block"}}
+                {{!-- Tags + share on one row - ./partials/components/tags.hbs, ./partials/components/share-link.hbs --}}
+                <div class="post-footer-actions flex items-start flex-wrap gap-4 mb-8">
+                    {{> "components/tags"}}
+                    {{> "components/share-link" label=true class="ml-auto" Tracking_name="Footer"}}
+                </div>
 
                 {{!-- Telegram - ./partials/components/telegram-card.hbs --}}
                 {{> "components/telegram-card"}}

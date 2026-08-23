@@ -100,7 +100,6 @@
   "Read post": "Read post",
   "About Us": "About Us",
   "Share": "Share",
-  "Share on": "Share on",
   "Send": "Send",
   "Listen": "Listen",
   "Related <span class='text-primary'>Articles</span>": "Related <span class='text-primary'>Articles</span>",
@@ -118,5 +117,6 @@
   "Not now": "Not now",
   "Tap the Share button in the browser bar": "Tap the Share button in the browser bar",
   "Choose “Add to Home Screen”": "Choose “Add to Home Screen”",
-  "Got it": "Got it"
+  "Got it": "Got it",
+  "Copied": "Copied"
 }

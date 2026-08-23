@@ -1,0 +1,92 @@
+/* Share / copy-link button
+/* ---------------------------------------------------------- */
+
+.share-link-wrap {
+  display: inline-flex;
+  flex: none;
+  /* fit-content matters: the article footer is a CSS grid (.godo-canvas), where
+     an inline-flex child is otherwise blockified and stretched to the full
+     column, which would break ml-auto alignment. */
+  width: fit-content;
+}
+
+.share-link {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: var(--gray-500);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.share-link:hover,
+.share-link:focus-visible,
+.share-link.is-copied {
+  color: var(--ghost-accent-color);
+}
+
+/* Both icons sit in one grid cell, so swapping them cannot shift the layout —
+   they have different viewBoxes and would otherwise nudge the caption. */
+.share-link-icons {
+  display: grid;
+  flex: none;
+}
+
+.share-link-icons > .icon {
+  grid-area: 1 / 1;
+}
+
+.share-link-icon-done {
+  visibility: hidden;
+}
+
+.share-link.is-copied .share-link-icon {
+  visibility: hidden;
+}
+
+.share-link.is-copied .share-link-icon-done {
+  visibility: visible;
+}
+
+/* Icon-only: the note meta row. Negative margin keeps a comfortable tap target
+   without growing the row it sits in. */
+.share-link:not(.is-labelled) {
+  height: 2.25rem;
+  margin: -0.375rem 0;
+  width: 2.25rem;
+}
+
+/* With a caption: the article footer. Deliberately unfilled — the tags next to it
+   are the theme's filled pills, and a filled share button reads as another tag.
+   No horizontal padding either, so the caption sits flush with the column edge
+   instead of an invisible box. */
+.share-link.is-labelled {
+  font-size: 0.875rem;
+  gap: 0.5rem;
+  height: 2.25rem;
+}
+
+.share-link.is-labelled .icon {
+  height: 1.125rem;
+  width: 1.125rem;
+}
+
+/* The caption swaps to the confirmation on copy. Both strings are stacked in one
+   grid cell so the cell is as wide as the longer of the two and the swap cannot
+   resize the button — "Скопировано" is 10px wider than "Поделиться". */
+.share-link-captions {
+  display: grid;
+}
+
+.share-link-captions > * {
+  grid-area: 1 / 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.share-link-sizer {
+  visibility: hidden;
+}

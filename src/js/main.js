@@ -10,11 +10,18 @@ import urlRegexp from './util/url-regular-expression'
 import docSelectorAll from './util/document-query-selector-all'
 import { initGalleryCards } from './util/gallery'
 import { initHorizontalCarousel } from './util/horizontal-carousel'
+import { initShareLink } from './util/share-link'
 import { initSearch } from './search'
 
 const simplySetup = () => {
   const rootEl = document.documentElement
   const documentBody = document.body
+
+  /* Share / copy link
+  /* ---------------------------------------------------------- */
+  // Bound first: it only needs a delegated document listener, so it stays
+  // working even if a later block below throws on some template.
+  initShareLink()
 
   /* Menu DropDown
   /* ---------------------------------------------------------- */

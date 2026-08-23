@@ -40,6 +40,7 @@
 @import "./components/mobile-navigation.css";
 @import "./components/search.css";
 @import "./components/pwa-install.css";
+@import "./components/share-link.css";
 @import "./components/code.css";
 @import "./components/comments.css";
 /* @import "./components/modal.css"; */

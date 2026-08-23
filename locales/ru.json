@@ -92,7 +92,6 @@
   "Search": "Поиск",
   "See all % posts": "Все посты (%)",
   "Send": "Отправить",
-  "Share on": "Поделиться в",
   "Share": "Поделиться",
   "Signed in as": "Вы вошли как",
   "Sign in": "Войти",
@@ -132,5 +131,6 @@
   "Not now": "Не сейчас",
   "Tap the Share button in the browser bar": "Нажмите «Поделиться» на панели браузера",
   "Choose “Add to Home Screen”": "Выберите «На экран „Домой“»",
-  "Got it": "Понятно"
+  "Got it": "Понятно",
+  "Copied": "Скопировано"
 }

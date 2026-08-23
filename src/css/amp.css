@@ -371,23 +371,7 @@ table {
   padding: 0.3125rem 1.25rem;
 }
 
-/* 15. share
-/* ---------------------------------------------------------- */
-
-amp-social-share.custom-style {
-  background-color: #008080;
-  background-image: url("https://raw.githubusercontent.com/google/material-design-icons/master/social/1x_web/ic_share_white_48dp.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-}
-
-amp-social-share.rounded {
-  border-radius: 10%;
-  background-size: 85%;
-}
-
-/* 16. Related Article
+/* 15. Related Article
 /* ---------------------------------------------------------- */
 
 .story-link-text {

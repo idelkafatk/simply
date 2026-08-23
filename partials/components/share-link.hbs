@@ -1,0 +1,29 @@
+{{!-- Share button. Native share sheet on touch devices, clipboard copy elsewhere.
+     Primarily for the PWA, where standalone mode hides the address bar entirely.
+     Pass label=true for the pill variant with a visible caption; without it the
+     caption stays sr-only and doubles as the accessible name. --}}
+<span class="share-link-wrap{{#if class}} {{class}}{{/if}}">
+    <button
+        type="button"
+        class="share-link godo-tracking{{#if label}} is-labelled{{/if}}"
+        data-share-link
+        data-share-url="{{url absolute="true"}}"
+        data-share-title="{{title}}"
+        data-message-copied="{{t "Copied"}}"
+        {{#unless label}}title="{{t "Share"}}"{{/unless}}
+        data-event-category="Article"
+        data-event-action="Share"
+        data-event-label="{{Tracking_name}} - Copy Link"
+        data-event-non-interaction="true"
+    >
+        <span class="share-link-icons">
+            <svg class="icon is-stroke share-link-icon" aria-hidden="true"><use xlink:href="#icon-share"></use></svg>
+            <svg class="icon share-link-icon-done" aria-hidden="true"><use xlink:href="#icon-checkmark"></use></svg>
+        </span>
+        <span class="share-link-captions{{#unless label}} sr-only{{/unless}}">
+            <span class="share-link-text" aria-live="polite">{{t "Share"}}</span>
+            {{!-- Reserves the width of the longest caption so the swap cannot resize the button. --}}
+            <span class="share-link-sizer" aria-hidden="true">{{t "Copied"}}</span>
+        </span>
+    </button>
+</span>
