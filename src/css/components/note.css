@@ -107,9 +107,75 @@
   outline-offset: 2px;
 }
 
-/* Ghost cards are handled separately from the text preview. */
-.story-note-body .kg-card {
+/* Ghost cards are handled separately from the text preview.
+   Bookmark cards are links written inside the note, so keep them inline. */
+.story-note-body .kg-card:not(.kg-bookmark-card) {
   display: none;
+}
+
+.story-note-body .kg-bookmark-card {
+  white-space: normal;
+}
+
+/* Compact bookmark: the feed is a preview, so keep the link to one row. */
+.story-note-body a.kg-bookmark-container {
+  color: inherit;
+  flex-direction: row-reverse;
+  overflow-wrap: normal;
+}
+
+.story-note-body .kg-bookmark-content {
+  justify-content: center;
+  min-width: 0;
+  padding: .75rem 1rem;
+}
+
+.story-note-body .kg-bookmark-title {
+  display: -webkit-box;
+  font-size: 1rem;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.story-note-body .kg-bookmark-description {
+  font-size: .875rem;
+  margin-top: .25rem;
+  -webkit-line-clamp: 1;
+}
+
+.story-note-body .kg-bookmark-metadata {
+  font-size: .75rem;
+  margin-top: .375rem;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.story-note-body .kg-bookmark-metadata span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.story-note-body .kg-bookmark-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.story-note-body .kg-bookmark-thumbnail {
+  flex: 0 0 7.5rem;
+  min-height: 5.5rem;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .story-note-body .kg-bookmark-description {
+    display: none;
+  }
+
+  .story-note-body .kg-bookmark-thumbnail {
+    flex-basis: 5.5rem;
+    min-height: 4.5rem;
+  }
 }
 
 .story-note-gallery:not(:empty) {
