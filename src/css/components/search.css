@@ -1,14 +1,13 @@
 :root {
-  --search-sheet-radius: 1rem;
   --search-field-height: 3.25rem;
-  --search-shadow: 0 -8px 30px rgba(0, 0, 0, 0.16);
+  --search-shadow: 0 8px 30px rgba(0, 0, 0, 0.16);
   --search-mark-bg: rgba(217, 119, 6, 0.18);
   --search-clear-bg: var(--gray-200);
   --search-clear-bg-hover: var(--gray-300);
 }
 
 .dark {
-  --search-shadow: 0 -8px 30px rgba(0, 0, 0, 0.55);
+  --search-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
   --search-mark-bg: rgba(217, 119, 6, 0.3);
 
   /* --gray-200 is nearly --bg-base in dark mode, so the disc would vanish. */
@@ -20,14 +19,13 @@
   display: none;
 }
 
-.is-search-open {
-  overflow: hidden;
-}
-
-/* The tab bar sits at z-index 40, below the sheet, but hiding it stops it
-   showing through the sheet's rounded top corners. */
-.is-search-open .mobile-tab-bar {
-  transform: translateY(100%);
+/* Phones lock the page behind the sheet. Where the page has a real scrollbar
+   that lock makes the bar vanish and the page jump sideways, so wide screens
+   leave it alone and search.js keeps the wheel from reaching the page. */
+@media (max-width: 999.98px) {
+  .is-search-open {
+    overflow: hidden;
+  }
 }
 
 .search-backdrop {
@@ -42,25 +40,33 @@
   z-index: 60;
 }
 
+/* On phones a card floating over the tab bar capsule, the shape of the More
+   menu. It hangs from the top, just under the header, and only its bottom
+   edge follows the keyboard: down to the capsule, or to 8px above the
+   keyboard once that is up and covers the capsule. So the field never moves
+   when the keyboard comes or goes; the list under it just gets shorter.
+   The --search-* values are set from visualViewport in search.js. */
 .search-sheet {
   background-color: var(--bg-base);
-  border-radius: var(--search-sheet-radius) var(--search-sheet-radius) 0 0;
-  bottom: var(--search-keyboard-inset, 0);
+  border-radius: 1.5rem;
+  bottom: max(
+    calc(var(--mobile-tab-bar-height) + var(--mobile-tab-bar-bottom-space) + 0.5rem),
+    calc(var(--search-keyboard-inset, 0px) + 0.5rem)
+  );
   box-shadow: var(--search-shadow);
   color: var(--text-base);
   display: flex;
   flex-direction: column;
-
-  /* Fallback first, then the dynamic unit. --search-available-height is set
-     from visualViewport in search.js so an open keyboard shrinks the sheet
-     instead of covering it. */
-  height: 92vh;
-  height: min(92dvh, var(--search-available-height, 92dvh));
   left: 0;
+  margin: 0 auto;
+  opacity: 0;
+  overflow: hidden;
   position: fixed;
   right: 0;
-  transform: translateY(calc(100% + 1rem));
-  transition: transform 0.24s ease, opacity 0.2s ease;
+  top: calc(env(safe-area-inset-top, 0px) + 4.5rem + var(--search-viewport-top, 0px));
+  transform: translateY(0.75rem);
+  transition: transform 0.24s ease, opacity 0.2s ease, bottom 0.2s ease;
+  width: var(--mobile-tab-bar-width);
   z-index: 61;
 }
 
@@ -73,6 +79,7 @@
 }
 
 .is-search-open .search-sheet {
+  opacity: 1;
   transform: translateY(0);
 }
 
@@ -85,7 +92,7 @@
   display: flex;
   flex: none;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 1.25rem;
 }
 
 .search-field-icon {
@@ -153,12 +160,19 @@
   width: 0.75rem;
 }
 
+/* At this size the 2px line of the icon set would thin out to a hair. */
+.search-clear .icon path {
+  stroke-width: 3.5;
+}
+
 .search-clear[hidden] {
   display: none;
 }
 
+/* The same cross, size and colour as the one that closes the More card. */
 .search-cancel {
   align-items: center;
+  color: var(--text-base);
   display: flex;
   height: 2.75rem;
   justify-content: center;
@@ -167,8 +181,8 @@
 }
 
 .search-cancel .icon {
-  height: 1.125rem;
-  width: 1.125rem;
+  height: 1.375rem;
+  width: 1.375rem;
 }
 
 .search-clear:hover {
@@ -201,7 +215,7 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   margin: 0;
-  padding: 0.875rem 1rem 0.375rem;
+  padding: 0.875rem 1.25rem 0.375rem;
   text-transform: uppercase;
 }
 
@@ -214,14 +228,14 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0.25rem 0 max(1rem, env(safe-area-inset-bottom));
+  padding: 0.25rem 0 0.5rem;
   -webkit-overflow-scrolling: touch;
 }
 
 .search-result {
   border-bottom: 1px solid var(--border-color);
   display: block;
-  padding: 0.875rem 1rem;
+  padding: 0.875rem 1.25rem;
 }
 
 .search-result:last-child {
@@ -296,7 +310,6 @@
 
 @media (min-width: 1000px) {
   .search-sheet {
-    border-radius: var(--search-sheet-radius);
     bottom: auto;
     height: auto;
     left: 50%;
@@ -311,9 +324,5 @@
 
   .is-search-open .search-sheet {
     transform: translate(-50%, 0);
-  }
-
-  .search-results {
-    padding-bottom: 0.5rem;
   }
 }

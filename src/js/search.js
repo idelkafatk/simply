@@ -4,6 +4,8 @@
    so nothing is downloaded for readers who never search.
 /* ---------------------------------------------------------- */
 
+import { trackKeyboardInset } from './util/keyboard-inset'
+
 const INDEX_LIMIT = 'all'
 const MAX_RESULTS = 20
 const MAX_RECENT = 8
@@ -127,6 +129,7 @@ export const initSearch = () => {
   let lastFocusedElement
   let activeIndex = -1
   let currentResults = []
+  let stopKeyboardTracking = () => {}
 
   const setMessage = text => {
     messageEl.textContent = text || ''
@@ -263,18 +266,6 @@ export const initSearch = () => {
       .catch(() => setMessage(root.dataset.searchError || 'Поиск временно недоступен'))
   }
 
-  // iOS keeps position:fixed anchored to the layout viewport, so an open
-  // keyboard would otherwise sit on top of the sheet's lower half.
-  const syncViewport = () => {
-    const viewport = window.visualViewport
-    if (!viewport) return
-
-    const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
-
-    root.style.setProperty('--search-keyboard-inset', `${inset}px`)
-    root.style.setProperty('--search-available-height', `${viewport.height - 32}px`)
-  }
-
   const isOpen = () => documentBody.classList.contains('is-search-open')
 
   const setOpen = open => {
@@ -292,16 +283,15 @@ export const initSearch = () => {
     documentBody.classList.toggle('is-search-open', open)
 
     if (open) {
-      syncViewport()
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', syncViewport)
-        window.visualViewport.addEventListener('scroll', syncViewport)
-      }
+      stopKeyboardTracking = trackKeyboardInset(root, 'search')
 
-      // Focus synchronously, still inside the tap that opened the sheet. Doing
-      // this in requestAnimationFrame breaks the user-gesture chain and iOS
-      // Safari then refuses to raise the keyboard.
-      input.focus({ preventScroll: true })
+      // On a phone the sheet opens on the latest posts and leaves the keyboard
+      // down until the field is tapped: raising it with the sheet made the
+      // whole screen lurch. With a real keyboard the field is focused at
+      // once, synchronously: from requestAnimationFrame the user-gesture chain
+      // is broken and iOS Safari refuses to raise an on-screen one.
+      if (window.matchMedia('(min-width: 1000px)').matches) input.focus({ preventScroll: true })
+      else sheet.focus({ preventScroll: true })
 
       loadIndex()
         .then(() => {
@@ -312,10 +302,7 @@ export const initSearch = () => {
       return
     }
 
-    if (window.visualViewport) {
-      window.visualViewport.removeEventListener('resize', syncViewport)
-      window.visualViewport.removeEventListener('scroll', syncViewport)
-    }
+    stopKeyboardTracking()
 
     input.value = ''
     clearButton.hidden = true
@@ -332,17 +319,32 @@ export const initSearch = () => {
   }
 
   // Take over every existing search trigger, including the ones that used to
-  // hand off to sodo-search.
+  // hand off to sodo-search. The tab bar stays in reach above the backdrop,
+  // so its search tab closes the sheet again and its other tabs dismiss it.
   document.querySelectorAll('[data-ghost-search], [data-search-open]').forEach(trigger => {
     trigger.addEventListener('click', event => {
       event.preventDefault()
-      setOpen(true)
+      setOpen(!isOpen())
     })
+  })
+
+  document.querySelectorAll('.mobile-tab-item:not([data-ghost-search])').forEach(tab => {
+    tab.addEventListener('click', () => setOpen(false))
   })
 
   closeControls.forEach(control => {
     control.addEventListener('click', () => setOpen(false))
   })
+
+  // Wide screens leave the page's scrollbar in place while search is open
+  // (see search.css), so the wheel is stopped here instead: it scrolls the
+  // results when they overflow and nothing at all otherwise.
+  root.addEventListener('wheel', event => {
+    const scrollable = event.target.closest('[data-search-results]') &&
+      resultsEl.scrollHeight > resultsEl.clientHeight
+
+    if (!scrollable) event.preventDefault()
+  }, { passive: false })
 
   resultsEl.addEventListener('click', event => {
     if (event.target.closest('a[href]') && window.simplyStartNavigation) {

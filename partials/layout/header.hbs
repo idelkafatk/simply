@@ -28,8 +28,8 @@
         <div class="header-right flex-none flex justify-end items-center">
             {{!-- Light and Dark Mode --}}
             <a role="button" class="js-dark-mode button is-white items-center mr-2" aria-label="Dark and Light Mode">
-                <svg class="icon icon--moon m-0"><use xlink:href="#icon-moon"></use></svg>
-                <svg class="icon icon--sunny m-0 hidden"><use xlink:href="#icon-sunny"></use></svg>
+                {{> "icons/moon" class="icon--moon m-0"}}
+                {{> "icons/sun" class="icon--sunny m-0 hidden"}}
             </a>
 
             {{!-- Toggle Searcg --}}
@@ -43,7 +43,7 @@
                 data-event-label="Click"
                 data-event-non-interaction="true"
                 data-ghost-search>
-                <svg class="icon icon--search"><use xlink:href="#icon-search"></use></svg>
+                {{> "icons/search" class="icon--search"}}
             </a>
 
             {{!-- Menu User Account --}}

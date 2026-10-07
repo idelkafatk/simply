@@ -12,6 +12,9 @@ import { initGalleryCards } from './util/gallery'
 import { initHorizontalCarousel } from './util/horizontal-carousel'
 import { initShareLink } from './util/share-link'
 import { initSearch } from './search'
+import { initMemberPanels } from './member-panels'
+import { contentApiUrl } from './util/content-api'
+import { trackKeyboardInset } from './util/keyboard-inset'
 
 const simplySetup = () => {
   const rootEl = document.documentElement
@@ -299,10 +302,26 @@ const simplySetup = () => {
     const sheet = navigation.querySelector('[data-mobile-navigation-sheet]')
     const closeControls = navigation.querySelectorAll('[data-mobile-navigation-close]')
     const notesLink = navigation.querySelector('[data-mobile-navigation-notes]')
+    const sheetTitle = sheet.querySelector('[data-mobile-navigation-title]')
+    const sheetContent = sheet.querySelector('[data-mobile-navigation-content]')
+    const panels = Array.from(sheet.querySelectorAll('[data-mobile-navigation-panel]'))
+    const tagLinks = Array.from(navigation.querySelectorAll('.mobile-navigation-links a[href*="/tag/"]'))
+    const onPanelShown = initMemberPanels(sheet)
+    const tabBar = navigation.querySelector('.mobile-tab-bar')
+    const tabs = Array.from(tabBar.querySelectorAll('.mobile-tab-item'))
     const desktopMedia = window.matchMedia('(min-width: 1000px)')
+    // Scroll distance over which the bar fades back in before the end of a
+    // page: about its own height plus the gap under it.
+    const endFade = 120
+    // Pages scrolling less than this keep the bar: 80px at the top where it
+    // always shows, the fade zone at the end, and 200px of hidden travel
+    // between. Any shorter and the two zones nearly meet and the bar flickers.
+    const minHideScroll = 80 + endFade + 200
     let lastFocusedElement
     let lastScrollY = Math.max(window.scrollY, 0)
     let scrollFrame
+    let stopKeyboardTracking = () => {}
+    let tagCountsRequested = false
 
     navigation.querySelectorAll('.mobile-navigation-links a[href]').forEach(link => {
       const url = new URL(link.href, window.location.href)
@@ -318,8 +337,90 @@ const simplySetup = () => {
       documentBody.classList.toggle('is-mobile-tab-bar-hidden', hidden && !isOpen())
     }
 
-    const setOpen = (open, restoreFocus = true, showKeyboardFocus = false) => {
-      if (open) setTabBarHidden(false)
+    // Ghost leaves .success / .error on a member form until its next submit.
+    const resetForms = (forms = sheet.querySelectorAll('form')) => {
+      forms.forEach(form => {
+        form.reset()
+        form.classList.remove('success', 'error')
+
+        const error = form.querySelector('[data-members-error]')
+        if (error) error.textContent = ''
+      })
+    }
+
+    // The post count next to each tag link, fetched the first time the menu
+    // opens and kept for the session: a number that small is not worth a
+    // request on every page.
+    const showTagCounts = counts => {
+      tagLinks.forEach(link => {
+        const slug = (new URL(link.href).pathname.match(/\/tag\/([^/]+)/) || [])[1]
+        if (!(slug in counts) || link.querySelector('.mobile-navigation-count')) return
+
+        const count = document.createElement('span')
+        count.className = 'mobile-navigation-count'
+        count.textContent = counts[slug]
+        link.appendChild(count)
+      })
+    }
+
+    const loadTagCounts = () => {
+      if (tagCountsRequested || !tagLinks.length) return
+      tagCountsRequested = true
+
+      try {
+        const cached = JSON.parse(window.sessionStorage.getItem('simply-tag-counts'))
+        if (cached) return showTagCounts(cached)
+      } catch (error) {}
+
+      const url = contentApiUrl('tags', { limit: 'all', include: 'count.posts' })
+      if (!url) return
+
+      window.fetch(url)
+        .then(response => response.ok ? response.json() : Promise.reject(new Error('Content API')))
+        .then(data => {
+          const counts = {}
+          data.tags.forEach(tag => { counts[tag.slug] = tag.count.posts })
+
+          try {
+            window.sessionStorage.setItem('simply-tag-counts', JSON.stringify(counts))
+          } catch (error) {}
+
+          showTagCounts(counts)
+        })
+        .catch(() => {})
+    }
+
+    // The sheet shows one panel at a time: the menu, or the member forms and
+    // account it leads to. Focusing a field has to happen inside the tap that
+    // opened its panel, or iOS Safari refuses to raise the keyboard.
+    const setPanel = (name, focus = true) => {
+      const panel = panels.find(item => item.dataset.mobileNavigationPanel === name) || panels[0]
+
+      // A form that was already sent starts over when its panel comes back.
+      resetForms(panel.querySelectorAll('form.success'))
+      panels.forEach(item => { item.hidden = item !== panel })
+      sheet.dataset.panel = panel.dataset.mobileNavigationPanel
+      sheet.dataset.parent = panel.dataset.parent || 'menu'
+      sheetTitle.textContent = panel.dataset.title
+      sheetContent.scrollTop = 0
+
+      if (focus) (panel.querySelector('[data-autofocus]') || sheet).focus({ preventScroll: true })
+      onPanelShown(panel.dataset.mobileNavigationPanel)
+    }
+
+    const setOpen = (open, restoreFocus = true, showKeyboardFocus = false, panel = 'menu') => {
+      if (open === isOpen()) return
+
+      if (open) {
+        setTabBarHidden(false)
+        resetForms()
+        setPanel(panel, false)
+        if (panel === 'menu') loadTagCounts()
+        stopKeyboardTracking = trackKeyboardInset(navigation, 'mobile-navigation')
+      } else {
+        stopKeyboardTracking()
+      }
+
       documentBody.classList.toggle('has-mobile-menu', open)
       toggle.setAttribute('aria-expanded', String(open))
       sheet.setAttribute('aria-hidden', String(!open))
@@ -332,16 +433,20 @@ const simplySetup = () => {
       if (open) {
         lastFocusedElement = document.activeElement
         const closeButton = sheet.querySelector('[data-mobile-navigation-close]')
+        const field = sheet.querySelector('[data-mobile-navigation-panel]:not([hidden]) [data-autofocus]')
         const focusTarget = showKeyboardFocus ? closeButton : sheet
-        window.requestAnimationFrame(() => focusTarget.focus())
+
+        // A panel's field is focused right away, inside the tap, for iOS.
+        if (field) field.focus({ preventScroll: true })
+        else window.requestAnimationFrame(() => focusTarget.focus())
       } else if (restoreFocus && lastFocusedElement) {
         lastFocusedElement.focus()
       }
     }
 
     const focusableElements = () => Array.from(sheet.querySelectorAll(
-      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    ))
+      'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
+    )).filter(element => element.getClientRects().length)
 
     toggle.addEventListener('click', event => {
       setOpen(!isOpen(), true, event.detail === 0)
@@ -351,8 +456,66 @@ const simplySetup = () => {
       control.addEventListener('click', () => setOpen(false))
     })
 
+    // Every link that would open Ghost Portal (the header buttons, the
+    // subscribe box under a post, "Sign in" in a members-only notice…) opens
+    // the matching panel of the sheet instead. Portal binds its own click
+    // handler on these elements, so this one runs first, in the capture phase,
+    // and stops the event there. Anything without a panel still goes to Portal.
+    const portalPanels = {
+      signup: 'signup',
+      'account/signup': 'signup',
+      signin: 'signin',
+      account: 'account',
+      'account/profile': 'profile',
+      'account/newsletters': 'newsletter'
+    }
+
+    const hasPanel = name => panels.some(item => item.dataset.mobileNavigationPanel === name)
+
+    document.addEventListener('click', event => {
+      if (event.defaultPrevented) return
+
+      const link = event.target.closest('[data-portal], a[href^="#/portal"]')
+      if (!link) return
+
+      const path = (link.dataset.portal !== undefined
+        ? link.dataset.portal
+        : link.getAttribute('href').replace('#/portal', '')
+      ).replace(/^\/|\/$/g, '')
+
+      // A bare "open Portal" link means sign-up to a guest and the account
+      // to a member.
+      const panel = path
+        ? portalPanels[path]
+        : ['signup', 'account'].find(hasPanel)
+
+      if (!panel || !hasPanel(panel)) return
+
+      event.preventDefault()
+      event.stopPropagation()
+
+      if (isOpen()) setPanel(panel)
+      else setOpen(true, true, false, panel)
+    }, true)
+
+    // One card at a time: opening search closes the sheet.
+    document.querySelectorAll('[data-ghost-search], [data-search-open]').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        if (isOpen()) setOpen(false, false)
+      })
+    })
+
     sheet.addEventListener('click', event => {
-      if (event.target.closest('a[href]')) setOpen(false, false)
+      const panelOpener = event.target.closest('[data-mobile-navigation-panel-open]')
+
+      if (panelOpener) {
+        setPanel(panelOpener.dataset.mobileNavigationPanelOpen)
+      } else if (event.target.closest('[data-mobile-navigation-back]')) {
+        const current = panels.find(item => !item.hidden)
+        setPanel(current.dataset.parent || 'menu')
+      } else if (event.target.closest('a[href]')) {
+        setOpen(false, false)
+      }
     })
 
     document.addEventListener('keydown', event => {
@@ -384,18 +547,35 @@ const simplySetup = () => {
       }
     })
 
+    // Hidden while the page scrolls down and back as soon as it scrolls up.
+    // Near the end of a page it fades in step with the scroll, so it is fully
+    // there at the end without a jump, however the iOS bounce plays out.
     const updateTabBarVisibility = () => {
-      const currentScrollY = Math.max(window.scrollY, 0)
-      const delta = currentScrollY - lastScrollY
+      scrollFrame = undefined
 
-      if (currentScrollY <= 64 || delta < -6) {
+      // iOS rubber-banding past the top gives a negative scrollY; past the
+      // end a negative distance, which clamps to fully revealed.
+      const currentScrollY = Math.max(window.scrollY, 0)
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight
+      const left = scrollable - window.scrollY
+      const reveal = scrollable < minHideScroll
+        ? 1
+        : Math.min(Math.max(1 - left / endFade, 0), 1)
+
+      tabBar.style.setProperty('--mobile-tab-reveal', String(reveal))
+      tabBar.toggleAttribute('data-near-end', reveal > 0)
+
+      if (currentScrollY < 80 || reveal >= 1) {
         setTabBarHidden(false)
-      } else if (delta > 6 && currentScrollY > 96) {
+      } else if (currentScrollY - lastScrollY > 8) {
         setTabBarHidden(true)
+      } else if (lastScrollY - currentScrollY > 8) {
+        setTabBarHidden(false)
+      } else {
+        return
       }
 
       lastScrollY = currentScrollY
-      scrollFrame = undefined
     }
 
     window.addEventListener('scroll', () => {
@@ -403,10 +583,37 @@ const simplySetup = () => {
       scrollFrame = window.requestAnimationFrame(updateTabBarVisibility)
     }, { passive: true })
 
+    updateTabBarVisibility()
+
+    // The tapped tab gets the pill right away instead of waiting for the next
+    // page. Cleared when the page comes back from the back/forward cache.
+    const setPendingTab = pendingTab => {
+      tabs.forEach(tab => tab.toggleAttribute('data-pending', tab === pendingTab))
+      tabBar.toggleAttribute('data-pending', Boolean(pendingTab))
+
+      if (pendingTab) {
+        tabBar.style.setProperty('--mobile-tab-index', tabs.indexOf(pendingTab))
+      } else {
+        tabBar.style.removeProperty('--mobile-tab-index')
+      }
+    }
+
+    tabs.forEach(tab => {
+      if (tab.tagName !== 'A' || tab.getAttribute('role') === 'button') return
+
+      tab.addEventListener('click', event => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey) return
+        setPendingTab(tab)
+      })
+    })
+
+    window.addEventListener('pageshow', () => setPendingTab())
+
     navigation.addEventListener('focusin', () => setTabBarHidden(false))
 
-    desktopMedia.addEventListener('change', event => {
-      if (event.matches && isOpen()) setOpen(false, false)
+    // The card sits in a different place on each side of the breakpoint.
+    desktopMedia.addEventListener('change', () => {
+      if (isOpen()) setOpen(false, false)
     })
 
     if (notesLink && (
@@ -504,6 +711,77 @@ const simplySetup = () => {
   }
 
   notesCardNavigation()
+
+  /* Notes months
+  /* ---------------------------------------------------------- */
+  // A heading opens each month of the feed in place of rules between notes.
+  // Infinite scroll appends notes, so this runs on every change to the feed
+  // and only adds the headings that are missing.
+  const notesMonths = () => {
+    const notesFeed = document.querySelector('.notes-feed')
+    if (!notesFeed) return
+
+    const currentYear = String(new Date().getFullYear())
+    const monthName = new Intl.DateTimeFormat(document.documentElement.lang || 'en', {
+      month: 'long',
+      timeZone: 'UTC'
+    })
+
+    const updateMonths = () => {
+      let previousMonth = null
+
+      notesFeed.querySelectorAll('.story-note').forEach(note => {
+        const time = note.querySelector('time[datetime]')
+        if (!time) return
+
+        const month = time.getAttribute('datetime').slice(0, 7)
+        const before = note.previousElementSibling
+        const hasHeading = before && before.classList.contains('notes-month')
+
+        if (month !== previousMonth && !hasHeading) {
+          const [year, monthNumber] = month.split('-')
+          const heading = document.createElement('h2')
+
+          heading.className = 'notes-month'
+          heading.textContent = monthName.format(new Date(Date.UTC(year, monthNumber - 1, 1))) +
+            (year === currentYear ? '' : ` ${year}`)
+          notesFeed.insertBefore(heading, note)
+        }
+
+        previousMonth = month
+      })
+
+      notesFeed.classList.add('has-months')
+    }
+
+    updateMonths()
+
+    const monthsObserver = new MutationObserver(updateMonths)
+    monthsObserver.observe(notesFeed, { childList: true })
+  }
+
+  notesMonths()
+
+  /* Notes topic filter
+  /* ---------------------------------------------------------- */
+  // On a phone the topics are one row that scrolls sideways: bring the
+  // current topic into view when it starts out past the edge.
+  const notesTopicFilter = () => {
+    const filter = document.querySelector('[data-notes-topic-filter]')
+    const active = filter && filter.querySelector('.is-active')
+    if (!active) return
+
+    active.setAttribute('aria-current', 'page')
+
+    const filterRect = filter.getBoundingClientRect()
+    const activeRect = active.getBoundingClientRect()
+
+    if (activeRect.right > filterRect.right - 40) {
+      filter.scrollLeft += activeRect.left - filterRect.left - (filterRect.width - activeRect.width) / 2
+    }
+  }
+
+  notesTopicFilter()
 
   /* Notes carousel
   /* ---------------------------------------------------------- */

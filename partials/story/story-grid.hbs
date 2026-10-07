@@ -1,6 +1,6 @@
 <article class="story js-story flex flex-col grow relative mb-3{{#if story_class}} {{story_class}}{{/if}}">
     {{#if feature_image}}
-        <figure class="story-image mb-5 h-52 relative border border-gray-300 bg-gray-200 overflow-hidden rounded-lg">
+        <figure class="story-image mb-5 h-52 relative border border-gray-300 bg-gray-200 overflow-hidden rounded-2xl">
             <a href="{{url}}">
                 <img class="story-img inset-image block"
                     src="{{img_url feature_image size="m"}}"
@@ -45,7 +45,7 @@
 
     {{else}}
 
-        <div class="story-body not-feature-image flex flex-col grow p-6 bg-blank rounded-lg shadow-4xl transition-all hover:shadow-card-primary">
+        <div class="story-body not-feature-image flex flex-col grow p-6 bg-blank rounded-2xl shadow-4xl transition-all hover:shadow-card-primary">
             {{#if primary_tag}}<div class="mb-4">{{> "components/primary-tag"}}</div>{{/if}}
 
             {{!-- Date Time and reading Time - ./partials/components/datetime.hbs --}}

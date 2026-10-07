@@ -6,13 +6,13 @@
 
 <div class="site-notes container mx-auto py-vmin8 px-4">
     <div class="notes-timeline mx-auto max-w-2xl">
-        <header class="notes-header mb-10">
+        <header class="notes-header mb-3">
             <h1 class="text-32 md:text-4xl text-title leading-tight">{{t "Notes"}}</h1>
         </header>
 
         {{> "components/note-topic-filter" allActive=true}}
 
-        <div class="js-feed-entry notes-feed border-t border-gray-300">
+        <div class="js-feed-entry notes-feed">
             {{#foreach posts}}
                 {{> "story/story-note"}}
             {{/foreach}}

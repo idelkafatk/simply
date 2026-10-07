@@ -11,7 +11,36 @@
   margin-left: -1rem;
 }
 
+/* Notes are parted by space and by a heading for each month (main.js adds
+   them), not by rules: a ruled feed read as a table. The heading carries the
+   year when it is not the current one, so the dates under it drop theirs.
+   It is set at half strength: it marks a place in the feed, and at full
+   strength it was one more white line among the note titles. */
+.notes-month {
+  color: var(--title-color);
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-top: 2.5rem;
+  opacity: .5;
+  padding: 0 1rem;
+}
+
+.notes-month:first-child {
+  margin-top: 0;
+}
+
+.notes-month::first-letter {
+  text-transform: uppercase;
+}
+
+.notes-feed.has-months .story-note-year {
+  display: none;
+}
+
 .story-note {
+  border-radius: 1rem;
   padding-right: 1rem;
   padding-left: 1rem;
   transition: background-color 150ms ease;
@@ -53,25 +82,29 @@
 }
 
 .story-note-body > * + * {
-  margin-top: 4vmin;
+  margin-top: .75em;
 }
 
 .story-note-body ul,
 .story-note-body ol,
 .note-single-body ul,
-.note-single-body ol {
+.note-single-body ol,
+.notes-carousel-excerpt ul,
+.notes-carousel-excerpt ol {
   list-style-position: outside;
   padding-left: 2rem;
   white-space: normal;
 }
 
 .story-note-body ul,
-.note-single-body ul {
+.note-single-body ul,
+.notes-carousel-excerpt ul {
   list-style-type: disc;
 }
 
 .story-note-body ol,
-.note-single-body ol {
+.note-single-body ol,
+.notes-carousel-excerpt ol {
   list-style-type: decimal;
 }
 
@@ -109,6 +142,7 @@
 
 /* Ghost cards are handled separately from the text preview.
    Bookmark cards are links written inside the note, so keep them inline. */
+.notes-carousel-excerpt .kg-card,
 .story-note-body .kg-card:not(.kg-bookmark-card) {
   display: none;
 }
@@ -201,28 +235,67 @@
   margin-right: .75rem;
 }
 
+/* Topics are navigation, so they are set in type rather than boxed: one row
+   of words, the current one in the accent colour, each with its note count.
+   On a phone the row scrolls sideways and fades out at the right edge; the
+   padding there lets the last word scroll clear of the fade. */
 .notes-topic-filter {
+  align-items: baseline;
   display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  margin-bottom: 2rem;
+  gap: 0 1.25rem;
+  margin: 0 -1rem 1.5rem;
+  mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
+  overflow-x: auto;
+  padding: 0 2.5rem 0 1rem;
+  scrollbar-width: none;
+}
+
+.notes-topic-filter::-webkit-scrollbar {
+  display: none;
 }
 
 .notes-topic-filter-link {
-  padding: .45rem .75rem;
-  border: 1px solid var(--gray-300);
-  border-radius: .375rem;
-  background-color: var(--gray-100);
-  color: var(--gray-700);
-  font-size: .875rem;
-  font-weight: 500;
-  line-height: 1.25;
+  align-items: baseline;
+  color: var(--gray-500);
+  display: inline-flex;
+  flex: none;
+  font-size: 1.25rem;
+  font-weight: 800;
+  gap: .3rem;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  padding: .625rem 0;
+  transition: color 150ms ease;
+  white-space: nowrap;
 }
 
 .notes-topic-filter-link:hover,
 .notes-topic-filter-link.is-active {
-  border-color: var(--ghost-accent-color);
   color: var(--ghost-accent-color);
+}
+
+.notes-topic-filter-count {
+  color: var(--gray-500);
+  font-size: .75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* From a tablet up there is no sideways scroll: the words are a size smaller
+   so the usual set fits one line, and wrap when it does not. */
+@media (min-width: 768px) {
+  .notes-topic-filter {
+    flex-wrap: wrap;
+    gap: 0 1rem;
+    mask-image: none;
+    overflow-x: visible;
+    padding-right: 1rem;
+  }
+
+  .notes-topic-filter-link {
+    font-size: 1.0625rem;
+  }
 }
 
 .notes-topic-filter-link:focus-visible {
@@ -236,7 +309,6 @@
 .notes-carousel {
   --notes-carousel-gutter: max(1rem, calc((100vw - 81.25rem) / 2 + 1rem));
   --notes-carousel-card-border: var(--gray-300);
-  --notes-carousel-card-shadow: 0 4px 12px rgb(0 0 0 / 8%);
 
   margin-bottom: 3rem;
   min-width: 0;
@@ -244,20 +316,55 @@
 
 .dark .notes-carousel {
   --notes-carousel-card-border: #34373B;
-  --notes-carousel-card-shadow: 0 6px 18px rgb(0 0 0 / 35%);
 }
 
 .notes-carousel-header {
-  align-items: center;
-  display: flex;
-  margin-bottom: 1rem;
-}
-
-.notes-carousel-heading {
-  align-items: center;
+  align-items: baseline;
   display: flex;
   gap: 1rem;
-  min-width: 0;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+/* The way to all notes is navigation, so it is a quiet line by the heading
+   and not a button under the cards. */
+.notes-carousel-all {
+  align-items: center;
+  color: var(--gray-500);
+  display: inline-flex;
+  flex: none;
+  font-size: 1rem;
+  font-weight: 600;
+  gap: 0.125rem;
+  line-height: 1.25;
+  padding: 0.5rem 0;
+  transition: color 150ms ease;
+}
+
+.notes-carousel-all:hover {
+  color: var(--ghost-accent-color);
+}
+
+.notes-carousel-all:focus-visible {
+  outline: 2px solid var(--ghost-accent-color);
+  outline-offset: 2px;
+}
+
+.notes-carousel-all-icon {
+  height: 1rem;
+  transition: transform 180ms ease;
+  width: 1rem;
+}
+
+.notes-carousel-all:hover .notes-carousel-all-icon,
+.notes-carousel-all:focus-visible .notes-carousel-all-icon {
+  transform: translateX(0.1875rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notes-carousel-all-icon {
+    transition: none;
+  }
 }
 
 .notes-carousel-viewport {
@@ -298,24 +405,43 @@
   border-radius: 0.5rem;
 }
 
+/* A card is a soft fill, as the tiles of the mobile menu are: an outline
+   made a row of them read as a table. */
 .notes-carousel-card {
-  background: var(--card-bg);
-  border: 1px solid var(--notes-carousel-card-border);
-  border-radius: 0.5rem;
+  background: var(--mobile-navigation-tile-bg);
+  border-radius: 1.5rem;
   flex: 0 0 clamp(18rem, 29vw, 23rem);
   height: 21rem;
   min-width: 0;
   overflow: hidden;
+  position: relative;
   scroll-snap-align: start;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: background-color 150ms ease;
 }
 
-.notes-carousel-link {
+.notes-carousel-content {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-width: 0;
   overflow: hidden;
+}
+
+/* The title link covers the card. */
+.notes-carousel-link::after {
+  border-radius: 1.5rem;
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.notes-carousel-link:focus-visible {
+  outline: none;
+}
+
+.notes-carousel-link:focus-visible::after {
+  outline: 2px solid var(--ghost-accent-color);
+  outline-offset: -2px;
 }
 
 .notes-carousel-media {
@@ -372,6 +498,16 @@
   -webkit-line-clamp: 9;
 }
 
+/* The preview is the start of the note itself, with its links read as text:
+   the card is one link. Lists and Ghost cards are styled with the feed's. */
+.notes-carousel-excerpt > * {
+  margin: 0;
+}
+
+.notes-carousel-excerpt > * + * {
+  margin-top: 0.5em;
+}
+
 .notes-carousel-card.has-image .notes-carousel-excerpt {
   -webkit-line-clamp: 3;
 }
@@ -407,58 +543,6 @@
 
 .notes-carousel-nav {
   display: none;
-}
-
-.notes-carousel-footer {
-  display: flex;
-  justify-content: center;
-  margin-top: 0.75rem;
-}
-
-.notes-carousel-all {
-  align-items: center;
-  background: var(--button-bg);
-  border: 1px solid transparent;
-  border-radius: 0.5rem;
-  color: var(--button-color);
-  display: inline-flex;
-  font-size: 0.875rem;
-  font-weight: 500;
-  gap: 0.5rem;
-  min-height: 2.5rem;
-  padding: 0.5rem 0.875rem;
-  transition: background-color 150ms ease, color 150ms ease;
-}
-
-.notes-carousel-all:hover {
-  background: var(--button-hover-bg);
-  color: var(--button-hover-color);
-}
-
-.notes-carousel-all:focus-visible {
-  outline: 2px solid var(--ghost-accent-color);
-  outline-offset: 2px;
-}
-
-.dark .notes-carousel-all {
-  border-color: var(--gray-300);
-}
-
-.notes-carousel-all-icon {
-  height: 1.125rem;
-  transition: transform 180ms ease;
-  width: 1.125rem;
-}
-
-.notes-carousel-all:hover .notes-carousel-all-icon,
-.notes-carousel-all:focus-visible .notes-carousel-all-icon {
-  transform: translateX(0.25rem);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .notes-carousel-all-icon {
-    transition: none;
-  }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -538,11 +622,13 @@
     -webkit-user-drag: none;
   }
 
-  .notes-carousel-card:hover {
-    box-shadow: var(--notes-carousel-card-shadow);
+  /* Not while the track scrolls: the highlight ran from card to card under a
+     resting pointer and read as a glow. */
+  .notes-carousel-track:not(.is-scrolling) .notes-carousel-card:hover {
+    background: var(--mobile-navigation-tile-active-bg);
   }
 
-  .notes-carousel-card:hover .notes-carousel-media img {
+  .notes-carousel-track:not(.is-scrolling) .notes-carousel-card:hover .notes-carousel-media img {
     transform: scale(1.02);
   }
 }
@@ -550,16 +636,6 @@
 @media (max-width: 767px) {
   .notes-carousel {
     margin-bottom: 2.5rem;
-  }
-
-  .notes-carousel-header {
-    align-items: center;
-  }
-
-  .notes-carousel-heading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.25rem;
   }
 
   .notes-carousel-card {

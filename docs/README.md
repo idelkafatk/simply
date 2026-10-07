@@ -25,6 +25,7 @@
     - Pagination Number
   - [Membership](./members.md)
     - [Disable Membership](./members.md#disable-membership)
+  - [Mobile design](./mobile-design.md) – tab bar capsule, floating cards and their panels
 - [Homepage](./settings.md#homepage)
   - [Publication cover](./settings.md#homepage)
     - None

@@ -121,6 +121,7 @@ export const initHorizontalCarousel = ({
     : []
   let activeIndex = -1
   let animationFrame
+  let scrollingTimeout
 
   const updateCarousel = () => {
     const hasOverflow = carousel.scrollWidth > carousel.clientWidth + 1
@@ -171,7 +172,19 @@ export const initHorizontalCarousel = ({
     })
   }
 
-  carousel.addEventListener('scroll', requestUpdate, { passive: true })
+  // Items slide under a resting pointer while the track scrolls, and their
+  // hover styles would flash from one to the next: the class lets CSS hold
+  // them back until the track is still.
+  const markScrolling = () => {
+    carousel.classList.add('is-scrolling')
+    window.clearTimeout(scrollingTimeout)
+    scrollingTimeout = window.setTimeout(() => carousel.classList.remove('is-scrolling'), 150)
+  }
+
+  carousel.addEventListener('scroll', () => {
+    requestUpdate()
+    markScrolling()
+  }, { passive: true })
   window.addEventListener('resize', requestUpdate)
 
   if (previousButton) {

@@ -1,41 +1,43 @@
 {{!-- Topics mirror the /notes/* channels declared in routes.yaml. Each topic is
-      shown only when at least one note exists for it. --}}
-<nav class="notes-topic-filter" aria-label="Notes by topic">
-    <a class="notes-topic-filter-link {{#if allActive}}is-active{{/if}}" href="/notes/">{{t "All"}}</a>
+      shown only when at least one note exists for it, with its note count:
+      navigation set in type, as docs/mobile-design.md has it. main.js brings
+      the active topic into view when the row scrolls. --}}
+<nav class="notes-topic-filter" aria-label="Notes by topic" data-notes-topic-filter>
+    <a class="notes-topic-filter-link {{#if allActive}}is-active{{/if}}" href="/notes/">{{t "All"}} {{#get "posts" filter="tag:hash-note" limit="1"}}<span class="notes-topic-filter-count">{{pagination.total}}</span>{{/get}}</a>
 
     {{#get "posts" filter="tag:hash-note+tag:guides" limit="1"}}
         {{#if posts}}
-            {{#link href="/notes/guides/" class="notes-topic-filter-link" activeClass="is-active"}}#Гайды{{/link}}
+            {{#link href="/notes/guides/" class="notes-topic-filter-link" activeClass="is-active"}}Гайды <span class="notes-topic-filter-count">{{pagination.total}}</span>{{/link}}
         {{/if}}
     {{/get}}
     {{#get "posts" filter="tag:hash-note+tag:korea" limit="1"}}
         {{#if posts}}
-            {{#link href="/notes/korea/" class="notes-topic-filter-link" activeClass="is-active"}}#Корея{{/link}}
+            {{#link href="/notes/korea/" class="notes-topic-filter-link" activeClass="is-active"}}Корея <span class="notes-topic-filter-count">{{pagination.total}}</span>{{/link}}
         {{/if}}
     {{/get}}
     {{#get "posts" filter="tag:hash-note+tag:life" limit="1"}}
         {{#if posts}}
-            {{#link href="/notes/life/" class="notes-topic-filter-link" activeClass="is-active"}}#Повседневность{{/link}}
+            {{#link href="/notes/life/" class="notes-topic-filter-link" activeClass="is-active"}}Повседневность <span class="notes-topic-filter-count">{{pagination.total}}</span>{{/link}}
         {{/if}}
     {{/get}}
     {{#get "posts" filter="tag:hash-note+tag:travel" limit="1"}}
         {{#if posts}}
-            {{#link href="/notes/travel/" class="notes-topic-filter-link" activeClass="is-active"}}#Путешествия{{/link}}
+            {{#link href="/notes/travel/" class="notes-topic-filter-link" activeClass="is-active"}}Путешествия <span class="notes-topic-filter-count">{{pagination.total}}</span>{{/link}}
         {{/if}}
     {{/get}}
     {{#get "posts" filter="tag:hash-note+tag:relocation" limit="1"}}
         {{#if posts}}
-            {{#link href="/notes/relocation/" class="notes-topic-filter-link" activeClass="is-active"}}#Релокация{{/link}}
+            {{#link href="/notes/relocation/" class="notes-topic-filter-link" activeClass="is-active"}}Релокация <span class="notes-topic-filter-count">{{pagination.total}}</span>{{/link}}
         {{/if}}
     {{/get}}
     {{#get "posts" filter="tag:hash-note+tag:tech" limit="1"}}
         {{#if posts}}
-            {{#link href="/notes/tech/" class="notes-topic-filter-link" activeClass="is-active"}}#Технологии{{/link}}
+            {{#link href="/notes/tech/" class="notes-topic-filter-link" activeClass="is-active"}}Технологии <span class="notes-topic-filter-count">{{pagination.total}}</span>{{/link}}
         {{/if}}
     {{/get}}
     {{#get "posts" filter="tag:hash-note+tag:japan" limit="1"}}
         {{#if posts}}
-            {{#link href="/notes/japan/" class="notes-topic-filter-link" activeClass="is-active"}}#Япония{{/link}}
+            {{#link href="/notes/japan/" class="notes-topic-filter-link" activeClass="is-active"}}Япония <span class="notes-topic-filter-count">{{pagination.total}}</span>{{/link}}
         {{/if}}
     {{/get}}
 </nav>

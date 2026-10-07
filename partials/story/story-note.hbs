@@ -1,9 +1,11 @@
-{{!-- Note row (microblog / forum-thread style). Used in the /notes/ timeline. --}}
-<article class="story-note js-story block py-8 border-b border-gray-300" data-note-url="{{url}}">
+{{!-- Note row (microblog / forum-thread style). Used in the /notes/ timeline.
+      Rows are parted by space and by the month headings main.js adds, which
+      also carry the year: with them in place the year here is hidden. --}}
+<article class="story-note js-story block py-6" data-note-url="{{url}}">
     <div class="flex flex-col min-w-0">
         <a href="{{url}}" class="story-note-main story-note-permalink block no-underline">
             <div class="story-note-meta flex items-center mb-3 text-sm text-gray-500">
-                <time class="capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+                <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM"}}<span class="story-note-year"> {{date format="YYYY"}}</span></time>
             </div>
 
             <h2 class="story-note-title text-xl font-semibold leading-tight text-title mb-3">{{title}}</h2>

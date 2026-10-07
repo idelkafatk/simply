@@ -1,4 +1,4 @@
-<div class="mobile-navigation lg:hidden" data-mobile-navigation>
+<div class="mobile-navigation" data-mobile-navigation>
     <button
         class="mobile-navigation-backdrop"
         type="button"
@@ -8,6 +8,12 @@
         data-mobile-navigation-close
     ></button>
 
+    {{!-- One floating card, several panels: the menu, and the member forms and
+          account that used to open Ghost Portal full screen. main.js shows one
+          panel at a time, puts its data-title in the header and sends the back
+          arrow to its data-parent (the menu when there is none).
+          On wide screens the tab bar and the menu panel are hidden and the
+          card drops from the header instead. See docs/mobile-design.md. --}}
     <aside
         class="mobile-navigation-sheet"
         id="mobile-navigation-sheet"
@@ -16,11 +22,22 @@
         aria-labelledby="mobile-navigation-title"
         aria-hidden="true"
         data-mobile-navigation-sheet
+        data-panel="menu"
+        data-parent="menu"
         tabindex="-1"
         inert
     >
         <header class="mobile-navigation-sheet-header">
-            <h2 id="mobile-navigation-title">{{t "Menu"}}</h2>
+            <button
+                class="mobile-navigation-back"
+                type="button"
+                aria-label="{{t "Back"}}"
+                title="{{t "Back"}}"
+                data-mobile-navigation-back
+            >
+                {{> "icons/arrow-left"}}
+            </button>
+            <h2 id="mobile-navigation-title" data-mobile-navigation-title>{{t "Menu"}}</h2>
             <button
                 class="mobile-navigation-close"
                 type="button"
@@ -28,41 +45,217 @@
                 title="{{t "Close menu"}}"
                 data-mobile-navigation-close
             >
-                <svg class="icon"><use xlink:href="#icon-close"></use></svg>
+                {{> "icons/close"}}
             </button>
         </header>
 
-        <div class="mobile-navigation-sheet-content">
-            {{#if @site.members_enabled}}
-                <div class="mobile-navigation-account">
+        <div class="mobile-navigation-sheet-content" data-mobile-navigation-content>
+            <div class="mobile-navigation-panel" data-mobile-navigation-panel="menu" data-title="{{t "Menu"}}">
+                {{#if @site.members_enabled}}
                     {{#if @member}}
-                        <a data-portal="account" class="button is-black" href="#">{{t "Account"}}</a>
-                        <a data-members-signout class="button is-white" href="#signout">{{t "Log out"}}</a>
+                        <button class="mobile-navigation-profile" type="button" data-mobile-navigation-panel-open="account">
+                            <span class="mobile-navigation-avatar">
+                                {{> "icons/avatar"}}
+                                {{#if @member.avatar_image}}<img src="{{@member.avatar_image}}" alt="" width="40" height="40"/>{{/if}}
+                            </span>
+                            <span class="mobile-navigation-profile-text">
+                                <span class="mobile-navigation-profile-name" data-member-name data-fallback="{{t "Account"}}">{{#if @member.name}}{{@member.name}}{{else}}{{t "Account"}}{{/if}}</span>
+                                <span class="mobile-navigation-profile-email">{{@member.email}}</span>
+                            </span>
+                            {{> "icons/chevron-right" class="mobile-navigation-chevron"}}
+                        </button>
                     {{else}}
-                        <a data-portal="signin" class="button is-white" href="#/portal/signin">{{t "Log in"}}</a>
-                        <a data-portal="signup" class="button is-primary" href="#/portal/signup">{{t "Subscribe"}}</a>
+                        <div class="mobile-navigation-account">
+                            <button class="button is-white" type="button" data-mobile-navigation-panel-open="signin">{{t "Log in"}}</button>
+                            <button class="button is-primary" type="button" data-mobile-navigation-panel-open="signup">{{t "Subscribe"}}</button>
+                        </div>
                     {{/if}}
-                </div>
-            {{/if}}
-
-            <nav class="mobile-navigation-links" aria-label="{{t "Menu"}}">
-                {{#if @site.navigation}}
-                    {{navigation navigationMobile=true}}
                 {{/if}}
-            </nav>
 
-            {{> "widget/social-media" class="mobile-navigation-social social-media is-inline"}}
+                <nav class="mobile-navigation-links" aria-label="{{t "Menu"}}">
+                    {{#if @site.navigation}}
+                        {{navigation navigationMobile=true}}
+                    {{/if}}
+                </nav>
+
+                {{> "widget/social-media" class="mobile-navigation-social social-media is-inline"}}
+            </div>
+
+            {{#if @site.members_enabled}}
+                {{#if @member}}
+                    <div class="mobile-navigation-panel" data-mobile-navigation-panel="account" data-title="{{t "Account"}}" hidden>
+                        <div class="mobile-navigation-member">
+                            <span class="mobile-navigation-avatar is-large">
+                                {{> "icons/avatar"}}
+                                {{#if @member.avatar_image}}<img src="{{@member.avatar_image}}" alt="" width="64" height="64"/>{{/if}}
+                            </span>
+                            <strong class="mobile-navigation-member-name" data-member-name>{{@member.name}}</strong>
+                            <span class="mobile-navigation-member-email">{{@member.email}}</span>
+                        </div>
+
+                        <div class="mobile-navigation-words">
+                            <button class="mobile-navigation-word" type="button" data-mobile-navigation-panel-open="profile">
+                                <span>{{t "Profile"}}</span>
+                                {{> "icons/chevron-right"}}
+                            </button>
+                            <button class="mobile-navigation-word" type="button" data-mobile-navigation-panel-open="newsletter">
+                                <span>{{t "Newsletter"}}</span>
+                                {{> "icons/chevron-right"}}
+                            </button>
+                            <a class="mobile-navigation-minor" data-members-signout href="#signout">{{t "Log out"}}</a>
+                        </div>
+                    </div>
+
+                    {{!-- member-panels.js saves these through Ghost's members API, with
+                          the requests Portal itself sends. A new email address only
+                          takes effect once the reader opens the link Ghost mails to it. --}}
+                    <div class="mobile-navigation-panel" data-mobile-navigation-panel="profile" data-parent="account" data-title="{{t "Profile"}}" hidden>
+                        <form class="mobile-navigation-form" data-member-profile>
+                            <div class="mobile-navigation-form-fields">
+                                <label class="mobile-navigation-field">
+                                    <span>{{t "Your name"}}</span>
+                                    <input
+                                        class="mobile-navigation-input"
+                                        type="text"
+                                        autocomplete="name"
+                                        value="{{@member.name}}"
+                                        data-member-name-input
+                                    />
+                                </label>
+                                <label class="mobile-navigation-field">
+                                    <span>Email</span>
+                                    <input
+                                        class="mobile-navigation-input"
+                                        type="email"
+                                        inputmode="email"
+                                        autocomplete="email"
+                                        autocapitalize="off"
+                                        value="{{@member.email}}"
+                                        required
+                                        data-member-email-input
+                                    />
+                                </label>
+                                <p class="mobile-navigation-form-notice" role="status" data-member-notice data-message="{{t "Check your inbox: we sent a link to confirm the new address."}}"></p>
+                                <p class="mobile-navigation-form-error" role="alert" data-member-error data-message="{{t "Could not save. Please try again."}}"></p>
+                                <button class="button is-primary mobile-navigation-submit" type="submit">
+                                    <span class="button-content" data-member-save data-label-saved="{{t "Saved"}}">{{t "Save"}}</span>
+                                    {{> "icons/loader"}}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="mobile-navigation-panel" data-mobile-navigation-panel="newsletter" data-parent="account" data-title="{{t "Newsletter"}}" hidden>
+                        <div
+                            class="mobile-navigation-switches"
+                            data-member-newsletters
+                            data-label-single="{{t "Email newsletter"}}"
+                            data-hint-single="{{t "New posts in your inbox"}}"
+                            data-label-comments="{{t "Replies to comments"}}"
+                            data-hint-comments="{{t "An email when someone replies to your comment"}}"
+                            data-message-loading="{{t "Loading"}}"
+                            data-message-error="{{t "Could not load. Please try again."}}"
+                            data-message-save-error="{{t "Could not save. Please try again."}}"
+                        ></div>
+                        <p class="mobile-navigation-form-error" role="alert" data-member-error></p>
+                    </div>
+                {{else}}
+                    {{!-- Ghost's members script binds form[data-members-form] on load and
+                          sets .loading / .success / .error on the form. --}}
+                    <div class="mobile-navigation-panel" data-mobile-navigation-panel="signup" data-title="{{t "Subscribe"}}" hidden>
+                        <form class="mobile-navigation-form" data-members-form="signup">
+                            <div class="mobile-navigation-form-fields">
+                                <p class="mobile-navigation-form-intro">{{t "Get new posts by email. No spam, unsubscribe any time."}}</p>
+                                <input
+                                    class="mobile-navigation-input"
+                                    type="text"
+                                    autocomplete="name"
+                                    placeholder="{{t "Your name"}}"
+                                    aria-label="{{t "Your name"}}"
+                                    data-members-name
+                                    data-autofocus
+                                />
+                                <input
+                                    class="mobile-navigation-input"
+                                    type="email"
+                                    inputmode="email"
+                                    autocomplete="email"
+                                    autocapitalize="off"
+                                    placeholder="{{t "Enter your email"}}"
+                                    aria-label="{{t "Enter your email"}}"
+                                    required
+                                    data-members-email
+                                />
+                                <p class="mobile-navigation-form-error" role="alert" data-members-error></p>
+                                <button class="button is-primary mobile-navigation-submit" type="submit">
+                                    <span class="button-content">{{t "Subscribe"}}</span>
+                                    {{> "icons/loader"}}
+                                </button>
+                                <p class="mobile-navigation-form-switch">
+                                    {{t "Already have an account?"}}
+                                    <button type="button" data-mobile-navigation-panel-open="signin">{{t "Sign in"}}</button>
+                                </p>
+                            </div>
+
+                            <div class="mobile-navigation-form-success" role="status">
+                                {{> "icons/check-circle"}}
+                                <strong>{{t "Check your inbox"}}</strong>
+                                <p>{{t "We sent you a link to confirm your subscription."}}</p>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="mobile-navigation-panel" data-mobile-navigation-panel="signin" data-title="{{t "Log in"}}" hidden>
+                        <form class="mobile-navigation-form" data-members-form="signin">
+                            <div class="mobile-navigation-form-fields">
+                                <p class="mobile-navigation-form-intro">{{t "We'll email you a link to sign in. No password needed."}}</p>
+                                <input
+                                    class="mobile-navigation-input"
+                                    type="email"
+                                    inputmode="email"
+                                    autocomplete="email"
+                                    autocapitalize="off"
+                                    placeholder="{{t "Enter your email"}}"
+                                    aria-label="{{t "Enter your email"}}"
+                                    required
+                                    data-members-email
+                                    data-autofocus
+                                />
+                                <p class="mobile-navigation-form-error" role="alert" data-members-error></p>
+                                <button class="button is-primary mobile-navigation-submit" type="submit">
+                                    <span class="button-content">{{t "Send login link"}}</span>
+                                    {{> "icons/loader"}}
+                                </button>
+                                <p class="mobile-navigation-form-switch">
+                                    {{t "Don't have an account yet?"}}
+                                    <button type="button" data-mobile-navigation-panel-open="signup">{{t "Subscribe"}}</button>
+                                </p>
+                            </div>
+
+                            <div class="mobile-navigation-form-success" role="status">
+                                {{> "icons/check-circle"}}
+                                <strong>{{t "Check your inbox"}}</strong>
+                                <p>{{t "We sent you a link to sign in."}}</p>
+                            </div>
+                        </form>
+                    </div>
+                {{/if}}
+            {{/if}}
         </div>
     </aside>
 
-    <nav class="mobile-tab-bar" aria-label="{{t "Menu"}}">
+    <nav class="mobile-tab-bar{{#is "home"}} is-home{{/is}}" aria-label="{{t "Menu"}}">
+        {{!-- One pill shared by all tabs, sliding to the active one. The icons
+              name the tabs; labels stay for screen readers. --}}
+        <span class="mobile-tab-pill" aria-hidden="true"></span>
+
         <a
             href="{{@site.url}}"
             class="mobile-tab-item {{#is "home"}}is-active{{/is}}"
             {{#is "home"}}aria-current="page"{{/is}}
         >
             {{> "icons/home"}}
-            <span>{{t "Home"}}</span>
+            <span class="sr-only">{{t "Home"}}</span>
         </a>
 
         <a
@@ -71,13 +264,13 @@
             data-mobile-navigation-notes
         >
             {{> "icons/notebook"}}
-            <span>{{t "Notes"}}</span>
+            <span class="sr-only">{{t "Notes"}}</span>
         </a>
 
         <a
             href="#/search"
             role="button"
-            class="mobile-tab-item godo-tracking"
+            class="mobile-tab-item mobile-tab-item-search godo-tracking"
             aria-label="{{t "Search"}}"
             aria-haspopup="true"
             data-event-category="Mobile Navigation"
@@ -87,7 +280,7 @@
             data-ghost-search
         >
             {{> "icons/search"}}
-            <span>{{t "Search"}}</span>
+            <span class="sr-only">{{t "Search"}}</span>
         </a>
 
         <button
@@ -98,7 +291,7 @@
             data-mobile-navigation-toggle
         >
             {{> "icons/ellipsis"}}
-            <span>{{t "More"}}</span>
+            <span class="sr-only">{{t "More"}}</span>
         </button>
     </nav>
 </div>

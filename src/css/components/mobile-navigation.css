@@ -1,46 +1,135 @@
 :root {
   --mobile-tab-bar-height: 4.25rem;
-  --mobile-tab-bar-bottom-space: max(0.5rem, env(safe-area-inset-bottom));
-  --mobile-tab-bar-radius: 1rem;
-  --mobile-tab-bar-shadow: 0 -1px 3px rgba(0, 0, 0, 0.06), 0 -8px 24px rgba(0, 0, 0, 0.05);
+
+  /* Gap under the floating bar: 14px, or the home-indicator inset less 8px
+     when that is larger. Adding the two up floats the bar too high in the
+     installed app. The 8px comes off outside max(): the build's value parser
+     can't read arithmetic inside it. */
+  --mobile-tab-bar-bottom-space: calc(max(1.375rem, env(safe-area-inset-bottom)) - 0.5rem);
+  --mobile-tab-bar-width: min(380px, calc(100% - 2rem));
+  --mobile-tab-bar-bg: rgba(244, 244, 245, 0.6);
+  --mobile-tab-bar-saturate: 2;
+
+  /* The 1px outline keeps the light capsule from dissolving into white pages. */
+  --mobile-tab-bar-shadow: 0 6px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --mobile-tab-pill-bg: rgba(24, 24, 27, 0.1);
+  --mobile-tab-icon-color: #52525B;
+  --mobile-navigation-tile-bg: rgba(24, 24, 27, 0.05);
+  --mobile-navigation-tile-active-bg: rgba(24, 24, 27, 0.1);
+
+  /* The hairline keeps the card's edge where nothing dims the page behind it. */
+  --mobile-navigation-card-shadow: 0 8px 30px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
-/* In dark mode --header-bg equals --bg-base, so a dark shadow can't separate
-   the bar from the page — an inset hairline does the work instead. */
+/* On dark pages a drop shadow can't separate the bar from the page — a light
+   inner rim does the work instead. The glass is thick enough to keep the
+   icons readable over a bright cover image scrolling under it. */
 .dark {
-  --mobile-tab-bar-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 -8px 24px rgba(0, 0, 0, 0.5);
+  --mobile-tab-bar-bg: rgba(39, 39, 42, 0.6);
+  --mobile-tab-bar-saturate: 1.5;
+  --mobile-tab-bar-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --mobile-tab-pill-bg: rgba(255, 255, 255, 0.12);
+  --mobile-tab-icon-color: #D4D4D8;
+  --mobile-navigation-tile-bg: rgba(255, 255, 255, 0.07);
+  --mobile-navigation-tile-active-bg: rgba(255, 255, 255, 0.12);
+  --mobile-navigation-card-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Without the blur the glass is too thin to read over page text. */
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --mobile-tab-bar-bg: rgba(244, 244, 245, 0.94);
+  }
+
+  .dark {
+    --mobile-tab-bar-bg: rgba(39, 39, 42, 0.94);
+  }
 }
 
 .mobile-navigation {
   display: block;
 }
 
+/* A floating capsule of frosted glass, centred. --mobile-tab-index is the
+   active tab, -1 when the page belongs to none of them. */
 .mobile-tab-bar {
-  align-items: stretch;
-  background-color: var(--header-bg);
-  border-radius: var(--mobile-tab-bar-radius) var(--mobile-tab-bar-radius) 0 0;
-  bottom: 0;
+  --mobile-tab-index: -1;
+
+  align-items: center;
+  backdrop-filter: blur(24px) saturate(var(--mobile-tab-bar-saturate));
+  background-color: var(--mobile-tab-bar-bg);
+  border-radius: 9999px;
+  bottom: var(--mobile-tab-bar-bottom-space);
   box-shadow: var(--mobile-tab-bar-shadow);
   display: grid;
+  gap: 0.25rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  height: var(--mobile-tab-bar-height);
   left: 0;
-  min-height: calc(var(--mobile-tab-bar-height) + var(--mobile-tab-bar-bottom-space));
-  padding: 0 0 var(--mobile-tab-bar-bottom-space);
+  margin: 0 auto;
+  padding: 0 0.5rem;
   position: fixed;
   right: 0;
-  transform: translateY(0);
-  transition: transform 0.22s ease;
-  will-change: transform;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  width: var(--mobile-tab-bar-width);
   z-index: 40;
 }
 
+.mobile-tab-bar.is-home {
+  --mobile-tab-index: 0;
+}
+
+.is-notes .mobile-tab-bar,
+.is-note .mobile-tab-bar {
+  --mobile-tab-index: 1;
+}
+
+.is-search-open .mobile-tab-bar {
+  --mobile-tab-index: 2;
+
+  /* The search backdrop and sheet are at 60/61: the capsule stays in reach. */
+  z-index: 62;
+}
+
+.has-mobile-menu .mobile-tab-bar {
+  --mobile-tab-index: 3;
+}
+
+/* Fades out with an 8px drop while the page scrolls down. Over the end of a
+   page --mobile-tab-reveal follows the scroll (main.js writes it every
+   frame), so the bar is fully back at the end without a jump. */
 .is-mobile-tab-bar-hidden .mobile-tab-bar {
-  transform: translateY(100%);
+  opacity: var(--mobile-tab-reveal, 0);
+  pointer-events: none;
+  transform: translateY(calc((1 - var(--mobile-tab-reveal, 0)) * 0.5rem));
+}
+
+.is-mobile-tab-bar-hidden .mobile-tab-bar[data-near-end] {
+  transition: none;
 }
 
 .has-mobile-menu .mobile-tab-bar,
+.is-search-open .mobile-tab-bar,
 .is-mobile-tab-bar-hidden .mobile-tab-bar:focus-within {
-  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+/* Tabs are equal width, so one step is a pill plus a gap. The opacity clamps
+   to 0 for index -1 and to 1 for every tab. */
+.mobile-tab-pill {
+  background-color: var(--mobile-tab-pill-bg);
+  border-radius: 9999px;
+  height: 3.5rem;
+  left: 0.5rem;
+  opacity: calc(var(--mobile-tab-index) + 1);
+  pointer-events: none;
+  position: absolute;
+  top: 0.375rem;
+  transform: translateX(calc(max(var(--mobile-tab-index), 0) * (100% + 0.25rem)));
+  transition: transform 0.3s cubic-bezier(0.3, 1.3, 0.5, 1), opacity 0.3s cubic-bezier(0.3, 1.3, 0.5, 1);
+  width: calc((100% - 1.75rem) / 4);
 }
 
 .mobile-tab-item {
@@ -48,40 +137,32 @@
   appearance: none;
   background: transparent;
   border: 0;
-  color: var(--gray-500);
+  border-radius: 9999px;
+  color: var(--mobile-tab-icon-color);
   cursor: pointer;
   display: flex;
-  flex-direction: column;
-  font-family: inherit;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  gap: 0.1875rem;
+  height: 3.5rem;
   justify-content: center;
-  line-height: 1.15;
   margin: 0;
   min-width: 0;
-  padding: 0.5rem 0.25rem;
-  text-align: center;
+  padding: 0;
+  position: relative;
+  transition: color 0.2s ease;
 }
 
 .mobile-tab-item .icon {
   flex: none;
-  height: 1.375rem;
-  width: 1.375rem;
-}
-
-.mobile-tab-item span {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  height: 1.625rem;
+  width: 1.625rem;
 }
 
 .mobile-tab-item:hover,
 .mobile-tab-item:focus-visible,
 .mobile-tab-item.is-active,
 .mobile-tab-item[aria-current="page"],
-.has-mobile-menu .mobile-tab-item-more {
+.mobile-tab-item[data-pending],
+.has-mobile-menu .mobile-tab-item-more,
+.is-search-open .mobile-tab-item-search {
   color: var(--ghost-accent-color);
 }
 
@@ -95,11 +176,19 @@
   color: var(--ghost-accent-color);
 }
 
+/* While a sheet is open or a tapped tab is loading, the pill has left the
+   current tab, and so does its accent. */
+.has-mobile-menu .mobile-tab-item:not(.mobile-tab-item-more),
+.is-search-open .mobile-tab-item:not(.mobile-tab-item-search),
+.mobile-tab-bar[data-pending] .mobile-tab-item:not([data-pending]) {
+  color: var(--mobile-tab-icon-color);
+}
+
 .mobile-navigation-backdrop {
   appearance: none;
   background: rgba(0, 0, 0, 0.42);
   border: 0;
-  bottom: calc(var(--mobile-tab-bar-height) + var(--mobile-tab-bar-bottom-space));
+  bottom: 0;
   left: 0;
   opacity: 0;
   padding: 0;
@@ -112,22 +201,31 @@
   z-index: 30;
 }
 
+/* A card floating over the capsule, as wide as it is. Once a form field
+   raises the keyboard, the keyboard covers the capsule and the card rides
+   8px above it instead (main.js tracks the inset while the sheet is open). */
 .mobile-navigation-sheet {
   background-color: var(--bg-base);
-  border-radius: 8px 8px 0 0;
-  bottom: calc(var(--mobile-tab-bar-height) + var(--mobile-tab-bar-bottom-space));
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.16);
+  border-radius: 1.5rem;
+  bottom: max(
+    calc(var(--mobile-tab-bar-height) + var(--mobile-tab-bar-bottom-space) + 0.5rem),
+    calc(var(--mobile-navigation-keyboard-inset, 0px) + 0.5rem)
+  );
+  box-shadow: var(--mobile-navigation-card-shadow);
   color: var(--text-base);
   display: flex;
   flex-direction: column;
   left: 0;
-  max-height: min(72vh, 38rem);
+  margin: 0 auto;
+  max-height: min(72vh, 38rem, var(--mobile-navigation-available-height, 72vh));
   opacity: 0;
+  overflow: hidden;
   position: fixed;
   right: 0;
-  transform: translateY(calc(100% + 1rem));
-  transition: opacity 0.2s ease, transform 0.24s ease, visibility 0s 0.24s;
+  transform: translateY(0.75rem);
+  transition: opacity 0.2s ease, transform 0.24s ease, bottom 0.2s ease, visibility 0s 0.24s;
   visibility: hidden;
+  width: var(--mobile-tab-bar-width);
   z-index: 35;
 }
 
@@ -137,21 +235,27 @@
 
 .mobile-navigation-sheet-header {
   align-items: center;
-  border-bottom: 1px solid var(--border-color);
   display: flex;
   flex: none;
-  justify-content: space-between;
   min-height: 3.5rem;
-  padding: 0.5rem 0.75rem 0.5rem 1rem;
+  padding: 0.5rem 0.75rem 0.5rem 1.25rem;
 }
 
 .mobile-navigation-sheet-header h2 {
   color: var(--title-color);
+  flex: 1;
   font-size: 1.125rem;
   line-height: 1.25;
   margin: 0;
+  min-width: 0;
 }
 
+/* The way back from a member panel; the menu itself has nowhere to go back to. */
+.mobile-navigation-back {
+  margin-left: -0.75rem;
+}
+
+.mobile-navigation-back,
 .mobile-navigation-close {
   align-items: center;
   appearance: none;
@@ -166,50 +270,504 @@
   width: 2.75rem;
 }
 
+.mobile-navigation-back:focus-visible,
 .mobile-navigation-close:focus-visible {
   outline: 2px solid var(--ghost-accent-color);
   outline-offset: -2px;
 }
 
+.mobile-navigation-back .icon,
+.mobile-navigation-close .icon {
+  height: 1.375rem;
+  width: 1.375rem;
+}
+
+.mobile-navigation-sheet[data-panel="menu"] .mobile-navigation-back {
+  display: none;
+}
+
 .mobile-navigation-sheet-content {
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0.5rem 1rem 1.25rem;
+  padding: 0 1.25rem 1.25rem;
 }
 
 .mobile-navigation-account {
   display: flex;
   gap: 0.5rem;
-  padding: 0.75rem 0;
+  padding: 0 0 1rem;
 }
 
 .mobile-navigation-account .button {
+  border-radius: 1rem;
   flex: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  height: 3.25rem;
   justify-content: center;
 }
 
-.mobile-navigation-links ul {
+/* The pair reads as actions, apart from the grey link tiles below: an accent
+   outline next to the filled accent button. */
+.mobile-navigation-account .button.is-white {
+  background-color: transparent;
+  border: 1.5px solid var(--ghost-accent-color);
+  color: var(--ghost-accent-color);
+}
+
+/* Links are set in type, not boxed: tags as a stack of big bold words with
+   their post count (main.js adds it), everything else as a quieter line. A
+   ruled list read as a table and a grid of tiles as more buttons.
+   The account panel reuses both through .mobile-navigation-word / -minor. */
+.mobile-navigation-links ul,
+.mobile-navigation-words {
+  display: flex;
+  flex-direction: column;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.mobile-navigation-links li {
-  border-bottom: 1px solid var(--border-color);
-}
-
-.mobile-navigation-links a {
-  color: var(--title-color);
+.mobile-navigation-links a,
+.mobile-navigation-minor {
+  color: var(--gray-500);
   display: block;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.25;
-  padding: 0.875rem 0.25rem;
+  padding: 0.75rem 0 0.5rem;
+}
+
+.mobile-navigation-links a[href*="/tag/"],
+.mobile-navigation-word {
+  align-items: baseline;
+  color: var(--title-color);
+  display: flex;
+  font-size: 1.75rem;
+  font-weight: 800;
+  gap: 1rem;
+  justify-content: space-between;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  padding: 0.375rem 0;
+}
+
+.mobile-navigation-word {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.mobile-navigation-word .icon {
+  color: var(--gray-500);
+  flex: none;
+  height: 1rem;
+  width: 1rem;
+}
+
+.mobile-navigation-count {
+  color: var(--gray-500);
+  flex: none;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 .mobile-navigation-links a:hover,
-.mobile-navigation-links a:focus-visible {
+.mobile-navigation-links a:focus-visible,
+.mobile-navigation-links a:active,
+.mobile-navigation-word:hover,
+.mobile-navigation-word:focus-visible,
+.mobile-navigation-word:active,
+.mobile-navigation-minor:hover,
+.mobile-navigation-minor:focus-visible,
+.mobile-navigation-minor:active {
   color: var(--ghost-accent-color);
+}
+
+/* Member panels
+/* ---------------------------------------------------------- */
+
+.mobile-navigation-panel[hidden] {
+  display: none;
+}
+
+/* The signed-in member's tile at the top of the menu, opening the account panel. */
+.mobile-navigation-profile {
+  align-items: center;
+  appearance: none;
+  background-color: var(--mobile-navigation-tile-bg);
+  border: 0;
+  border-radius: 1rem;
+  color: var(--title-color);
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  gap: 0.75rem;
+  margin: 0 0 0.5rem;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  width: 100%;
+}
+
+.mobile-navigation-profile:active {
+  background-color: var(--mobile-navigation-tile-active-bg);
+}
+
+.mobile-navigation-profile:focus-visible {
+  outline: 2px solid var(--ghost-accent-color);
+  outline-offset: -2px;
+}
+
+.mobile-navigation-avatar {
+  background-color: var(--mobile-navigation-tile-active-bg);
+  border-radius: 50%;
+  color: var(--gray-400);
+  flex: none;
+  height: 2.5rem;
+  overflow: hidden;
+  position: relative;
+  width: 2.5rem;
+}
+
+.mobile-navigation-avatar.is-large {
+  height: 4rem;
+  width: 4rem;
+}
+
+.mobile-navigation-avatar svg,
+.mobile-navigation-avatar img {
+  height: 100%;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.mobile-navigation-profile-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.mobile-navigation-profile-name,
+.mobile-navigation-profile-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-navigation-profile-name {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.mobile-navigation-profile-email,
+.mobile-navigation-member-email {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+  line-height: 1.3;
+}
+
+.mobile-navigation-chevron {
+  color: var(--gray-500);
+  flex: none;
+  height: 1rem;
+  width: 1rem;
+}
+
+.mobile-navigation-member {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.25rem 0 1.25rem;
+  text-align: center;
+}
+
+.mobile-navigation-member .mobile-navigation-avatar {
+  margin-bottom: 0.5rem;
+}
+
+.mobile-navigation-member-name {
+  color: var(--title-color);
+  font-size: 1.125rem;
+  line-height: 1.25;
+}
+
+.mobile-navigation-member-name,
+.mobile-navigation-member-email {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.mobile-navigation-member-name:empty {
+  display: none;
+}
+
+.mobile-navigation-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-navigation-form-intro {
+  color: var(--gray-500);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  margin: 0 0 0.25rem;
+}
+
+/* Fields are tiles too. The font stays >= 1rem so iOS does not zoom the page
+   on focus. */
+.mobile-navigation-form .mobile-navigation-input {
+  appearance: none;
+  background-color: var(--mobile-navigation-tile-bg);
+  border: 1px solid transparent;
+  border-radius: 1rem;
+  box-shadow: none;
+  color: var(--title-color);
+  font-family: inherit;
+  font-size: 1rem;
+  height: 3.25rem;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+.mobile-navigation-form .mobile-navigation-input:focus {
+  border-color: var(--ghost-accent-color);
+  box-shadow: none;
+  outline: none;
+}
+
+.mobile-navigation-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.mobile-navigation-field > span {
+  color: var(--gray-500);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.mobile-navigation-form-error {
+  color: #F14668;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.mobile-navigation-form-error:empty {
+  display: none;
+}
+
+.mobile-navigation-form-notice {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.mobile-navigation-form-notice:empty {
+  display: none;
+}
+
+.mobile-navigation-form .mobile-navigation-submit {
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  height: 3.25rem;
+  width: 100%;
+}
+
+.mobile-navigation-form.loading .mobile-navigation-submit {
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.mobile-navigation-form.loading .button-content {
+  display: none;
+}
+
+.mobile-navigation-form.loading .button-loader {
+  display: block;
+}
+
+.mobile-navigation-form-switch {
+  color: var(--gray-500);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  margin: 0.5rem 0 0;
+  text-align: center;
+}
+
+.mobile-navigation-form-switch button,
+.mobile-navigation-form-link {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--ghost-accent-color);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+}
+
+/* Newsletter switches: the name set like a tag word, a line of what it does,
+   and the switch itself. */
+.mobile-navigation-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.mobile-navigation-switches-message {
+  color: var(--gray-500);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.mobile-navigation-switch {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 1rem;
+  position: relative;
+}
+
+.mobile-navigation-switch-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.mobile-navigation-switch-text strong {
+  color: var(--title-color);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.mobile-navigation-switch-text span {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.mobile-navigation-switch-text span:empty {
+  display: none;
+}
+
+/* The checkbox stays in the tree for keyboards and screen readers; the track
+   after it is what shows. */
+.mobile-navigation-switch input {
+  appearance: none;
+  height: 1.875rem;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 3.125rem;
+}
+
+.mobile-navigation-switch-track {
+  background-color: var(--mobile-navigation-tile-active-bg);
+  border-radius: 9999px;
+  flex: none;
+  height: 1.875rem;
+  position: relative;
+  transition: background-color 0.2s ease;
+  width: 3.125rem;
+}
+
+.mobile-navigation-switch-track::after {
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  content: "";
+  height: 1.5rem;
+  left: 0.1875rem;
+  position: absolute;
+  top: 0.1875rem;
+  transition: transform 0.2s cubic-bezier(0.3, 1.3, 0.5, 1);
+  width: 1.5rem;
+}
+
+.mobile-navigation-switch input:checked + .mobile-navigation-switch-track {
+  background-color: var(--ghost-accent-color);
+}
+
+.mobile-navigation-switch input:checked + .mobile-navigation-switch-track::after {
+  transform: translateX(1.25rem);
+}
+
+.mobile-navigation-switch input:focus-visible + .mobile-navigation-switch-track {
+  outline: 2px solid var(--ghost-accent-color);
+  outline-offset: 2px;
+}
+
+.mobile-navigation-switch input:disabled + .mobile-navigation-switch-track {
+  opacity: 0.6;
+}
+
+.mobile-navigation-form-success {
+  align-items: center;
+  display: none;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.75rem 0 0.5rem;
+  text-align: center;
+}
+
+.mobile-navigation-form-success .icon {
+  color: var(--ghost-accent-color);
+  height: 3rem;
+  margin-bottom: 0.375rem;
+  width: 3rem;
+}
+
+.mobile-navigation-form-success strong {
+  color: var(--title-color);
+  font-size: 1.125rem;
+  line-height: 1.25;
+}
+
+.mobile-navigation-form-success p {
+  color: var(--gray-500);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.mobile-navigation-form.success .mobile-navigation-form-fields {
+  display: none;
+}
+
+.mobile-navigation-form.success .mobile-navigation-form-success {
+  display: flex;
 }
 
 .mobile-navigation-social {
@@ -217,8 +775,11 @@
   text-align: left;
 }
 
-.has-mobile-menu {
-  overflow: hidden;
+/* The page behind is locked only where the card dims it. */
+@media (max-width: 999.98px) {
+  .has-mobile-menu {
+    overflow: hidden;
+  }
 }
 
 .has-mobile-menu .mobile-navigation-backdrop {
@@ -231,16 +792,21 @@
 .has-mobile-menu .mobile-navigation-sheet {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 0.2s ease, transform 0.24s ease;
+  transition: opacity 0.2s ease, transform 0.24s ease, bottom 0.2s ease;
   visibility: visible;
 }
 
-.simply-viewport {
-  padding-bottom: calc(
-    var(--mobile-tab-bar-height) +
-    var(--mobile-tab-bar-bottom-space) +
-    1rem
-  );
+/* Pages keep room for the bar under their last line. The room is the footer's
+   own padding, so a tinted footer (posts have one) runs on under the glass
+   instead of stopping at a white band. */
+@media (max-width: 999.98px) {
+  .simply-viewport > footer {
+    padding-bottom: calc(
+      var(--mobile-tab-bar-height) +
+      var(--mobile-tab-bar-bottom-space) +
+      1.5rem
+    );
+  }
 }
 
 .medium-zoom--opened .mobile-navigation {
@@ -250,18 +816,97 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mobile-tab-bar,
+  .mobile-tab-pill,
   .mobile-navigation-backdrop,
   .mobile-navigation-sheet {
     transition: none;
   }
 }
 
+/* Scrollbars inside the cards
+/* ----------------------------------------------------------
+   With a mouse the browser's own bar is a grey slab cut off by the card's
+   round corner. This one is a thin floating thumb that stops short of the
+   corners. Touch screens keep their overlay bars. */
+
+:root {
+  --card-scrollbar-thumb: rgba(24, 24, 27, 0.2);
+  --card-scrollbar-thumb-hover: rgba(24, 24, 27, 0.38);
+}
+
+.dark {
+  --card-scrollbar-thumb: rgba(255, 255, 255, 0.22);
+  --card-scrollbar-thumb-hover: rgba(255, 255, 255, 0.4);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .search-results::-webkit-scrollbar,
+  .mobile-navigation-sheet-content::-webkit-scrollbar {
+    width: 0.875rem;
+  }
+
+  .search-results::-webkit-scrollbar-track,
+  .mobile-navigation-sheet-content::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0.5rem 0 1rem;
+  }
+
+  /* The transparent border is what floats the thumb off the card's edge. */
+  .search-results::-webkit-scrollbar-thumb,
+  .mobile-navigation-sheet-content::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    background-color: var(--card-scrollbar-thumb);
+    border: 0.25rem solid transparent;
+    border-radius: 9999px;
+    min-height: 2.5rem;
+  }
+
+  .search-results::-webkit-scrollbar-thumb:hover,
+  .mobile-navigation-sheet-content::-webkit-scrollbar-thumb:hover {
+    background-color: var(--card-scrollbar-thumb-hover);
+  }
+
+  /* Firefox has no scrollbar pseudo-elements. Giving these to the others
+     would switch their styled bar above off, hence the Firefox-only test
+     (the build's autoprefixer cannot parse "not selector(…)"). */
+  @supports (-moz-appearance: none) {
+    .search-results,
+    .mobile-navigation-sheet-content {
+      scrollbar-color: var(--card-scrollbar-thumb) transparent;
+      scrollbar-width: thin;
+    }
+  }
+}
+
+/* Wide screens: the header has the tabs and the links, so the tab bar and the
+   menu panel are gone and the card holds the member panels only. It drops
+   from the right end of the header, over a page that is neither dimmed nor
+   locked.
+/* ---------------------------------------------------------- */
+
 @media (min-width: 1000px) {
-  .mobile-navigation {
+  .mobile-tab-bar,
+  .mobile-navigation-panel[data-mobile-navigation-panel="menu"] {
     display: none;
   }
 
-  .simply-viewport {
-    padding-bottom: 0;
+  .has-mobile-menu .mobile-navigation-backdrop {
+    background: transparent;
+  }
+
+  .mobile-navigation-sheet {
+    bottom: auto;
+    left: auto;
+    margin: 0;
+    max-height: calc(100vh - 6rem);
+    right: max(1rem, calc((100vw - 81.25rem) / 2 + 1rem));
+    top: 4.5rem;
+    transform: translateY(-0.5rem);
+    width: 22.5rem;
+  }
+
+  /* There is no menu to go back to. */
+  .mobile-navigation-sheet[data-parent="menu"] .mobile-navigation-back {
+    display: none;
   }
 }

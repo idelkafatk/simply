@@ -34,7 +34,7 @@
         tabindex="-1"
     >
         <div class="search-field">
-            <svg class="search-field-icon icon" aria-hidden="true"><use xlink:href="#icon-search"></use></svg>
+            {{> "icons/search" class="search-field-icon"}}
 
             <input
                 class="search-input"
@@ -57,7 +57,7 @@
                 data-search-clear
                 hidden
             >
-                <svg class="icon" aria-hidden="true"><use xlink:href="#icon-close"></use></svg>
+                {{> "icons/close"}}
             </button>
 
             <button
@@ -67,7 +67,7 @@
                 title="{{t "Close search"}}"
                 data-search-close
             >
-                <svg class="icon" aria-hidden="true"><use xlink:href="#icon-close"></use></svg>
+                {{> "icons/close"}}
             </button>
         </div>
 

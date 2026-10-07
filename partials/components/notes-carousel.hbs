@@ -1,16 +1,22 @@
-{{!-- Horizontal notes carousel. Expects carouselId + widgetTitle + widgetPosts. --}}
+{{!-- Horizontal notes carousel. Expects carouselId + widgetTitle + widgetPosts.
+      Follows docs/mobile-design.md: the way to all notes is a quiet line by
+      the heading, not a button, and a card is a soft fill with no outline.
+      The title link covers the whole card, so the preview can be the note's
+      own markup (it has links of its own, which cannot sit inside a link). --}}
 <section class="notes-carousel js-notes-carousel" data-notes-carousel aria-labelledby="{{carouselId}}-title">
     <header class="notes-carousel-header">
-        <div class="notes-carousel-heading">
-            <h2 id="{{carouselId}}-title" class="text-2xl font-semibold text-title">{{widgetTitle}}</h2>
-        </div>
+        <h2 id="{{carouselId}}-title" class="text-2xl font-semibold text-title">{{widgetTitle}}</h2>
+        <a href="/notes/" class="notes-carousel-all" aria-label="{{t "See all"}}">
+            <span>{{t "All"}}</span>
+            {{> "icons/chevron-right" class="notes-carousel-all-icon"}}
+        </a>
     </header>
 
     <div class="notes-carousel-viewport">
         <div id="{{carouselId}}-track" class="notes-carousel-track" data-notes-carousel-track role="list" tabindex="0">
             {{#foreach widgetPosts}}
                 <article class="notes-carousel-card {{#if feature_image}}has-image{{/if}}" data-notes-carousel-item role="listitem">
-                    <a href="{{url}}" class="notes-carousel-link">
+                    <div class="notes-carousel-content">
                         {{#if feature_image}}
                             <figure class="notes-carousel-media">
                                 <img src="{{img_url feature_image size="s"}}"
@@ -23,11 +29,11 @@
                         {{/if}}
 
                         <div class="notes-carousel-body">
-                            <time class="notes-carousel-date capitalize" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
-                            <h3 class="notes-carousel-title text-title">{{title}}</h3>
-                            <p class="notes-carousel-excerpt text-global">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="200"}}{{/if}}</p>
+                            <time class="notes-carousel-date" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+                            <h3 class="notes-carousel-title text-title"><a href="{{url}}" class="notes-carousel-link">{{title}}</a></h3>
+                            <div class="notes-carousel-excerpt text-global">{{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{else}}{{content words="200"}}{{/if}}</div>
                         </div>
-                    </a>
+                    </div>
                 </article>
             {{/foreach}}
         </div>
@@ -42,10 +48,4 @@
 
     <div class="notes-carousel-pagination" data-notes-carousel-pagination role="status" aria-live="polite"></div>
 
-    <div class="notes-carousel-footer">
-        <a href="/notes/" class="notes-carousel-all">
-            <span>{{t "See all"}}</span>
-            <svg class="icon notes-carousel-all-icon" aria-hidden="true"><use xlink:href="#icon-arrow"></use></svg>
-        </a>
-    </div>
 </section>
