@@ -469,13 +469,17 @@
 
 .notes-carousel-date {
   color: var(--gray-500);
+  flex: none;
   font-size: 0.75rem;
   line-height: 1.25;
   margin-bottom: 0.625rem;
 }
 
+/* The title keeps its height: with overflow hidden a flex item may shrink to
+   nothing, and the preview below would take its place. */
 .notes-carousel-title {
   display: -webkit-box;
+  flex: none;
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.25;
@@ -492,7 +496,7 @@
    past the edge, so it was cut in half with its ellipsis hidden. */
 .notes-carousel-excerpt {
   mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5em), transparent);
-  flex: 1 1 auto;
+  flex: 1 1 0;
   font-size: 0.9375rem;
   line-height: 1.5;
   margin: 0;
