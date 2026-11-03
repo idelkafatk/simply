@@ -486,16 +486,20 @@
   -webkit-line-clamp: 2;
 }
 
+/* The preview fills what the card leaves after the date and title, and fades
+   out at the bottom. A line clamp counted lines while the card has a fixed
+   height: paragraph gaps and a two-line title pushed the last clamped line
+   past the edge, so it was cut in half with its ellipsis hidden. */
 .notes-carousel-excerpt {
-  display: -webkit-box;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5em), transparent);
+  flex: 1 1 auto;
   font-size: 0.9375rem;
   line-height: 1.5;
   margin: 0;
+  min-height: 0;
   overflow: hidden;
   overflow-wrap: anywhere;
   white-space: pre-line;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 9;
 }
 
 /* The preview is the start of the note itself, with its links read as text:
@@ -506,10 +510,6 @@
 
 .notes-carousel-excerpt > * + * {
   margin-top: 0.5em;
-}
-
-.notes-carousel-card.has-image .notes-carousel-excerpt {
-  -webkit-line-clamp: 3;
 }
 
 .notes-carousel-pagination {
