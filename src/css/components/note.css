@@ -647,9 +647,10 @@
   }
 }
 
-/* A note that carries a live embed (an HTML card marked data-live-embed, such as
+/* A note that carries a live embed (in the note layout or the sidebar template) (an HTML card marked data-live-embed, such as
    an interactive map) shows the embed itself; its cover is the same picture as
    a still for the feed and Telegram, so on the note's own page it would repeat. */
-.note-single:has([data-live-embed]) .note-single-media {
+.note-single:has([data-live-embed]) .note-single-media,
+.is-note article:has([data-live-embed]) .story-post-media {
   display: none;
 }
