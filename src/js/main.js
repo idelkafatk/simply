@@ -661,7 +661,31 @@ const simplySetup = () => {
       background: 'hsla(0,0%,100%,.85)'
     })
 
+    // A live embed (an HTML card marked data-live-embed) can't run in the feed: the
+    // excerpt cuts its script. Its cover stands in for it, so drop the embed and the
+    // blank lines around it, which pre-line kept and line-clamp ended with "…".
+    const dropLiveEmbeds = note => {
+      const body = note.querySelector('.story-note-body')
+      if (!body || !body.querySelector('[data-live-embed]')) return
+
+      body.querySelectorAll('[data-live-embed]').forEach(embed => {
+        let next = embed.nextSibling
+        while (next && (next.nodeType !== 1 || next.tagName === 'SCRIPT')) {
+          const after = next.nextSibling
+          if (next.nodeType !== 1 && next.textContent.trim()) break
+          next.remove()
+          next = after
+        }
+        embed.remove()
+      })
+
+      Array.from(body.childNodes).forEach(node => {
+        if (node.nodeType === 8 || (node.nodeType === 3 && !node.textContent.trim())) node.remove()
+      })
+    }
+
     const updateNote = note => {
+      dropLiveEmbeds(note)
       const source = note.querySelector('[data-note-gallery-source]')
       const target = note.querySelector('[data-note-gallery]')
       if (!source || !target) return
