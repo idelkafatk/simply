@@ -254,14 +254,48 @@ const simplySetup = () => {
     }))
   }
 
+  // A picture drawn in two versions follows the theme: upload "name-light.jpg" as
+  // the image and "name-dark.jpg" next to it (it needn't be in any post; Ghost makes
+  // the sizes on request), and in the dark theme every src and srcset swaps the
+  // suffix. With no dark version on the server the light one comes back.
+  const themedImages = root => {
+    const dark = rootEl.classList.contains('dark')
+    const from = dark ? '-light.' : '-dark.'
+    const to = dark ? '-dark.' : '-light.'
+
+    root.querySelectorAll('img[src*="-light."], img[src*="-dark."]').forEach(img => {
+      if (img.dataset.themedFailed || !img.src.includes(from)) return
+
+      if (dark && !img.dataset.themedWatched) {
+        img.dataset.themedWatched = 'true'
+        img.addEventListener('error', () => {
+          if (!img.src.includes('-dark.')) return
+          img.dataset.themedFailed = 'true'
+          img.srcset = img.srcset.split('-dark.').join('-light.')
+          img.src = img.src.split('-dark.').join('-light.')
+        })
+      }
+
+      if (img.srcset) img.srcset = img.srcset.split(from).join(to)
+      img.src = img.src.split(from).join(to)
+    })
+  }
+
   darkMode()
   watchCommentsFrame()
+  themedImages(document)
+
+  // Cards that pagination adds later
+  new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
+    if (node.nodeType === 1) themedImages(node.tagName === 'IMG' ? node.parentNode || node : node)
+  }))).observe(document.body, { childList: true, subtree: true })
 
   // Watch for theme changes (e.g., from system preference)
   const observer = new MutationObserver(() => {
     updateThemeIcons()
     updateCommentsTheme()
     paintCommentsFrame()
+    themedImages(document)
   })
   observer.observe(rootEl, {
     attributes: true,
