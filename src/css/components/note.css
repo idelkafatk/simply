@@ -427,12 +427,15 @@
   overflow: hidden;
 }
 
-/* The title link covers the card. */
+/* The title link covers the card. It sits above the preview: the preview's
+   fade mask gives it a stacking context of its own, which would otherwise be
+   painted over the link and take the clicks on most of the card. */
 .notes-carousel-link::after {
   border-radius: 1.5rem;
   content: "";
   inset: 0;
   position: absolute;
+  z-index: 1;
 }
 
 .notes-carousel-link:focus-visible {
