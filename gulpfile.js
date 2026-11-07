@@ -218,7 +218,6 @@ async function deploy (done) {
     const url = process.env.GHOST_API_URL || env.parsed.GHOST_API_URL
     console.log(url)
     const adminApiKey = process.env.GHOST_ADMIN_API_KEY || env.parsed.GHOST_ADMIN_API_KEY
-    console.log(adminApiKey)
     const themeName = process.env.THEME_NAME || require('./package.json').name
     console.log('name =', themeName)
     const apiVersion = process.env.API_VERSION || require('./package.json').engines['ghost-api']

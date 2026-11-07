@@ -1,14 +1,63 @@
 {{!--
-  Publication follow-up actions.
-  - Web Push and its card are revealed by src/js/pwa.js only when available.
+  Publication follow-up: one "follow" card + a light discussion row.
+  - Follow card: Telegram channel is the primary action (link from the
+    "telegram_channel_url" theme setting). Web Push is a secondary row inside the
+    same card, revealed by src/js/pwa.js only when available ([data-push-card]).
   - The discussion action ships hidden; revealed by telegramDiscussion() in
     src/js/post.js via [data-telegram-discussion-url] / [data-telegram-discussion] /
     [data-telegram-discussion-link]. Keep these three hooks stable — the sibling
     idel-blog-tg-bot repo relies on the discussion-url marker format, and this JS relies
     on the other two, but neither cares about surrounding DOM structure.
 --}}
-<div class="publication-actions pt-vmin8" data-publication-actions hidden>
-    {{#if access}}
+{{#if @custom.telegram_channel_url}}
+<div class="publication-follow pt-vmin8">
+    <div class="publication-follow-card border-t-3 border-primary bg-gray-100 rounded-lg">
+        <div class="publication-follow-main">
+            <span class="publication-follow-icon" aria-hidden="true">
+                <svg class="w-5 h-5 fill-current"><use xlink:href="#icon-telegram"></use></svg>
+            </span>
+            <div class="publication-follow-copy">
+                <h2 class="text-lg font-bold text-title m-0">{{t "I write about life in Korea from the inside"}}</h2>
+                <p class="text-sm text-gray-500 m-0">{{t "Relocation guides, visas, everyday life and short notes."}}</p>
+            </div>
+            <a class="publication-follow-button button is-primary"
+               href="{{@custom.telegram_channel_url}}"
+               target="_blank"
+               rel="noopener noreferrer">{{t "Subscribe on Telegram"}}</a>
+        </div>
+
+        <div class="publication-follow-push" data-push-card hidden>
+            <div class="push-subscribe"
+                 data-push-subscribe
+                 data-message-enabled="{{t "Notifications are enabled."}}"
+                 data-message-install="{{t "Add the blog to your Home Screen first, then enable notifications from the installed app."}}"
+                 data-message-denied="{{t "Notifications are blocked. Allow them in your browser settings."}}"
+                 data-message-error="{{t "Could not enable notifications. Please try again."}}"
+                 data-message-disable-error="{{t "Could not disable notifications. Please try again."}}"
+                 hidden>
+                <span class="push-subscribe-label text-sm text-gray-500">{{t "Or get notifications about new posts"}}</span>
+                <button class="push-subscribe-link"
+                        type="button"
+                        data-push-enable>
+                    {{t "Enable"}}
+                </button>
+                <button class="push-subscribe-link"
+                        type="button"
+                        data-push-disable
+                        hidden>
+                    {{t "Disable"}}
+                </button>
+                <p class="push-subscribe-status text-sm text-gray-500 m-0"
+                   data-push-status
+                   aria-live="polite"></p>
+            </div>
+        </div>
+    </div>
+</div>
+{{/if}}
+
+{{#if access}}
+<div class="publication-actions pt-6" data-publication-actions hidden>
     <div class="publication-discussion" data-telegram-discussion hidden>
         <a class="publication-discussion-link"
            data-telegram-discussion-link
@@ -27,40 +76,5 @@
             </svg>
         </a>
     </div>
-    {{/if}}
-
-    <div class="publication-push-card border-t-3 border-primary bg-gray-100 rounded-lg"
-         data-push-card
-         hidden>
-        <div class="publication-push-card-inner">
-            <div class="publication-subscribe-copy">
-                <h2 class="text-xl font-bold text-title mb-1">{{t "Follow new publications"}}</h2>
-                <p class="text-sm text-gray-500 m-0">{{t "New articles and notes."}}</p>
-            </div>
-
-            <div class="push-subscribe"
-                 data-push-subscribe
-                 data-message-enabled="{{t "Notifications are enabled."}}"
-                 data-message-install="{{t "Add the blog to your Home Screen first, then enable notifications from the installed app."}}"
-                 data-message-denied="{{t "Notifications are blocked. Allow them in your browser settings."}}"
-                 data-message-error="{{t "Could not enable notifications. Please try again."}}"
-                 data-message-disable-error="{{t "Could not disable notifications. Please try again."}}"
-                 hidden>
-                <button class="button is-primary shrink-0"
-                        type="button"
-                        data-push-enable>
-                    {{t "Enable notifications"}}
-                </button>
-                <button class="button is-white shrink-0"
-                        type="button"
-                        data-push-disable
-                        hidden>
-                    {{t "Disable"}}
-                </button>
-                <p class="push-subscribe-status text-sm text-gray-500 m-0"
-                   data-push-status
-                   aria-live="polite"></p>
-            </div>
-        </div>
-    </div>
 </div>
+{{/if}}
