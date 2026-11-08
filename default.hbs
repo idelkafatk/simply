@@ -55,6 +55,9 @@
     <script>
     (function () {
         var root = document.documentElement;
+        // CSS can tell from this that the theme's scripts will run, e.g. that
+        // video cards next to a gallery will move into its carousel.
+        root.classList.add('has-js');
         var themeColor = document.querySelector('[data-theme-color]');
         var systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
         var configuredTheme = 'auto';

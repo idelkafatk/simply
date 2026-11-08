@@ -410,3 +410,19 @@
     object-fit: contain;
   }
 }
+
+/* A video card right next to a gallery is moved into its carousel by
+   util/gallery.js. Until then Ghost draws it as a full-width card (a vertical
+   clip is ~1080px tall) and the page jumps when it moves: on a phone it stays
+   up for about a second. Keep such cards hidden from the start; without
+   JavaScript (no .has-js) they stay visible as ordinary cards. Comments
+   between cards do not count for "+", only elements do. */
+.has-js .post-body .kg-gallery-card + figure.kg-video-card,
+.has-js .post-body figure.kg-video-card:has(+ .kg-gallery-card),
+.has-js .post-body .kg-gallery-card + .kg-video-card + figure.kg-video-card,
+.has-js .post-body figure.kg-video-card:has(+ .kg-video-card + .kg-gallery-card),
+.has-js .post-body .kg-gallery-card + .kg-video-card + .kg-video-card + figure.kg-video-card,
+.has-js .post-body figure.kg-video-card:has(+ .kg-video-card + .kg-video-card + .kg-gallery-card),
+.has-js .post-body figure.kg-video-card:has(+ .kg-video-card + .kg-video-card + .kg-video-card + .kg-gallery-card) {
+  display: none;
+}
