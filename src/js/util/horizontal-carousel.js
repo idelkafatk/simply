@@ -26,6 +26,20 @@ const getVisibleItemIndex = (carousel, items) => {
   return visibleIndex
 }
 
+// The browser's video controls sit in a strip along the bottom of the video and
+// seeking there is a drag too, so a drag starting there belongs to the player.
+// Anywhere else on a video the drag scrolls the carousel; a plain click (under
+// the drag threshold) still reaches the video and plays or pauses it.
+const MEDIA_CONTROLS_HEIGHT = 56
+
+const isOnMediaControls = event => {
+  const target = event.target
+  if (target.closest('input, button, select')) return true
+  if (target.tagName !== 'VIDEO' || !target.controls) return false
+
+  return event.clientY > target.getBoundingClientRect().bottom - MEDIA_CONTROLS_HEIGHT
+}
+
 const initCarouselDrag = carousel => {
   let pointerId
   let startX = 0
@@ -52,8 +66,7 @@ const initCarouselDrag = carousel => {
 
   carousel.addEventListener('pointerdown', event => {
     if (event.pointerType !== 'mouse' || event.button !== 0) return
-    // Video controls need the pointer for themselves: seeking is a drag too.
-    if (event.target.closest('video, input, button, select')) return
+    if (isOnMediaControls(event)) return
     if (carousel.scrollWidth <= carousel.clientWidth + 1) return
 
     pointerId = event.pointerId
