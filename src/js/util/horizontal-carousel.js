@@ -52,6 +52,8 @@ const initCarouselDrag = carousel => {
 
   carousel.addEventListener('pointerdown', event => {
     if (event.pointerType !== 'mouse' || event.button !== 0) return
+    // Video controls need the pointer for themselves: seeking is a drag too.
+    if (event.target.closest('video, input, button, select')) return
     if (carousel.scrollWidth <= carousel.clientWidth + 1) return
 
     pointerId = event.pointerId

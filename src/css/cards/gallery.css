@@ -384,3 +384,29 @@
 .kg-gallery-pagination[hidden] {
   display: none;
 }
+
+/* A video slide: a video card placed right next to a gallery (util/gallery.js)
+/* ---------------------------------------------------------- */
+
+.kg-gallery-video {
+  background: var(--gray-900, #111);
+  overflow: hidden;
+  position: relative;
+}
+
+/* The slide sets the height in every carousel layout; the video fills it. */
+.kg-gallery-video video {
+  display: block;
+  height: 100% !important;
+  margin: 0;
+  max-height: none;
+  min-height: 0;
+  object-fit: cover;
+  width: 100%;
+}
+
+@media (min-width: 769px) {
+  .post-body .kg-gallery-row.is-portrait-row .kg-gallery-video video {
+    object-fit: contain;
+  }
+}

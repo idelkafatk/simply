@@ -8,7 +8,7 @@ import mediumZoom from 'medium-zoom'
 // import loadScript from './util/load-script'
 import urlRegexp from './util/url-regular-expression'
 import docSelectorAll from './util/document-query-selector-all'
-import { initGalleryCards } from './util/gallery'
+import { initGalleryCards, mergeVideosIntoGalleries } from './util/gallery'
 import { initHorizontalCarousel } from './util/horizontal-carousel'
 import { initShareLink } from './util/share-link'
 import { initSearch } from './search'
@@ -729,6 +729,7 @@ const simplySetup = () => {
       const target = note.querySelector('[data-note-gallery]')
       if (!source || !target) return
 
+      mergeVideosIntoGalleries(source.content)
       const galleries = source.content.querySelectorAll('.kg-gallery-card')
 
       if (galleries.length) {
