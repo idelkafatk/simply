@@ -689,8 +689,18 @@ const simplySetup = () => {
   // A live embed (an HTML card marked data-live-embed, such as an interactive map)
   // can't run in an excerpt: Ghost's word limit cuts its script. Drop the embed and
   // the blank lines around it, which pre-line kept and line-clamp ended with "…".
-  function dropLiveEmbedsIn (body) {
-    if (!body || !body.querySelector('[data-live-embed]')) return
+  // Media cards (videos, galleries, images) are hidden in an excerpt and shown
+  // in the note's carousel instead, but the line breaks around them stay and
+  // pre-line turns them into a tall blank gap: a video card alone brings dozens.
+  // Drop such cards with their surrounding whitespace too. Bookmark cards stay
+  // where they are shown: in the feed they are links written into the note.
+  function dropLiveEmbedsIn (body, hiddenCards = '.kg-card:not(.kg-bookmark-card)') {
+    if (!body) return
+
+    const cards = body.querySelectorAll(hiddenCards)
+    if (!cards.length && !body.querySelector('[data-live-embed]')) return
+
+    cards.forEach(card => card.remove())
 
     body.querySelectorAll('[data-live-embed]').forEach(embed => {
       let next = embed.nextSibling
@@ -708,7 +718,7 @@ const simplySetup = () => {
     })
   }
 
-  document.querySelectorAll('.notes-carousel-excerpt').forEach(dropLiveEmbedsIn)
+  document.querySelectorAll('.notes-carousel-excerpt').forEach(excerpt => dropLiveEmbedsIn(excerpt, '.kg-card'))
 
   /* Notes galleries
   /* ---------------------------------------------------------- */
