@@ -31,11 +31,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="{{@site.title}}">
     <link rel="manifest" href="{{@site.url}}/manifest/">
-    {{#if @site.icon}}
-    <link rel="apple-touch-icon" sizes="192x192" href="{{img_url @site.icon size="pwa_192"}}">
-    {{else}}
+    {{!-- Square bundled icon, not @site.icon: the round favicon would get black corners on the iOS home screen. --}}
     <link rel="apple-touch-icon" sizes="192x192" href="{{asset "images/pwa/icon-192.png"}}">
-    {{/if}}
     {{> "pwa/apple-startup-images"}}
 
     {{!--
