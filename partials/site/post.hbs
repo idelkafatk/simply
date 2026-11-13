@@ -61,6 +61,8 @@
 
     {{#if comments}}
     <section class="post-comments">
+        {{!-- Styles for the comments iframe, fetched and injected by src/js/ghost-frames.js --}}
+        <link rel="preload" as="fetch" crossorigin href="{{asset "styles/ghost-comments.css"}}" data-ghost-frame-css="comments">
         {{comments title="Комментарии" count=false}}
         {{!--
           comments-ui is deferred and fixes its config on first render. In "auto"

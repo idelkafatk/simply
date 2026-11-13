@@ -8,10 +8,16 @@ import docSelectorAll from './util/document-query-selector-all'
 import { initShareLink } from './util/share-link'
 import { initSearch } from './search'
 import { initSubscribe } from './subscribe'
+import { initGhostFrames } from './ghost-frames'
 
 const simplySetup = () => {
   const rootEl = document.documentElement
   const documentBody = document.body
+
+  /* Ghost's Portal and comments frames
+  /* ---------------------------------------------------------- */
+  // The blog's look inside Ghost's own iframes (src/js/ghost-frames.js).
+  initGhostFrames()
 
   /* Share / copy link
   /* ---------------------------------------------------------- */

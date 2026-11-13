@@ -107,6 +107,9 @@
 
     <link rel="stylesheet" type="text/css" href="{{asset "styles/main.css"}}"/>
 
+    {{!-- Styles for Ghost's Portal iframes, fetched and injected by src/js/ghost-frames.js --}}
+    {{#if @site.members_enabled}}<link rel="preload" as="fetch" crossorigin href="{{asset "styles/ghost-portal.css"}}" data-ghost-frame-css="portal">{{/if}}
+
     {{!-- Ghost outputs important style and meta data with this tag.
           "search" is excluded because the theme ships its own search UI
           (partials/search.hbs) instead of loading sodo-search. --}}
