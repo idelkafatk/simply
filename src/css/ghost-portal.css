@@ -1,0 +1,653 @@
+/* Ghost Portal, restyled to match the blog
+/* ----------------------------------------------------------
+   Not linked from the page: src/js/ghost-frames.js fetches the built file
+   and puts it as a <style> at the end of the head of Portal's iframes
+   (portal-popup and portal-notification), whose documents are same-origin.
+   Selectors only use Portal's own gh-portal-* class names, so if Portal
+   changes its markup the popups fall back to Ghost's default look.
+   The reference is the subscribe dialog (src/css/site/subscribe.css).
+   !important only where Portal itself uses it or writes inline styles. */
+
+:root {
+  --s-bg: #fff;
+  --s-card: #fff;
+  --s-surface: #f6f6f4;
+  --s-text: #2b2d31;
+  --s-muted: #6b6f75;
+  --s-link: #b8501f;
+  --s-accent: #e2703f;
+  --s-danger: #d93a2b;
+  --s-line: color-mix(in srgb, var(--s-text) 16%, var(--s-card));
+  --s-fill: color-mix(in srgb, var(--s-text) 7%, transparent);
+  --s-fill-hover: color-mix(in srgb, var(--s-text) 12%, transparent);
+  --s-row: var(--s-surface);
+  --s-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+  --s-font: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Portal's own palette, mapped onto the blog's */
+  --grey0: var(--s-text);
+  --grey1: var(--s-text);
+  --grey2: var(--s-text);
+  --grey3: var(--s-text);
+  --grey4: var(--s-muted);
+  --grey5: var(--s-muted);
+  --grey6: var(--s-muted);
+  --grey7: var(--s-muted);
+  --grey8: var(--s-muted);
+  --grey9: var(--s-line);
+  --grey10: var(--s-line);
+  --grey11: var(--s-line);
+  --grey12: var(--s-line);
+  --grey13: var(--s-row);
+  --grey14: var(--s-row);
+  --white: var(--s-card);
+  --whitergb: 255, 255, 255;
+  --red: var(--s-danger);
+}
+
+/* the site's .dark, mirrored onto the frame by ghost-frames.js */
+html.simply-dark {
+  --s-bg: #161719;
+  --s-card: #1c1f23;
+  --s-surface: #1c1f23;
+  --s-text: #e8eaed;
+  --s-muted: #8b9198;
+  --s-link: #f2955f;
+  --s-row: color-mix(in srgb, var(--s-text) 6%, var(--s-card));
+  --s-shadow: 0 0 0 1px #262a2f, 0 24px 80px rgba(0, 0, 0, 0.5);
+  --whitergb: 28, 31, 35;
+
+  color-scheme: dark;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  color: var(--s-text);
+  font-family: var(--s-font);
+}
+
+/* «Powered by Ghost»: nothing else is positioned against it */
+.gh-portal-powered {
+  display: none !important;
+}
+
+/* Overlay
+/* ---------------------------------------------------------- */
+
+.gh-portal-popup-background {
+  animation: simply-fade 0.18s;
+  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, #000 40%, transparent);
+}
+
+/* the card sits in the middle of the screen, as the blog's dialog */
+.gh-portal-popup-wrapper:not(.full-size) {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+  padding-left: 0;
+  padding-top: 16px;
+}
+
+.gh-portal-popup-container:not(.full-size):not(.large-size):not(.preview) {
+  animation: simply-pop 0.18s ease-out;
+  background: var(--s-card);
+  border-radius: 20px;
+  box-shadow: var(--s-shadow);
+  font-size: 15px;
+  margin: auto;
+  max-width: calc(100vw - 32px);
+  padding: 32px 28px 28px;
+  width: 400px;
+}
+
+/* the close and back buttons stand in the card's corners, not the screen's */
+.gh-portal-popup-container:not(.full-size) .gh-portal-content {
+  position: static;
+}
+
+@keyframes simply-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes simply-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes simply-sheet {
+  from { transform: translateY(30px); }
+  to { transform: none; }
+}
+
+/* Close and back
+/* ---------------------------------------------------------- */
+
+.gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container {
+  border-radius: 10px;
+  display: grid;
+  height: 36px;
+  place-items: center;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  transition: background 0.12s;
+  width: 36px;
+}
+
+.gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container:hover {
+  background: var(--s-surface);
+}
+
+html.simply-dark .gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container:hover {
+  background: var(--s-fill);
+}
+
+/* Portal paints the cross in the accent colour inline */
+.gh-portal-popup-container:not(.full-size) .gh-portal-closeicon {
+  color: var(--s-muted) !important;
+  height: 11px;
+  padding: 0;
+  width: 11px;
+}
+
+.gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container:hover .gh-portal-closeicon {
+  color: var(--s-text) !important;
+}
+
+.gh-portal-closeicon path {
+  stroke-width: 3.6;
+}
+
+.gh-portal-popup-container:not(.full-size) .gh-portal-btn-back {
+  background: none;
+  border-radius: 10px;
+  color: var(--s-muted) !important;
+  font-size: 15px;
+  font-weight: 500;
+  height: 36px;
+  left: 10px;
+  padding: 0 10px 0 6px;
+  position: absolute;
+  top: 10px;
+  transform: none;
+  transition: background 0.12s, color 0.12s;
+}
+
+.gh-portal-popup-container:not(.full-size) .gh-portal-btn-back:hover {
+  background: var(--s-fill);
+  color: var(--s-text) !important;
+}
+
+/* Headings and text
+/* ---------------------------------------------------------- */
+
+.gh-portal-main-title {
+  color: var(--s-text);
+  font-family: var(--s-font);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.gh-portal-signup-header,
+.gh-portal-signin-header {
+  margin-bottom: 0;
+  padding: 0 0 20px;
+}
+
+/* signin and signup: the button follows the field as closely as in the subscribe dialog */
+.gh-portal-popup-container.signin .gh-portal-section,
+.gh-portal-popup-container.signup .gh-portal-section {
+  margin-bottom: 0;
+}
+
+.gh-portal-signin-footer,
+.gh-portal-signup-footer {
+  padding-top: 0;
+}
+
+.gh-portal-signup-header .gh-portal-main-title,
+.gh-portal-signin-header .gh-portal-main-title {
+  margin-top: 16px;
+}
+
+/* the site icon, ringed like the avatar in the subscribe dialog */
+.gh-portal-signup-logo {
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--s-card), 0 0 0 5px var(--s-accent);
+  height: 64px;
+  margin: 2px 0 0;
+  object-fit: cover;
+  width: 64px;
+}
+
+/* profile and email settings: the title sits on one line with «Назад» and the cross */
+.gh-portal-popup-container:not(.full-size) .gh-portal-detail-header {
+  margin: -22px 0 24px;
+  min-height: 36px;
+  padding-inline: 72px;
+  position: static;
+}
+
+.gh-portal-popup-container:not(.account-plan) .gh-portal-detail-header .gh-portal-main-title {
+  font-size: 17px;
+  margin: 0;
+}
+
+.gh-portal-signup-message {
+  color: var(--s-muted);
+  font-size: 15px;
+  gap: 4px;
+  margin-top: 16px;
+}
+
+.gh-portal-error,
+.gh-portal-input-labelcontainer p {
+  color: var(--s-danger);
+  font-size: 13px;
+}
+
+/* Fields
+/* ---------------------------------------------------------- */
+
+.gh-portal-input-label {
+  color: var(--s-muted);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.gh-portal-input {
+  background: none;
+  border: 1px solid var(--s-line);
+  border-radius: 12px;
+  color: var(--s-text);
+  font-family: var(--s-font);
+  font-size: 16px; /* >=16px so iOS does not zoom */
+  height: 48px;
+  letter-spacing: 0;
+  margin-bottom: 12px;
+  padding: 0 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.gh-portal-input::placeholder {
+  color: var(--s-muted);
+  opacity: 0.7;
+}
+
+.gh-portal-input:hover {
+  border-color: color-mix(in srgb, var(--s-text) 28%, var(--s-card));
+}
+
+.gh-portal-input:focus {
+  border-color: var(--s-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--s-accent) 18%, transparent);
+}
+
+.gh-portal-input.error {
+  border-color: var(--s-danger);
+}
+
+/* Buttons
+/* ---------------------------------------------------------- */
+
+/* every Portal button is the quiet «Готово» unless it is the primary one */
+.gh-portal-btn {
+  background: var(--s-fill);
+  border: 0;
+  border-radius: 12px;
+  color: var(--s-text);
+  font-family: var(--s-font);
+  font-size: 16px;
+  font-weight: 600;
+  height: 48px;
+  letter-spacing: 0;
+  transition: background 0.12s, box-shadow 0.15s, color 0.12s;
+}
+
+.gh-portal-btn:hover {
+  background: var(--s-fill-hover);
+}
+
+/* the size Portal forces below 1440px has to be matched rule for rule */
+button[class="gh-portal-btn"],
+.gh-portal-btn-main,
+.gh-portal-btn-primary {
+  height: 48px;
+}
+
+/* orange with white text; Portal sets the colour inline and dims it on hover */
+.gh-portal-btn-primary {
+  background: var(--s-accent);
+  color: #fff;
+}
+
+.gh-portal-btn-primary:not(:disabled):hover,
+.gh-portal-btn-primary:not(:disabled):focus {
+  box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--s-accent) 75%, transparent);
+  opacity: 1 !important;
+}
+
+.gh-portal-btn-primary:not(:disabled):active {
+  box-shadow: none;
+}
+
+.gh-portal-loadingicon path,
+.gh-portal-loadingicon rect {
+  fill: #fff;
+}
+
+.gh-portal-btn-destructive:not(:disabled):hover {
+  color: var(--s-danger);
+}
+
+/* links: «Зарегистрироваться», «Войти», «Редактировать», «Получить помощь» */
+.gh-portal-btn-link,
+.gh-portal-btn-text,
+.gh-portal-btn-list,
+.gh-portal-btn-site-title-back {
+  background: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  height: auto;
+}
+
+.gh-portal-btn-link:hover,
+.gh-portal-btn-text:hover,
+.gh-portal-btn-list:hover,
+.gh-portal-btn-site-title-back:hover {
+  background: none;
+  opacity: 0.8;
+}
+
+.gh-portal-btn-link,
+.gh-portal-btn-text,
+.gh-portal-btn-list,
+.gh-portal-list-action {
+  color: var(--s-link) !important; /* Portal writes the accent inline: too light for text on white */
+}
+
+/* Lists: account rows, newsletter toggles. Filled rows, spacing between them, no lines */
+.gh-portal-list {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: visible;
+}
+
+.gh-portal-list section,
+.gh-portal-list section:last-of-type {
+  background: var(--s-row);
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.gh-portal-list-clickable {
+  transition: background 0.12s;
+}
+
+.gh-portal-list-clickable:hover {
+  background: color-mix(in srgb, var(--s-text) 9%, var(--s-card));
+}
+
+.gh-portal-list-clickable:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--s-accent);
+}
+
+.gh-portal-list-detail h3 {
+  color: var(--s-text);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.gh-portal-list-detail p {
+  color: var(--s-muted);
+  font-size: 14px;
+}
+
+.gh-portal-list .gh-portal-list-help {
+  background: none;
+  font-size: 14px;
+  padding: 4px 16px;
+}
+
+.gh-portal-list-help .gh-email-faq-page-button {
+  font-size: 14px;
+}
+
+.gh-portal-list-header {
+  color: var(--s-muted);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* newsletter switches: the accent when on, a soft track when off */
+.gh-portal-for-switch .input-toggle-component {
+  background: color-mix(in srgb, var(--s-text) 16%, var(--s-card));
+}
+
+.gh-portal-for-switch .input-toggle-component::before {
+  background-color: #fff;
+}
+
+.gh-portal-for-switch input:checked + .input-toggle-component {
+  background: var(--s-accent);
+}
+
+/* Account home
+/* ---------------------------------------------------------- */
+
+.gh-portal-account-header {
+  margin-bottom: 20px;
+}
+
+.gh-portal-avatar {
+  background: color-mix(in srgb, var(--s-accent) 15%, var(--s-card));
+  border-radius: 50%;
+  color: var(--s-accent);
+  overflow: hidden;
+}
+
+.gh-portal-account-data {
+  margin-bottom: 20px;
+}
+
+/* «Выйти» and the support link, two quiet buttons of one width */
+footer.gh-portal-account-footer {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr;
+}
+
+.gh-portal-account-footermenu,
+.gh-portal-account-footermenu li,
+.gh-portal-account-footerright {
+  display: block;
+  margin: 0;
+  width: 100%;
+}
+
+.gh-portal-account-footer .gh-portal-btn {
+  font-size: 15px;
+  width: 100%;
+}
+
+.gh-portal-account-footer .gh-portal-btn-branded {
+  background: var(--s-fill);
+  color: var(--s-text);
+}
+
+.gh-portal-account-footer .gh-portal-btn-branded:hover {
+  background: var(--s-fill-hover);
+}
+
+/* Profile and email settings
+/* ---------------------------------------------------------- */
+
+.gh-portal-section {
+  margin-bottom: 20px;
+}
+
+.gh-portal-section.flex {
+  gap: 8px;
+}
+
+.gh-portal-btn-unsubscribe {
+  margin-top: 16px;
+}
+
+.gh-portal-btn-unsubscribe .gh-portal-btn {
+  font-size: 15px;
+}
+
+/* «Check your inbox»: the check badge and the quiet «Готово» of the subscribe dialog */
+.gh-portal-inbox-notification .gh-portal-header {
+  padding-bottom: 6px;
+}
+
+.gh-portal-inbox-notification .gh-portal-header svg {
+  background: color-mix(in srgb, var(--s-accent) 15%, var(--s-card));
+  border-radius: 50%;
+  box-sizing: border-box;
+  color: var(--s-accent);
+  height: 64px;
+  margin-bottom: 16px;
+  padding: 18px;
+  width: 64px;
+}
+
+.gh-portal-inbox-notification p {
+  color: var(--s-muted);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0 auto 20px;
+  max-width: 320px;
+  text-align: center;
+}
+
+.magiclink .gh-portal-btn-primary {
+  background-color: var(--s-fill) !important;
+  color: var(--s-text);
+}
+
+.magiclink .gh-portal-btn-primary:not(:disabled):hover,
+.magiclink .gh-portal-btn-primary:not(:disabled):focus {
+  background-color: var(--s-fill-hover) !important;
+  box-shadow: none;
+}
+
+/* Notification after a link is followed
+/* ---------------------------------------------------------- */
+
+.gh-portal-notification {
+  align-items: center;
+  backdrop-filter: none;
+  background: var(--s-card);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+  color: var(--s-text);
+  font-family: var(--s-font);
+  padding: 14px 12px 14px 16px;
+}
+
+html.simply-dark .gh-portal-notification {
+  box-shadow: 0 0 0 1px #262a2f, 0 8px 28px rgba(0, 0, 0, 0.5);
+}
+
+.gh-portal-notification p {
+  color: var(--s-text);
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+.gh-portal-notification-icon {
+  height: 20px;
+  margin: 0;
+  min-width: 20px;
+  width: 20px;
+}
+
+.gh-portal-notification-icon.success {
+  color: var(--s-accent);
+}
+
+.gh-portal-notification-closeicon {
+  border-radius: 8px;
+  color: var(--s-muted);
+  height: 12px;
+  margin: -8px -4px -8px 0;
+  opacity: 1;
+  padding: 10px;
+  width: 12px;
+}
+
+.gh-portal-notification-closeicon:hover {
+  background: var(--s-fill);
+  color: var(--s-text);
+}
+
+/* Phones: a bottom sheet with rounded top corners, as the subscribe sheet
+/* ---------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .gh-portal-popup-wrapper:not(.full-size),
+  .gh-portal-popup-wrapper.account-home {
+    background: none;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+
+  .gh-portal-popup-container:not(.full-size):not(.large-size):not(.preview),
+  .gh-portal-popup-container.account-home {
+    animation: simply-sheet 0.2s ease-out;
+    background: var(--s-card);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.12) !important;
+    margin: auto 0 0;
+    max-width: none;
+    padding: 28px 20px calc(24px + env(safe-area-inset-bottom)) !important;
+    width: 100% !important;
+  }
+
+  html.simply-dark .gh-portal-popup-container:not(.full-size):not(.large-size):not(.preview) {
+    box-shadow: 0 0 0 1px #262a2f !important;
+  }
+
+  .gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container,
+  .gh-portal-popup-container:not(.full-size) .gh-portal-btn-back {
+    height: 44px;
+    top: 8px;
+  }
+
+  .gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container {
+    right: 8px;
+    width: 44px;
+  }
+
+  .gh-portal-popup-container:not(.full-size) .gh-portal-btn-back {
+    left: 8px;
+  }
+
+  .gh-portal-popup-container:not(.full-size) .gh-portal-detail-header {
+    margin-top: -20px;
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gh-portal-popup-background,
+  .gh-portal-popup-container:not(.full-size):not(.large-size):not(.preview) {
+    animation: none;
+  }
+}
