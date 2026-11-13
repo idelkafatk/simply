@@ -51,7 +51,8 @@ const watchForm = form => {
       box.querySelector('[data-subscribe-email]').textContent = input.value
       box.classList.add('is-done')
       const done = box.querySelector('[data-subscribe-close].m-close')
-      if (done) done.focus({ preventScroll: true })
+      // focus for keyboard and screen readers, without a ring the reader didn't ask for
+      if (done) done.focus({ preventScroll: true, focusVisible: false })
     } else if (form.classList.contains('error')) {
       form.classList.remove('error')
       showError(form, SEND_FAILED)

@@ -285,9 +285,24 @@
   overflow-wrap: anywhere;
 }
 
+/* «Готово»: a quiet full-width secondary button, the same size as «Подписаться» */
 .m-close {
-  height: 44px;
-  padding: 0 22px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  border: 0;
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  height: 48px;
+  margin-top: 4px;
+  transition: background 0.12s;
+  width: 100%;
+}
+
+.m-close:hover {
+  background: color-mix(in srgb, var(--text) 12%, transparent);
 }
 
 /* the same block, inline under the post: the done state takes the form's place without changing the height */
