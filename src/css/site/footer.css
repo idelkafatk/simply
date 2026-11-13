@@ -1,0 +1,46 @@
+/* Footer: socials and RSS on the left, the city on the right
+/* ---------------------------------------------------------- */
+
+.foot {
+  padding: 32px 0 calc(24px + env(safe-area-inset-bottom));
+}
+
+.socials {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 15px;
+  margin: 0 0 0 -10px;
+  min-height: 44px;
+}
+
+.socials a {
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.socials a:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.socials svg {
+  display: block;
+  height: 20px;
+  width: 20px;
+}
+
+.geo {
+  align-items: center;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 14px;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.geo svg {
+  height: 16px;
+  width: 16px;
+}

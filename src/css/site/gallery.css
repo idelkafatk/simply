@@ -1,0 +1,180 @@
+/* Gallery carousel
+/* ----------------------------------------------------------
+   Ghost's gallery rows become one horizontal track of 400px slides
+   (src/js/util/gallery.js sets each slide's width from its picture, a video
+   card right next to a gallery becomes a slide; horizontal-carousel.js adds
+   dots, mouse drag and .is-static when every slide already fits). A slide is
+   as wide as its picture at this height, never wider than the row minus a
+   peek of the next one. On phones the track runs edge to edge. */
+
+.content .kg-gallery-card {
+  --gallery-height: 25rem;
+
+  margin: 1.6em 0;
+}
+
+.content .kg-gallery-card + .kg-gallery-card {
+  margin-top: 0.75em;
+}
+
+.content .kg-gallery-container {
+  -webkit-overflow-scrolling: touch;
+  align-items: flex-start;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  height: var(--gallery-height);
+  margin: 0;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  width: 100%;
+}
+
+.content .kg-gallery-container::-webkit-scrollbar {
+  display: none;
+}
+
+.content .kg-gallery-row {
+  display: contents;
+  margin: 0 !important;
+}
+
+.content .kg-gallery-image {
+  background: var(--surface);
+  border-radius: 8px;
+  flex: 0 0 min(var(--gallery-image-width, 13.333rem), calc(100% - 2.5rem)) !important;
+  height: var(--gallery-height) !important;
+  margin: 0 0.75rem 0 0 !important;
+  overflow: hidden;
+  scroll-snap-align: start;
+  width: min(var(--gallery-image-width, 13.333rem), calc(100% - 2.5rem));
+}
+
+.content .kg-gallery-row:last-child .kg-gallery-image:last-child {
+  margin-right: 0 !important;
+}
+
+.content .kg-gallery-image img,
+.content .kg-gallery-video video {
+  border-radius: 0;
+  display: block;
+  height: 100% !important;
+  margin: 0;
+  max-height: none;
+  object-fit: cover;
+  width: 100%;
+}
+
+.content .kg-gallery-video {
+  background: #111;
+}
+
+/* nothing to swipe: the slides sit in the middle instead of hugging the left edge */
+.content .kg-gallery-container.is-static {
+  justify-content: center;
+}
+
+/* mouse: free drag without snapping */
+@media (hover: hover) and (pointer: fine) {
+  .content .kg-gallery-container {
+    cursor: grab;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
+  .content .kg-gallery-container.is-static {
+    cursor: auto;
+  }
+
+  .content .kg-gallery-container .medium-zoom-image {
+    cursor: grab;
+  }
+
+  .content .kg-gallery-container.is-dragging,
+  .content .kg-gallery-container.is-dragging .medium-zoom-image {
+    cursor: grabbing;
+  }
+
+  .content .kg-gallery-image {
+    scroll-snap-align: none;
+  }
+
+  .content .kg-gallery-image img {
+    -webkit-user-drag: none;
+  }
+}
+
+.kg-gallery-pagination {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  height: 24px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.kg-gallery-pagination[hidden] {
+  display: none;
+}
+
+.kg-gallery-pagination-dot {
+  background: var(--muted);
+  border-radius: 50%;
+  height: 6px;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, width 0.2s ease;
+  width: 6px;
+}
+
+.kg-gallery-pagination-dot.is-active {
+  border-radius: 3px;
+  opacity: 0.9;
+  width: 16px;
+}
+
+/* Ghost's own video player chrome: the theme uses the browser's controls */
+.content .kg-video-overlay,
+.content .kg-video-player-container {
+  display: none !important;
+}
+
+/* A video card right next to a gallery is moved into its carousel by
+   util/gallery.js. Until then Ghost draws it as a full-width card and the page
+   jumps when it moves, so such cards are hidden from the start; without
+   JavaScript (no .has-js) they stay visible as ordinary cards. */
+.has-js .post-body .kg-gallery-card + figure.kg-video-card,
+.has-js .post-body figure.kg-video-card:has(+ .kg-gallery-card),
+.has-js .post-body .kg-gallery-card + .kg-video-card + figure.kg-video-card,
+.has-js .post-body figure.kg-video-card:has(+ .kg-video-card + .kg-gallery-card),
+.has-js .post-body .kg-gallery-card + .kg-video-card + .kg-video-card + figure.kg-video-card,
+.has-js .post-body figure.kg-video-card:has(+ .kg-video-card + .kg-video-card + .kg-gallery-card),
+.has-js .post-body figure.kg-video-card:has(+ .kg-video-card + .kg-video-card + .kg-video-card + .kg-gallery-card) {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /* the carousel runs edge to edge, slides start at the text margin */
+  .content .kg-gallery-card {
+    margin-left: calc(var(--gutter) * -1);
+    margin-right: calc(var(--gutter) * -1);
+    max-width: none;
+    width: auto;
+  }
+
+  .content .kg-gallery-container {
+    border-radius: 0;
+    padding: 0 var(--gutter);
+    scroll-padding-inline: var(--gutter);
+  }
+
+  .content .kg-gallery-image {
+    flex-basis: min(var(--gallery-image-width, 13.333rem), calc(100vw - 2.75rem)) !important;
+    width: min(var(--gallery-image-width, 13.333rem), calc(100vw - 2.75rem));
+  }
+}

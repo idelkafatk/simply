@@ -1,0 +1,235 @@
+/* Search
+/* ----------------------------------------------------------
+   Phone: a bottom sheet pinned to the bottom edge with rounded top corners and
+   a fixed height, so the field stays put while the results change; with the
+   keyboard up it stands on the keyboard (--search-keyboard-inset from
+   util/keyboard-inset.js). Desktop: a centred dialog. */
+
+.search[hidden] {
+  display: none;
+}
+
+.search-backdrop {
+  -webkit-backdrop-filter: blur(4px); /* stylelint-disable-line property-no-vendor-prefix */
+  appearance: none;
+  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, #000 40%, transparent);
+  border: 0;
+  inset: 0;
+  opacity: 0;
+  padding: 0;
+  position: fixed;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.search-sheet {
+  background: var(--bg);
+  border-radius: 20px 20px 0 0;
+  bottom: var(--search-keyboard-inset, 0px);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  height: min(60dvh, 520px, calc(100dvh - var(--search-keyboard-inset, 0px) - env(safe-area-inset-top, 0px) - 48px));
+  left: 0;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  position: fixed;
+  right: 0;
+  transform: translateY(100%);
+  transition: transform 0.24s ease, bottom 0.2s ease;
+  z-index: 11;
+}
+
+.search[data-keyboard] .search-sheet {
+  padding-bottom: 0;
+}
+
+.dark .search-sheet {
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.search-sheet:focus {
+  outline: none;
+}
+
+.is-search-open .search-backdrop {
+  opacity: 1;
+}
+
+.is-search-open .search-sheet {
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  html.is-search-open {
+    overflow: hidden;
+  }
+}
+
+.search-field {
+  align-items: center;
+  background: var(--surface);
+  border-radius: 14px;
+  display: flex;
+  flex: none;
+  gap: 8px;
+  margin: 12px 12px 4px;
+  padding: 0 4px 0 14px;
+}
+
+.dark .search-field {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.search-field-icon {
+  color: var(--muted);
+  flex: none;
+  height: 20px;
+  width: 20px;
+}
+
+.search-input {
+  appearance: none;
+  background: none;
+  border: 0;
+  color: var(--text);
+  flex: 1;
+  font-size: 16px; /* >=16px so iOS does not zoom */
+  height: 48px;
+  min-width: 0;
+  padding: 0;
+}
+
+.search-input::placeholder {
+  color: var(--muted);
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.search-clear,
+.search-cancel {
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  flex: none;
+  padding: 0;
+}
+
+/* iOS convention: clearing is a small filled disc in the field, closing a plain cross at the edge */
+.search-clear {
+  align-items: center;
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+  border-radius: 50%;
+  color: var(--muted);
+  display: flex;
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+}
+
+.search-clear svg {
+  height: 12px;
+  stroke-width: 3.5;
+  width: 12px;
+}
+
+.search-cancel {
+  align-items: center;
+  color: var(--text);
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+.search-cancel svg {
+  height: 22px;
+  width: 22px;
+}
+
+.search-cancel:hover {
+  color: var(--accent);
+}
+
+.search-results {
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px;
+}
+
+.search-results:empty {
+  display: none;
+}
+
+/* rows inside are the list rows, with the same right padding */
+.search-results .row {
+  margin: 0;
+  padding: 6px 16px 6px 8px;
+}
+
+.search-results .row.is-active {
+  background: var(--surface);
+}
+
+.dark .search-results .row:hover,
+.dark .search-results .row.is-active {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+/* the dark sheet is the surface colour, so the empty-cover tile steps one shade lighter */
+.dark .search-results .thumb.is-empty {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.search-message {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 0;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-backdrop,
+  .search-sheet {
+    transition: none;
+  }
+}
+
+/* desktop: a centred dialog rather than a sheet */
+@media (min-width: 641px) {
+  .search-sheet {
+    border-radius: 16px;
+    bottom: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    height: auto;
+    left: 50%;
+    margin: 0;
+    max-height: min(70vh, 640px);
+    max-width: 576px;
+    opacity: 0;
+    padding-bottom: 0;
+    right: auto;
+    top: 96px;
+    transform: translate(-50%, -12px);
+    transition: transform 0.24s ease, opacity 0.2s ease;
+    width: calc(100% - 32px);
+  }
+
+  .is-search-open .search-sheet {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

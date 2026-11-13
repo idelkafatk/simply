@@ -1,0 +1,102 @@
+/* Top bar
+/* ----------------------------------------------------------
+   The background runs edge to edge, the content stays in the column. On a
+   post the bar sticks, hides while reading down (.is-hidden) and, once the
+   page has moved, casts a soft shadow instead of a divider (.is-lifted). */
+
+.bar {
+  align-items: center;
+  background: var(--bg);
+  display: flex;
+  height: 60px;
+  justify-content: space-between;
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 var(--gutter);
+  position: relative;
+  top: 0;
+  transition: transform 0.25s ease;
+  z-index: 5;
+}
+
+.bar::before {
+  background: var(--bg);
+  content: "";
+  inset: 0 -100vmax;
+  position: absolute;
+  transition: box-shadow 0.25s;
+  z-index: -1;
+}
+
+.is-post .bar {
+  position: sticky;
+}
+
+.is-post .bar.is-lifted::before {
+  box-shadow: var(--bar-shadow);
+}
+
+.is-post .bar.is-hidden {
+  transform: translateY(-100%);
+  transition: transform 0.25s ease, visibility 0s 0.25s;
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .is-post .bar.is-hidden {
+    transition: none;
+  }
+}
+
+.me {
+  align-items: center;
+  display: flex;
+  font-weight: 600;
+  gap: 10px;
+  position: relative;
+}
+
+.me img {
+  border-radius: 50%;
+  height: 28px;
+  object-fit: cover;
+  width: 28px;
+}
+
+/* the back arrow hangs in the margin left of the column, so avatar and name sit at the same spot on home and post */
+.me .arrow {
+  color: var(--muted);
+  height: 20px;
+  left: -26px;
+  margin-top: -10px;
+  position: absolute;
+  top: 50%;
+  transition: transform 0.15s;
+  width: 20px;
+}
+
+.me:hover .arrow {
+  color: var(--text);
+  transform: translateX(-3px);
+}
+
+.is-list .me .arrow {
+  display: none;
+}
+
+.tools {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.theme {
+  margin-right: -8px;
+}
+
+@media (max-width: 640px) {
+  /* no room in a 16px gutter; avatar and name already lead home */
+  .me .arrow {
+    display: none;
+  }
+}

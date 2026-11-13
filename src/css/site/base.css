@@ -1,0 +1,307 @@
+/* Base
+/* ---------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%; /* stylelint-disable-line property-no-vendor-prefix */
+  overflow-y: scroll;
+  scrollbar-gutter: stable; /* nothing shifts when a list gets shorter */
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 var(--font);
+  margin: 0;
+  overflow-x: clip;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+button,
+input {
+  color: inherit;
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+}
+
+:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+[hidden],
+.hidden {
+  display: none !important;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.col {
+  margin: 0 auto;
+  max-width: 680px;
+  padding: 0 var(--gutter);
+}
+
+.page {
+  min-height: 60vh;
+}
+
+/* Buttons
+/* ---------------------------------------------------------- */
+
+/* orange buttons keep their colour: hover adds a soft glow of the same orange, pressing takes it away */
+.btn {
+  align-items: center;
+  background: var(--accent);
+  border: 0;
+  border-radius: 10px;
+  color: var(--accent-ink) !important;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 600;
+  justify-content: center;
+  padding: 8px 16px;
+  transition: box-shadow 0.15s ease;
+}
+
+.btn:not(:disabled):hover {
+  box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 75%, transparent);
+}
+
+.btn:not(:disabled):active {
+  box-shadow: none;
+}
+
+.btn:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.btn-sm {
+  height: 34px;
+  margin: 0 6px 0 0;
+  padding: 0 16px;
+}
+
+/* a quiet outlined button for secondary links («На главную», «Готово») */
+.btn-ghost {
+  align-items: center;
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--text) 16%, var(--bg));
+  border-radius: 10px;
+  color: var(--text) !important;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 7px 15px;
+  transition: border-color 0.12s;
+}
+
+.btn-ghost:hover {
+  border-color: var(--muted);
+}
+
+/* a filled surface button: «Обсудить», «Поделиться», «Показать ещё» */
+.act {
+  align-items: center;
+  background: var(--surface);
+  border: 0;
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 8px;
+  height: 44px;
+  justify-content: center;
+  padding: 0 18px;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.act:hover {
+  background: color-mix(in srgb, var(--text) 9%, var(--bg));
+}
+
+.act svg {
+  flex: none;
+  height: 18px;
+  width: 18px;
+}
+
+/* icon buttons in the bar and dialogs */
+.ibtn {
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--muted);
+  cursor: pointer;
+  display: grid;
+  height: 36px;
+  padding: 0;
+  place-items: center;
+  width: 36px;
+}
+
+.ibtn:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.ibtn svg {
+  height: 20px;
+  width: 20px;
+}
+
+@media (max-width: 640px) {
+  .ibtn {
+    height: 44px;
+    width: 44px;
+  }
+}
+
+.empty {
+  color: var(--muted);
+  margin: 28px 0;
+}
+
+/* Loading bar and pull to refresh (src/js/navigation.js)
+/* ---------------------------------------------------------- */
+
+.loadingBar {
+  background: var(--accent);
+  display: none;
+  height: 3px;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transform: translateX(100%);
+  z-index: 50;
+}
+
+.is-loading .loadingBar,
+.is-feed-loading .loadingBar {
+  animation: loading-bar 1.1s ease-in-out infinite;
+  display: block;
+}
+
+@keyframes loading-bar {
+  0% { transform: translateX(-100%); }
+  40% { transform: translateX(0); }
+  60% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+.pull-to-refresh {
+  align-items: center;
+  background: var(--bg);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  color: var(--accent);
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  transform: translate(-50%, -56px) scale(0.9);
+  transition: opacity 0.15s ease, transform 0.2s ease;
+  width: 44px;
+  z-index: 40;
+}
+
+.pull-to-refresh svg {
+  display: block;
+  height: 22px;
+  width: 22px;
+}
+
+.pull-to-refresh .opacity-25 {
+  opacity: 0.25;
+}
+
+.pull-to-refresh .opacity-75 {
+  opacity: 0.75;
+}
+
+.pull-to-refresh.is-pulling {
+  opacity: 1;
+  transform: translate(-50%, calc(-56px + var(--pull-distance))) scale(1);
+}
+
+.pull-to-refresh.is-pulling svg,
+.pull-to-refresh.is-refreshing svg {
+  animation: pull-to-refresh-spin 0.8s linear infinite;
+}
+
+.is-pull-active .col {
+  transform: translateY(var(--pull-distance));
+  transition: none;
+}
+
+.is-pull-resetting .col {
+  transform: translateY(0);
+  transition: transform 200ms ease-out;
+}
+
+.is-pull-refreshing .col {
+  transform: translateY(var(--pull-distance));
+  transition: transform 160ms ease-out;
+}
+
+@keyframes pull-to-refresh-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-loading .loadingBar,
+  .is-feed-loading .loadingBar {
+    animation: none;
+    transform: translateX(0);
+  }
+
+  .pull-to-refresh,
+  .is-pull-resetting .col,
+  .is-pull-refreshing .col {
+    transition: none;
+  }
+}

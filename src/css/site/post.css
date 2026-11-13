@@ -1,0 +1,181 @@
+/* Post
+/* ---------------------------------------------------------- */
+
+.post-title {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin: 32px 0 12px;
+}
+
+/* tags sit above the title; the title then needs less space above it */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.post-tags {
+  margin-top: 32px;
+}
+
+.post-tags + .post-title {
+  margin-top: 14px;
+}
+
+.tag {
+  background: var(--surface);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 4px 10px;
+  transition: background 0.12s, color 0.12s;
+}
+
+.tag:hover {
+  background: color-mix(in srgb, var(--text) 9%, var(--bg));
+  color: var(--text);
+}
+
+.post .meta {
+  color: var(--muted);
+  display: flex;
+  font-size: 15px;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.post .cover {
+  border-radius: 14px;
+  display: block;
+  height: auto;
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+/* below the post: space separates the blocks, no rules */
+.post-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 48px;
+}
+
+.act-wrap {
+  display: contents;
+}
+
+/* the caption keeps the width of its longer state, so nothing next to it moves */
+.share-text {
+  display: inline-grid;
+}
+
+.share-text > span {
+  grid-area: 1 / 1;
+}
+
+.share-sizer {
+  visibility: hidden;
+}
+
+/* both icons share one grid cell, so swapping them cannot shift the caption */
+.share-icons {
+  display: grid;
+  flex: none;
+}
+
+.share-icons > svg {
+  grid-area: 1 / 1;
+}
+
+.share-icons > svg + svg,
+.act.is-copied .share-icons > svg:first-child {
+  visibility: hidden;
+}
+
+.act.is-copied .share-icons > svg + svg {
+  visibility: visible;
+}
+
+.act.is-copied {
+  color: var(--link);
+}
+
+/* Ghost native comments */
+.post-comments {
+  margin-top: 40px;
+}
+
+.block-title {
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 48px 0 6px;
+}
+
+/* prev/next: two tiles side by side on every screen, one line each, long titles end with an ellipsis */
+.pn {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+  margin: 40px 0 0;
+}
+
+.pn > a {
+  align-items: center;
+  background: var(--surface);
+  border-radius: 12px;
+  display: flex;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 8px;
+  line-height: 1.4;
+  min-width: 0;
+  padding: 14px 16px;
+  transition: background 0.12s;
+}
+
+.pn > a:hover {
+  background: color-mix(in srgb, var(--text) 9%, var(--bg));
+}
+
+.pn > a span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pn a.next {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.pn svg {
+  color: var(--muted);
+  flex: none;
+  height: 18px;
+  width: 18px;
+}
+
+/* 404 and offline */
+.not-found {
+  padding-bottom: 24px;
+}
+
+.not-found .btn-ghost {
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .post-title {
+    font-size: 30px;
+  }
+
+  /* two equal halves on a phone */
+  .post-actions .act {
+    flex: 1;
+  }
+}

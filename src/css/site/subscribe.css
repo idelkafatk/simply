@@ -1,0 +1,356 @@
+/* Subscribe: modal (bottom sheet on phones) and the same block under a post
+/* ---------------------------------------------------------- */
+
+.modal {
+  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, #000 40%, transparent);
+  display: grid;
+  inset: 0;
+  opacity: 0;
+  padding: 16px;
+  place-items: center;
+  position: fixed;
+  transition: opacity 0.18s;
+  z-index: 20;
+}
+
+.modal.is-open {
+  opacity: 1;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal-card {
+  background: var(--bg);
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+  max-width: 400px;
+  padding: 32px 28px 28px;
+  position: relative;
+  text-align: center;
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.18s;
+  width: 100%;
+}
+
+.modal.is-open .modal-card {
+  transform: none;
+}
+
+.dark .modal-card {
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.modal-x {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.m-ava {
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
+  height: 64px;
+  object-fit: cover;
+  width: 64px;
+}
+
+.dark .modal .m-ava {
+  box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent);
+}
+
+.sub-box h2 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 16px 0 6px;
+}
+
+.m-lead {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0 auto 20px;
+  max-width: 300px;
+}
+
+.m-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  text-align: left;
+}
+
+.m-input {
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--text) 16%, var(--bg));
+  border-radius: 12px;
+  color: var(--muted);
+  display: flex;
+  gap: 10px;
+  height: 48px;
+  padding: 0 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.m-input:hover {
+  border-color: color-mix(in srgb, var(--text) 28%, var(--bg));
+}
+
+/* focus: the accent orange with a soft ring, not a black frame */
+.m-input:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text);
+}
+
+.m-input > span {
+  display: grid;
+  flex: none;
+  place-items: center;
+}
+
+.m-input svg {
+  display: block;
+  height: 18px;
+  width: 18px;
+}
+
+.m-input input {
+  background: none;
+  border: 0;
+  color: var(--text);
+  flex: 1;
+  font-size: 16px; /* >=16px so iOS does not zoom */
+  height: 100%;
+  min-width: 0;
+  outline: none;
+  padding: 0;
+}
+
+.m-input input::placeholder {
+  color: var(--muted);
+}
+
+.m-fields.is-invalid .m-input {
+  border-color: var(--danger);
+}
+
+.m-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin: -4px 0 0;
+}
+
+.m-error:empty {
+  display: none;
+}
+
+.m-submit {
+  height: 48px;
+  font-size: 16px;
+  border-radius: 12px;
+}
+
+.m-or {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 16px 0 8px;
+  text-align: center;
+}
+
+.m-alt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  position: relative;
+}
+
+.m-tg {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.m-tg:hover {
+  background: var(--surface);
+}
+
+.dark .modal .m-tg:hover {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.m-tg svg {
+  height: 18px;
+  width: 18px;
+}
+
+.m-tg[aria-pressed="true"] {
+  color: var(--link);
+}
+
+/* both push captions share one cell, so switching them moves nothing */
+.push-subscribe {
+  display: inline-grid;
+}
+
+.push-subscribe > .m-tg {
+  grid-area: 1 / 1;
+  justify-content: center;
+}
+
+.push-subscribe > .m-tg[hidden] {
+  display: inline-flex !important;
+  visibility: hidden;
+}
+
+/* a push message sits in the card's bottom padding, so it never moves the block */
+.m-status {
+  color: var(--muted);
+  font-size: 13px;
+  left: 0;
+  line-height: 1.4;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 100%;
+}
+
+.m-done {
+  display: none;
+}
+
+.sub-box.is-done .m-form {
+  display: none;
+}
+
+.sub-box.is-done .m-done {
+  display: block;
+}
+
+.m-check {
+  background: color-mix(in srgb, var(--accent) 15%, var(--bg));
+  border-radius: 50%;
+  color: var(--accent);
+  display: inline-grid;
+  height: 64px;
+  place-items: center;
+  width: 64px;
+}
+
+.m-check svg {
+  height: 30px;
+  width: 30px;
+}
+
+.m-email {
+  color: var(--text);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.m-close {
+  height: 44px;
+  padding: 0 22px;
+}
+
+/* the same block, inline under the post: the done state takes the form's place without changing the height */
+.sub-inline {
+  background: var(--surface);
+  border-radius: 20px;
+  display: grid;
+  margin: 40px 0 0;
+  padding: 32px 28px 28px;
+  text-align: center;
+}
+
+.sub-inline > div {
+  grid-area: 1 / 1;
+  margin: 0 auto;
+  max-width: 344px;
+  width: 100%;
+}
+
+.sub-inline .m-ava {
+  box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent);
+}
+
+.sub-inline .m-input {
+  background: var(--bg);
+}
+
+/* the block is already the surface colour, so its links step one shade darker on hover */
+.sub-inline .m-tg:hover {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.sub-inline .m-done {
+  align-self: center;
+  display: block;
+  visibility: hidden;
+}
+
+.sub-inline.is-done .m-form {
+  display: block;
+  visibility: hidden;
+}
+
+.sub-inline.is-done .m-done {
+  visibility: visible;
+}
+
+@media (max-width: 640px) {
+  .modal {
+    padding: 0;
+    place-items: end center;
+  }
+
+  .modal-card {
+    border-radius: 20px 20px 0 0;
+    max-width: none;
+    padding: 28px 20px calc(24px + env(safe-area-inset-bottom));
+    transform: translateY(30px);
+  }
+
+  .sub-inline {
+    padding: 28px 20px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal,
+  .modal-card {
+    transition: none;
+  }
+}
+
+/* with the keyboard up the sheet stands on it (util/keyboard-inset.js) */
+@media (max-width: 640px) {
+  .modal {
+    padding-bottom: var(--subscribe-keyboard-inset, 0px);
+    transition: opacity 0.18s, padding-bottom 0.2s ease;
+  }
+
+  .modal[data-keyboard] .modal-card {
+    padding-bottom: 24px;
+  }
+}
+
+/* the card takes focus on open only to keep the phone keyboard down */
+.modal-card:focus {
+  outline: none;
+}

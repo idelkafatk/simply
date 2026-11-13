@@ -8,6 +8,7 @@
     "function-calc-no-unspaced-operator": true,
     "string-quotes": "double",
     "no-duplicate-selectors": null,
+    "no-descending-specificity": null,
     "at-rule-no-unknown": null,
     "color-hex-case": null,
     "color-named": "never",

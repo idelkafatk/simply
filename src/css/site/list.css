@@ -1,0 +1,160 @@
+/* Topics and post list
+/* ---------------------------------------------------------- */
+
+/* quiet text links in one line, not sticky; the active one is dark and underlined in the accent colour */
+.tabs {
+  color: var(--muted);
+  display: flex;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 22px;
+  margin: 4px 0;
+  overflow-x: auto;
+  padding: 6px 0 2px;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs a {
+  flex: none;
+  padding: 6px 0;
+  position: relative;
+  transition: color 0.12s;
+  white-space: nowrap;
+}
+
+.tabs a:hover,
+.tabs a.on {
+  color: var(--text);
+}
+
+.tabs a.on::after {
+  background: var(--accent);
+  border-radius: 1px;
+  bottom: 0;
+  content: "";
+  height: 2px;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.month {
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 28px 0 6px;
+}
+
+.row {
+  align-items: center;
+  border-radius: 12px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
+  margin: 0 -16px 0 -8px;
+  padding: 8px 16px 8px 8px;
+  transition: background 0.12s;
+}
+
+.row:hover {
+  background: var(--surface);
+}
+
+.thumb {
+  aspect-ratio: 3 / 2;
+  border-radius: 8px;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 84px;
+}
+
+/* hand-drawn covers have a flat paper background: blend it into the row */
+.thumb.art {
+  mix-blend-mode: multiply;
+}
+
+.dark .thumb.art {
+  mix-blend-mode: lighten;
+}
+
+/* posts without a cover get a quiet tile, so titles stay in one line down the list */
+.thumb.is-empty {
+  background: var(--surface);
+  color: color-mix(in srgb, var(--muted) 55%, var(--bg));
+  display: grid;
+  place-items: center;
+  transition: background 0.12s;
+}
+
+.thumb.is-empty svg {
+  height: 20px;
+  width: 20px;
+}
+
+.row:hover .thumb.is-empty {
+  background: color-mix(in srgb, var(--text) 7%, var(--bg));
+}
+
+.row .t {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.row .d {
+  color: var(--muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* "load more" (src/js/pagination.js) */
+.load-more-btn {
+  display: flex;
+  margin: 24px auto 0;
+  min-width: 200px;
+}
+
+.load-more-btn.hidden {
+  display: none !important;
+}
+
+.feed-loading-status,
+.feed-load-error {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 24px 0 0;
+  text-align: center;
+}
+
+.feed-load-retry {
+  color: var(--link);
+  margin-left: 6px;
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .thumb {
+    width: 72px;
+  }
+
+  .row .d {
+    display: none;
+  }
+}
