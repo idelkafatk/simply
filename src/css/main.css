@@ -1,6 +1,6 @@
 /* idel.blog — redesign 2026-11
 /* ----------------------------------------------------------
-   One centred 680px column, Rubik everywhere, accent #e2703f in both themes.
+   One centred 680px column, Golos Text for the interface, Literata for the post body, accent #e2703f in both themes.
    No hairline dividers anywhere: blocks are separated by space, filled
    surfaces or a soft shadow. The previous Tailwind look lives in the files
    next to this folder; nothing imports them any more. */

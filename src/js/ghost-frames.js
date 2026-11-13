@@ -2,7 +2,7 @@
 /* ----------------------------------------------------------
    Portal (signup, signin, account, notifications) and comments-ui render
    into same-origin iframes, out of reach of the page's CSS. This puts the
-   theme's styles into them: Rubik, and the built ghost-portal.css or
+   theme's styles into them: the Golos Text font, and the built ghost-portal.css or
    ghost-comments.css as a <style> at the end of the frame's head (the URLs
    come from <link data-ghost-frame-css> in the templates). It also mirrors
    the site's .dark onto the frame's <html> as .simply-dark.
@@ -88,7 +88,7 @@ const styleDocument = frame => {
   let style = doc.getElementById(STYLE_ID)
   if (style) return keepLast(doc, style)
 
-  const font = document.querySelector('link[href*="fonts.googleapis.com"][href*="Rubik"]')
+  const font = document.querySelector('link[href*="fonts.googleapis.com"][href*="Golos"]')
   if (font && !doc.getElementById(FONT_ID)) {
     const link = doc.createElement('link')
     link.id = FONT_ID

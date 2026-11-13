@@ -2,7 +2,8 @@
 /* ---------------------------------------------------------- */
 
 .content {
-  font-size: 19px;
+  font-family: var(--font-text);
+  font-size: 18px; /* Literata has tall lowercase: 18px reads like 19px of a sans */
   line-height: 1.7;
   overflow-wrap: break-word;
 }
@@ -87,6 +88,18 @@
 
 .content figure {
   margin: 1.6em 0;
+}
+
+/* only the running text is serif: captions and Ghost's cards stay in the interface face */
+.content figcaption,
+.content .kg-button-card,
+.content .kg-file-card,
+.content .kg-toggle-card,
+.content .kg-product-card,
+.content .kg-header-card,
+.content .kg-signup-card,
+.content .kg-cta-card {
+  font-family: var(--font);
 }
 
 .content figcaption {
@@ -312,7 +325,7 @@
 
 @media (max-width: 640px) {
   .content {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .content .kg-bookmark-thumbnail {

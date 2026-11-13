@@ -13,7 +13,8 @@
   --accent-ink: #fff;
   --link: #b8501f;
   --danger: #d93a2b;
-  --font: var(--gh-font-body, "Rubik"), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font: var(--gh-font-body, "Golos Text"), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-text: "Literata", Georgia, "Times New Roman", serif; /* the post body: a reading face, the rest stays sans */
   --font-heading: var(--gh-font-heading, var(--font));
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --gutter: 24px;

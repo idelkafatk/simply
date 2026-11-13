@@ -22,7 +22,7 @@
   --s-fill-hover: color-mix(in srgb, var(--s-text) 12%, transparent);
   --s-row: var(--s-surface);
   --s-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
-  --s-font: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --s-font: "Golos Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Portal's own palette, mapped onto the blog's */
   --grey0: var(--s-text);
