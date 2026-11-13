@@ -62,10 +62,9 @@ import InfiniteScroll from 'infinite-scroll'
 
     if (!infScroll.canLoad) {
       hideButton()
-    } else if (infScroll.loadCount === 1) {
-      infScroll.options.loadOnScroll = false
-      showButton()
-    } else if (infScroll.options.loadOnScroll) {
+    } else {
+      // Every page loads on scroll: the blog has only a few pages, so the
+      // footer is reached soon anyway. The button stays as a fallback.
       hideButton()
     }
   })
