@@ -133,7 +133,13 @@
   display: flex;
   height: 22px;
   justify-content: center;
+  transition: background 0.12s, color 0.12s;
   width: 22px;
+}
+
+.search-clear:hover {
+  background: color-mix(in srgb, var(--text) 22%, transparent);
+  color: var(--text);
 }
 
 .search-clear svg {
