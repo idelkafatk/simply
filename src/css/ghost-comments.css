@@ -1,0 +1,286 @@
+/* Ghost comments, restyled to match the blog
+/* ----------------------------------------------------------
+   Not linked from the page: src/js/ghost-frames.js fetches the built file
+   and puts it as a <style> into comments-ui's same-origin iframe
+   (title="comments-frame"). comments-ui is built from Tailwind utilities, so
+   rules hang on its data-testid hooks and .gh-comment-content; when those
+   change the widget simply keeps Ghost's look. !important only where
+   comments-ui writes inline styles (avatar colours, accent buttons). */
+
+:root {
+  --s-bg: #fff;
+  --s-surface: #f6f6f4;
+  --s-text: #2b2d31;
+  --s-muted: #6b6f75;
+  --s-link: #b8501f;
+  --s-accent: #e2703f;
+  --s-line: color-mix(in srgb, var(--s-text) 16%, var(--s-bg));
+  --s-fill: color-mix(in srgb, var(--s-text) 7%, transparent);
+  --s-fill-hover: color-mix(in srgb, var(--s-text) 12%, transparent);
+  --s-font: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* the site's .dark, mirrored onto the frame by ghost-frames.js */
+html.simply-dark {
+  --s-bg: #161719;
+  --s-surface: #1c1f23;
+  --s-text: #e8eaed;
+  --s-muted: #8b9198;
+  --s-link: #f2955f;
+}
+
+html {
+  background: var(--s-bg);
+  font-family: var(--s-font);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  color: var(--s-text);
+}
+
+.ghost-display {
+  font-family: var(--s-font);
+}
+
+.ghost-display button,
+.ghost-display h1,
+.ghost-display h2,
+.ghost-display h3,
+.ghost-display h4,
+.ghost-display p {
+  font-family: var(--s-font);
+}
+
+/* «Комментарии»: the same small muted heading as «Ещё почитать» */
+.ghost-display [data-testid="title"] {
+  color: var(--s-muted);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+
+/* Comments
+/* ---------------------------------------------------------- */
+
+.ghost-display [data-testid="comment-component"] h4 {
+  color: var(--s-text);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* the date follows the name after a gap, without the «·» */
+.ghost-display [data-testid="comment-component"] h4 + div {
+  color: var(--s-muted);
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.ghost-display [data-testid="comment-component"] h4 + div a[href^="#ghost-comments"] > span:first-child {
+  display: none;
+}
+
+/* «Добавить свой опыт» next to the name in the editor, also without the «·» */
+.ghost-display [data-testid="expertise-button"] {
+  color: var(--s-muted);
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.ghost-display [data-testid="expertise-button"]:hover {
+  color: var(--s-text);
+}
+
+.ghost-display [data-testid="expertise-button"] > span > span:first-child {
+  display: none;
+}
+
+.ghost-display [data-testid="comment-content"] {
+  color: var(--s-text);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.ghost-display .gh-comment-content a {
+  color: var(--s-link);
+}
+
+.ghost-display .gh-comment-content blockquote {
+  border-left-color: var(--s-accent);
+}
+
+.ghost-display [data-testid="like-button"],
+.ghost-display [data-testid="dislike-button"],
+.ghost-display [data-testid="reply-button"],
+.ghost-display [data-testid="more-button"] {
+  color: var(--s-muted);
+  font-size: 14px;
+}
+
+.ghost-display [data-testid="like-button"]:hover,
+.ghost-display [data-testid="dislike-button"]:hover,
+.ghost-display [data-testid="reply-button"]:hover,
+.ghost-display [data-testid="more-button"]:hover {
+  color: var(--s-text);
+}
+
+/* a liked comment: the thumb in the accent instead of solid black */
+.ghost-display [data-testid="like-button"][aria-label="Remove like"] {
+  color: var(--s-accent);
+}
+
+.ghost-display [data-testid="like-button"][aria-label="Remove like"] svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* avatars: initials in the accent on a soft accent circle, the colour of the
+   subscribe dialog's check; comments-ui writes a random colour inline */
+.ghost-display [data-testid="avatar-background"] {
+  background: color-mix(in srgb, var(--s-accent) 15%, var(--s-bg)) !important;
+}
+
+.ghost-display [data-testid="avatar-background"] p {
+  color: var(--s-accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* replies are set off by their indent; the thread lines go */
+.ghost-display [data-testid="replies-line"],
+.ghost-display [data-testid="comment-elements"] [class~="border-l"] {
+  border-color: transparent;
+}
+
+/* Editor: the blog's input, an orange ring on focus
+/* ---------------------------------------------------------- */
+
+.ghost-display [data-testid="form-editor"] {
+  background: none;
+  border: 1px solid var(--s-line);
+  border-radius: 12px;
+  color: var(--s-text);
+  font-size: 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ghost-display [data-testid="form-editor"]:hover {
+  border-color: color-mix(in srgb, var(--s-text) 28%, var(--s-bg));
+}
+
+.ghost-display [data-testid="form"]:focus-within [data-testid="form-editor"] {
+  border-color: var(--s-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--s-accent) 18%, transparent);
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--s-muted) !important; /* comments-ui marks its placeholder !important */
+}
+
+/* Buttons
+/* ---------------------------------------------------------- */
+
+/* the accent with white text, 12px corners */
+.ghost-display [data-testid="submit-form-button"],
+.ghost-display [data-testid="signup-button"] {
+  background-color: var(--s-accent) !important;
+  border-radius: 12px;
+  color: #fff;
+  font-family: var(--s-font);
+  font-size: 15px;
+  font-weight: 600;
+  transition: box-shadow 0.15s;
+}
+
+.ghost-display [data-testid="submit-form-button"]:not(:disabled):hover,
+.ghost-display [data-testid="signup-button"]:hover {
+  box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--s-accent) 75%, transparent);
+  filter: none;
+  opacity: 1;
+}
+
+.ghost-display [data-testid="submit-form-button"]:disabled {
+  background-color: var(--s-fill) !important;
+  color: var(--s-muted);
+}
+
+/* «Сортировать по» */
+.ghost-display [data-testid="comments-sorting-form"],
+.ghost-display [data-testid="comments-sorting-form"] button {
+  color: var(--s-text);
+}
+
+.ghost-display [data-testid="comments-sorting-form"] > div {
+  background: var(--s-surface);
+  border: 0;
+  border-radius: 12px;
+  color: var(--s-text);
+}
+
+/* «Загрузить ещё»: the filled surface button of the blog («Показать ещё») */
+.ghost-display [data-testid="pagination-component"] > span {
+  background: var(--s-surface);
+  border-radius: 12px;
+  color: var(--s-text);
+  font-size: 15px;
+  font-weight: 500;
+  height: 44px;
+  padding: 0 18px;
+}
+
+.ghost-display [data-testid="pagination-component"]:hover > span {
+  background: color-mix(in srgb, var(--s-text) 9%, var(--s-bg));
+  color: var(--s-text);
+}
+
+/* Signed out: a filled block, as the subscribe block under a post
+/* ---------------------------------------------------------- */
+
+.ghost-display [data-testid="cta-box"] {
+  background: var(--s-surface);
+  border-radius: 20px;
+  padding: 32px 28px 28px;
+}
+
+.ghost-display [data-testid="cta-box"] h1 {
+  color: var(--s-text);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.ghost-display [data-testid="cta-box"] p {
+  color: var(--s-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.ghost-display [data-testid="cta-box"] h1 + p {
+  margin-bottom: 20px;
+}
+
+.ghost-display [data-testid="cta-box"] p span {
+  font-size: 15px;
+}
+
+.ghost-display [data-testid="signup-button"] {
+  height: 48px;
+  max-width: 344px;
+  padding: 0 24px;
+  width: 100%;
+}
+
+.ghost-display [data-testid="signin-button"] {
+  color: var(--s-link) !important; /* comments-ui writes the accent inline */
+  font-size: 15px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .ghost-display [data-testid="cta-box"] {
+    padding: 28px 20px 24px;
+  }
+}
