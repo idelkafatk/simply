@@ -52,7 +52,22 @@ const syncTheme = doc => doc.documentElement.classList.toggle('simply-dark', isD
 // comments-ui dialogs live in a full-screen frame over the page: it must stay transparent
 const POPUP_TITLES = ['addDetailsPopup', 'reportPopup', 'ctaPopup', 'deletePopup']
 const markPopup = (frame, doc) => {
-  if (POPUP_TITLES.includes(frame.getAttribute('title'))) doc.documentElement.classList.add('simply-comments-popup')
+  if (!POPUP_TITLES.includes(frame.getAttribute('title'))) return
+  if (doc.documentElement.classList.contains('simply-comments-popup')) return
+  doc.documentElement.classList.add('simply-comments-popup')
+
+  // «Сохранить» in the profile dialog has no busy state of its own: show the
+  // dots until the dialog closes (it closes on success). With an empty name
+  // Ghost answers at once with an error, so no dots then; if the save fails
+  // the dialog stays open and the button comes back after a few seconds.
+  doc.addEventListener('click', event => {
+    const button = event.target.closest && event.target.closest('[data-testid="save-button"]')
+    if (!button) return
+    const name = doc.querySelector('[data-testid="name-input"]')
+    if (name && !name.value.trim()) return
+    button.classList.add('simply-busy')
+    window.setTimeout(() => button.classList.remove('simply-busy'), 8000)
+  }, true)
 }
 
 // Portal and comments-ui add their own <style> to the head while mounting;

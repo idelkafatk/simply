@@ -497,3 +497,63 @@ html.simply-dark.simply-comments-popup [data-testid$="-modal"] input {
     padding: 28px 20px calc(24px + env(safe-area-inset-bottom));
   }
 }
+
+/* Loading: the blog's three dots
+/* ----------------------------------------------------------
+   comments-ui shows a spinning arc (svg#loader-1) while a comment, report or
+   delete is sent, and nothing at all while «Сохранить» saves the profile
+   (ghost-frames.js marks that button .simply-busy). Both get the blog's
+   three pulsing white dots over the button, the label hidden but keeping
+   the width. One pseudo-element draws all three dots as gradient layers;
+   the keyframes reproduce .dots-loader (900ms, each dot 300ms after the
+   previous one, growing to 1.7×). */
+
+.ghost-display button:has(#loader-1),
+html .simply-busy.simply-busy { /* above the save button's own white text */
+  color: transparent !important;
+  pointer-events: none;
+  position: relative;
+}
+
+.ghost-display button:has(#loader-1) > *,
+.simply-busy > * {
+  visibility: hidden;
+}
+
+.ghost-display button:has(#loader-1)::after,
+.simply-busy::after {
+  animation: simply-dots 900ms linear infinite;
+  background:
+    radial-gradient(circle closest-side, #fff 92%, transparent) calc(50% - 13px) 50% / 7px 7px no-repeat,
+    radial-gradient(circle closest-side, #fff 92%, transparent) 50% 50% / 7px 7px no-repeat,
+    radial-gradient(circle closest-side, #fff 92%, transparent) calc(50% + 13px) 50% / 7px 7px no-repeat;
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+@keyframes simply-dots {
+  0% { background-size: 7px 7px, 9.5px 9.5px, 7.1px 7.1px; }
+  11.1% { background-size: 7px 7px, 7px 7px, 9.6px 9.6px; }
+  22% { background-size: 7px 7px, 7px 7px, 12px 12px; }
+  33.3% { background-size: 7.1px 7.1px, 7px 7px, 9.5px 9.5px; }
+  44.5% { background-size: 9.6px 9.6px, 7px 7px, 7px 7px; }
+  55.3% { background-size: 12px 12px, 7px 7px, 7px 7px; }
+  66.7% { background-size: 9.5px 9.5px, 7.1px 7.1px, 7px 7px; }
+  77.8% { background-size: 7px 7px, 9.6px 9.6px, 7px 7px; }
+  88.7% { background-size: 7px 7px, 12px 12px, 7px 7px; }
+  100% { background-size: 7px 7px, 9.5px 9.5px, 7.1px 7.1px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost-display button:has(#loader-1)::after,
+  .simply-busy::after {
+    animation: simply-dots-pulse 900ms ease-in-out infinite;
+  }
+}
+
+@keyframes simply-dots-pulse {
+  0%,
+  100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
