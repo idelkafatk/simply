@@ -13,11 +13,8 @@
     </a>
     <div class="tools">
         {{#if @site.members_enabled}}
-            {{#if @member}}
-                <a class="ibtn" href="#/portal/account" data-portal="account" aria-label="Аккаунт" title="Аккаунт">{{> "site/icon" name="person"}}</a>
-            {{else}}
-                <button class="btn btn-sm" type="button" data-subscribe-open aria-haspopup="dialog">Подписаться</button>
-            {{/if}}
+            {{!-- Same for everyone: Ghost only recognises a subscriber who opened the sign-in link in this very browser. --}}
+            <button class="btn btn-sm" type="button" data-subscribe-open aria-haspopup="dialog">Подписаться</button>
         {{/if}}
         <button class="ibtn" type="button" data-search-open aria-label="Поиск" title="Поиск" aria-haspopup="dialog" aria-controls="search-sheet">{{> "site/icon" name="search"}}</button>
         <button class="ibtn theme js-dark-mode" type="button" aria-label="Сменить тему" title="Сменить тему">
