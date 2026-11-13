@@ -57,7 +57,11 @@ document.addEventListener('click', event => {
   if (link && shouldShowLoading(event, link)) setLoading(true)
 })
 
-document.addEventListener('submit', () => setLoading(true))
+// Member forms are sent in place by Portal's script; the page stays.
+document.addEventListener('submit', event => {
+  if (event.defaultPrevented || event.target.closest('[data-members-form]')) return
+  setLoading(true)
+})
 window.addEventListener('pageshow', () => setLoading(false))
 
 const setupPullToRefresh = () => {
@@ -78,7 +82,8 @@ const setupPullToRefresh = () => {
   let isRefreshing = false
   let resetTimer
 
-  const isMobileMenuOpen = () => document.body.classList.contains('has-mobile-menu')
+  const isMobileMenuOpen = () => rootElement.classList.contains('has-modal') ||
+    rootElement.classList.contains('is-search-open')
 
   const setStatus = message => {
     if (status.textContent !== message) status.textContent = message

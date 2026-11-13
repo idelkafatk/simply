@@ -139,7 +139,12 @@ export const initHorizontalCarousel = ({
   let scrollingTimeout
 
   const updateCarousel = () => {
+    // Centred slides still overflow to the right once they stop fitting, so
+    // the measurement holds with .is-static on.
     const hasOverflow = carousel.scrollWidth > carousel.clientWidth + 1
+    // When every slide fits there is nothing to swipe: no dots, and the slides
+    // sit in the middle instead of hugging the left edge.
+    carousel.classList.toggle('is-static', !hasOverflow)
     const remainingScroll = carousel.scrollWidth - carousel.clientWidth - carousel.scrollLeft
     const visibleIndex = getVisibleItemIndex(carousel, items)
 

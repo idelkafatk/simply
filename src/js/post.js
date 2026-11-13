@@ -9,6 +9,11 @@ import docSelectorAll from './util/document-query-selector-all'
 import { initGalleryCards } from './util/gallery'
 
 const simplyPost = () => {
+  /* «Обсудить»
+  /* ---------------------------------------------------------- */
+  // The Telegram bot writes the post's discussion link into its code injection
+  // as [data-telegram-discussion-url]. When it is there, «Обсудить» opens that
+  // discussion; otherwise it keeps the channel link from the theme settings.
   const telegramDiscussion = () => {
     const metadata = document.querySelector('[data-telegram-discussion-url]')
     const container = document.querySelector('[data-telegram-discussion]')
@@ -22,11 +27,8 @@ const simplyPost = () => {
 
       link.href = url.toString()
       container.hidden = false
-
-      const actions = container.closest('[data-publication-actions]')
-      if (actions) actions.hidden = false
     } catch {
-      // Invalid metadata leaves the discussion block hidden.
+      // Invalid metadata leaves the channel link in place.
     }
   }
 
@@ -44,16 +46,8 @@ const simplyPost = () => {
       'iframe[src*="kickstarter.com"][src*="video.html"]'
     ]
 
-    const $iframes = docSelectorAll(selectors.join(','))
-
-    if (!$iframes.length) return
-
-    $iframes.forEach(el => {
+    docSelectorAll(selectors.join(',')).forEach(el => {
       el.classList.add('aspect-video', 'w-full')
-      // const parentForVideo = document.createElement('div')
-      // parentForVideo.className = 'video-responsive'
-      // el.parentNode.insertBefore(parentForVideo, el)
-      // parentForVideo.appendChild(el)
       el.removeAttribute('height')
       el.removeAttribute('width')
     })
@@ -61,22 +55,28 @@ const simplyPost = () => {
 
   videoResponsive()
 
+  /* Gallery Card
+  /* ---------------------------------------------------------- */
+  // Before zoom, so pictures moved into a carousel are zoomable too.
+  initGalleryCards(document)
+
   /* medium-zoom
   /* ---------------------------------------------------------- */
+  // The overlay colour follows the theme through --zoom-bg (content.css).
   const mediumZoomImg = () => {
     docSelectorAll('.post-body img').forEach(el => !el.closest('a') && el.classList.add('simply-zoom'))
 
-    mediumZoom('.simply-zoom', {
-      margin: 20,
-      background: 'hsla(0,0%,100%,.85)'
-    })
+    mediumZoom('.simply-zoom', { margin: 20 })
   }
 
   mediumZoomImg()
 
-  /* Gallery Card
+  /* Plain videos play with the browser's own controls
   /* ---------------------------------------------------------- */
-  initGalleryCards(document)
+  docSelectorAll('.post-body .kg-video-card video').forEach(video => {
+    video.controls = true
+    video.removeAttribute('hidden')
+  })
 
   /* highlight prismjs
   /* ---------------------------------------------------------- */

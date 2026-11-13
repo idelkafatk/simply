@@ -1,7 +1,8 @@
 /* Search
 /* ----------------------------------------------------------
    Replaces Ghost's sodo-search. The index is fetched lazily on first open,
-   so nothing is downloaded for readers who never search.
+   so nothing is downloaded for readers who never search. Results are drawn
+   as the list rows of the home page (partials/site/row.hbs).
 /* ---------------------------------------------------------- */
 
 import { trackKeyboardInset } from './util/keyboard-inset'
@@ -9,7 +10,8 @@ import { trackKeyboardInset } from './util/keyboard-inset'
 const INDEX_LIMIT = 'all'
 const MAX_RESULTS = 20
 const MAX_RECENT = 8
-const SNIPPET_RADIUS = 60
+const DESKTOP = '(min-width: 641px)'
+const MONTHS = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']
 
 const normalize = value => (value || '')
   .toLowerCase()
@@ -24,8 +26,6 @@ const escapeHtml = value => value.replace(/[&<>"']/g, character => ({
   '"': '&quot;',
   "'": '&#39;'
 }[character]))
-
-const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 // Crude Russian stemming: "виза", "визу" and "визах" all reduce to "виз" so they
 // match each other, with substring matching covering the rest. This is nowhere
@@ -57,38 +57,25 @@ const stem = token => {
   return result
 }
 
-// Wraps every token occurrence in <mark>. Input is escaped first, so the only
-// tags in the output are the ones added here.
-const highlight = (text, tokens) => {
-  const escaped = escapeHtml(text)
-  if (!tokens.length) return escaped
+// The 300px size of a Ghost image, as the list rows use it.
+const thumbUrl = url => /\/content\/images\/(?!size\/)/.test(url)
+  ? url.replace('/content/images/', '/content/images/size/w300/')
+  : url
 
-  // Tokens are stems, so the match is extended over the rest of the word —
-  // searching "виза" highlights the whole of "визе", not just "виз".
-  const pattern = new RegExp(`(${tokens.map(escapeRegExp).join('|')})[\\p{L}\\p{N}]*`, 'giu')
+const NOTE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>'
 
-  return escaped.replace(pattern, '<mark>$&</mark>')
-}
+// The same markup as partials/site/row.hbs. -light/-dark covers are swapped to
+// the current theme by themedImages() in main.js as the rows are added.
+const rowHtml = post => {
+  const art = /-(light|dark)\./.test(post.image) ? ' art' : ''
+  const thumb = post.image
+    ? `<img class="thumb${art}" src="${escapeHtml(thumbUrl(post.image))}" width="84" height="56" alt="" loading="lazy" decoding="async">`
+    : `<span class="thumb is-empty">${NOTE_ICON}</span>`
+  const date = post.date ? new Date(post.date) : null
+  const label = date ? `${date.getDate()} ${MONTHS[date.getMonth()]}` : ''
 
-// Pulls the region of the body text around the first match, so the reader sees
-// why the post was returned rather than a generic opening paragraph.
-const buildSnippet = (plaintext, tokens) => {
-  if (!plaintext) return ''
-
-  const haystack = normalize(plaintext)
-  let index = -1
-
-  tokens.forEach(token => {
-    const found = haystack.indexOf(token)
-    if (found !== -1 && (index === -1 || found < index)) index = found
-  })
-
-  if (index === -1) return plaintext.slice(0, SNIPPET_RADIUS * 2)
-
-  const start = Math.max(0, index - SNIPPET_RADIUS)
-  const end = Math.min(plaintext.length, index + SNIPPET_RADIUS * 2)
-
-  return `${start > 0 ? '…' : ''}${plaintext.slice(start, end).trim()}${end < plaintext.length ? '…' : ''}`
+  return `<a class="row" role="option" aria-selected="false" href="${escapeHtml(post.url)}">${thumb}` +
+    `<span class="t">${escapeHtml(post.title)}</span><span class="d">${label}</span></a>`
 }
 
 const scorePost = (post, tokens) => {
@@ -120,9 +107,8 @@ export const initSearch = () => {
   const resultsEl = root.querySelector('[data-search-results]')
   const messageEl = root.querySelector('[data-search-message]')
   const clearButton = root.querySelector('[data-search-clear]')
-  const sectionEl = root.querySelector('[data-search-section]')
   const closeControls = root.querySelectorAll('[data-search-close]')
-  const documentBody = document.body
+  const rootEl = document.documentElement
 
   let posts = null
   let indexRequest = null
@@ -136,18 +122,13 @@ export const initSearch = () => {
     messageEl.hidden = !text
   }
 
-  const setSection = text => {
-    sectionEl.textContent = text || ''
-    sectionEl.hidden = !text
-  }
-
   const loadIndex = () => {
     if (indexRequest) return indexRequest
 
     const key = root.dataset.searchKey
     const url = `${window.location.origin}/ghost/api/content/posts/` +
       `?key=${encodeURIComponent(key)}&limit=${INDEX_LIMIT}` +
-      '&fields=id,title,url,excerpt,plaintext&formats=plaintext&order=published_at%20desc'
+      '&fields=id,title,url,excerpt,plaintext,feature_image,published_at&formats=plaintext&order=published_at%20desc'
 
     indexRequest = window.fetch(url)
       .then(response => {
@@ -160,6 +141,8 @@ export const initSearch = () => {
           url: post.url,
           excerpt: post.excerpt || '',
           plaintext: post.plaintext || '',
+          image: post.feature_image || '',
+          date: post.published_at,
           searchTitle: normalize(post.title),
           searchExcerpt: normalize(post.excerpt),
           searchBody: normalize(post.plaintext)
@@ -190,23 +173,10 @@ export const initSearch = () => {
     })
   }
 
-  const render = (results, tokens) => {
+  const render = results => {
     currentResults = results
     activeIndex = -1
-
-    if (!results.length) {
-      resultsEl.innerHTML = ''
-      return
-    }
-
-    resultsEl.innerHTML = results.map(post => {
-      const snippet = buildSnippet(post.plaintext || post.excerpt, tokens)
-
-      return `<a class="search-result" role="option" aria-selected="false" href="${escapeHtml(post.url)}">
-        <div class="search-result-title">${highlight(post.title, tokens)}</div>
-        <div class="search-result-excerpt">${highlight(snippet, tokens)}</div>
-      </a>`
-    }).join('')
+    resultsEl.innerHTML = results.map(rowHtml).join('')
   }
 
   // The index is ordered newest first, so an empty query can offer something to
@@ -214,13 +184,11 @@ export const initSearch = () => {
   // is already being fetched when the sheet opens.
   const showRecent = () => {
     if (!posts || !posts.length) {
-      render([], [])
-      setSection('')
+      render([])
       return
     }
 
-    render(posts.slice(0, MAX_RECENT), [])
-    setSection(root.dataset.searchRecent || 'Последние публикации')
+    render(posts.slice(0, MAX_RECENT))
     setMessage('')
   }
 
@@ -234,9 +202,11 @@ export const initSearch = () => {
       return
     }
 
-    setSection('')
+    let tokens = query.split(' ').filter(Boolean).map(stem)
 
-    const tokens = query.split(' ').filter(Boolean).map(stem)
+    // One-letter words ("в", "и") match inside nearly every post; drop them
+    // when there is a real word to search by.
+    if (tokens.some(token => token.length > 1)) tokens = tokens.filter(token => token.length > 1)
 
     const search = () => {
       const results = posts
@@ -246,7 +216,7 @@ export const initSearch = () => {
         .slice(0, MAX_RESULTS)
         .map(entry => entry.post)
 
-      render(results, tokens)
+      render(results)
       setMessage(results.length ? '' : root.dataset.searchEmpty || 'Ничего не найдено')
     }
 
@@ -266,7 +236,7 @@ export const initSearch = () => {
       .catch(() => setMessage(root.dataset.searchError || 'Поиск временно недоступен'))
   }
 
-  const isOpen = () => documentBody.classList.contains('is-search-open')
+  const isOpen = () => rootEl.classList.contains('is-search-open')
 
   const setOpen = open => {
     if (open === isOpen()) return
@@ -280,7 +250,7 @@ export const initSearch = () => {
       void root.offsetWidth
     }
 
-    documentBody.classList.toggle('is-search-open', open)
+    rootEl.classList.toggle('is-search-open', open)
 
     if (open) {
       stopKeyboardTracking = trackKeyboardInset(root, 'search')
@@ -290,7 +260,7 @@ export const initSearch = () => {
       // whole screen lurch. With a real keyboard the field is focused at
       // once, synchronously: from requestAnimationFrame the user-gesture chain
       // is broken and iOS Safari refuses to raise an on-screen one.
-      if (window.matchMedia('(min-width: 1000px)').matches) input.focus({ preventScroll: true })
+      if (window.matchMedia(DESKTOP).matches) input.focus({ preventScroll: true })
       else sheet.focus({ preventScroll: true })
 
       loadIndex()
@@ -306,11 +276,10 @@ export const initSearch = () => {
 
     input.value = ''
     clearButton.hidden = true
-    render([], [])
-    setSection('')
+    render([])
     setMessage('')
 
-    if (lastFocusedElement) lastFocusedElement.focus()
+    if (lastFocusedElement && lastFocusedElement.isConnected) lastFocusedElement.focus({ preventScroll: true })
 
     // Keep the node in the tree until the slide-out animation finishes.
     window.setTimeout(() => {
@@ -318,18 +287,13 @@ export const initSearch = () => {
     }, 240)
   }
 
-  // Take over every existing search trigger, including the ones that used to
-  // hand off to sodo-search. The tab bar stays in reach above the backdrop,
-  // so its search tab closes the sheet again and its other tabs dismiss it.
+  // Take over every search trigger, including links that used to hand off to
+  // sodo-search.
   document.querySelectorAll('[data-ghost-search], [data-search-open]').forEach(trigger => {
     trigger.addEventListener('click', event => {
       event.preventDefault()
       setOpen(!isOpen())
     })
-  })
-
-  document.querySelectorAll('.mobile-tab-item:not([data-ghost-search])').forEach(tab => {
-    tab.addEventListener('click', () => setOpen(false))
   })
 
   closeControls.forEach(control => {
@@ -347,9 +311,10 @@ export const initSearch = () => {
   }, { passive: false })
 
   resultsEl.addEventListener('click', event => {
-    if (event.target.closest('a[href]') && window.simplyStartNavigation) {
-      window.simplyStartNavigation()
-    }
+    if (!event.target.closest('a[href]')) return
+    if (window.simplyStartNavigation) window.simplyStartNavigation()
+    // Back from the post, the page is shown without the sheet over it.
+    window.setTimeout(() => setOpen(false), 0)
   })
 
   input.addEventListener('input', runSearch)
@@ -370,6 +335,8 @@ export const initSearch = () => {
     if (!isOpen()) return
 
     if (event.key === 'Escape') {
+      // Esc closes a zoomed picture first, nothing else.
+      if (document.querySelector('.medium-zoom-image--opened')) return
       event.preventDefault()
       setOpen(false)
       return
