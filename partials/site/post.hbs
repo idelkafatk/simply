@@ -1,6 +1,6 @@
 {{!--
   The post page, one template for notes and articles: tags, title, date (with
-  reading time from 3 minutes), cover, content, actions, subscribe,
+  reading time from 3 minutes), cover, content, actions, subscribe, comments,
   «Ещё почитать», previous/next. Used by post.hbs and every custom-post-*.hbs,
   so posts that still carry an old custom template look the same.
 --}}
@@ -59,7 +59,27 @@
     {{/unless}}{{/if}}
     {{/if}}
 
-    {{!-- No Ghost comments: discussion happens in Telegram (the «Обсудить» button), and subscribing never asks readers to sign up. --}}
+    {{#if comments}}
+    <section class="post-comments">
+        {{comments title="Комментарии" count=false}}
+        {{!--
+          comments-ui is deferred and fixes its config on first render. In "auto"
+          it guesses the scheme from the parent's text colour and ignores .dark on
+          <html>, so set it here: this inline script runs before the bundle.
+          Later toggles are followed by updateCommentsTheme() in main.js.
+        --}}
+        <script>
+        (function () {
+            var script = document.querySelector('script[data-ghost-comments]');
+            if (!script) return;
+            script.setAttribute(
+                'data-color-scheme',
+                document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+            );
+        })();
+        </script>
+    </section>
+    {{/if}}
 </article>
 {{/post}}
 

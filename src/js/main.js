@@ -68,8 +68,58 @@ const simplySetup = () => {
     })
   }
 
+  // The first comments scheme is set by the inline script next to {{comments}},
+  // which runs before the deferred comments-ui bundle. This only follows later
+  // toggles: the bundle watches its script tag's attributes.
+  const updateCommentsTheme = () => {
+    const commentsTheme = rootEl.classList.contains('dark') ? 'dark' : 'light'
+
+    docSelectorAll('script[data-ghost-comments]').forEach(script => {
+      if (script.dataset.colorScheme !== commentsTheme) {
+        script.dataset.colorScheme = commentsTheme
+      }
+    })
+  }
+
+  // comments-ui renders into a srcdoc iframe whose document is transparent, so
+  // Chrome paints the frame canvas opaque white, which shows under light text
+  // in the dark theme. CSS cannot reach it; writing the panel colour into the
+  // frame's document (same origin) can.
+  const paintCommentsFrame = () => {
+    const panel = document.querySelector('.post-comments')
+    if (!panel) return
+
+    const frame = panel.querySelector('iframe[title="comments-frame"]')
+    if (!frame || !frame.contentDocument) return
+
+    frame.contentDocument.documentElement.style.backgroundColor =
+      window.getComputedStyle(documentBody).backgroundColor
+  }
+
+  const watchCommentsFrame = () => {
+    const panel = document.querySelector('.post-comments')
+    if (!panel) return
+
+    // The widget mounts lazily and can re-create its frame on re-render.
+    const frameObserver = new window.MutationObserver(() => {
+      const frame = panel.querySelector('iframe[title="comments-frame"]')
+
+      if (frame && !frame.dataset.simplyPainted) {
+        frame.dataset.simplyPainted = 'true'
+        frame.addEventListener('load', paintCommentsFrame)
+      }
+
+      paintCommentsFrame()
+    })
+
+    frameObserver.observe(panel, { childList: true, subtree: true })
+    paintCommentsFrame()
+  }
+
   const darkMode = () => {
     updateThemeIcons()
+    updateCommentsTheme()
+    paintCommentsFrame()
 
     docSelectorAll('.js-dark-mode').forEach(item => item.addEventListener('click', event => {
       event.preventDefault()
@@ -105,6 +155,7 @@ const simplySetup = () => {
   }
 
   darkMode()
+  watchCommentsFrame()
   themedImages(document)
 
   // Rows that pagination and search add later
@@ -115,6 +166,8 @@ const simplySetup = () => {
   // Theme changes, from the toggle or the system preference
   new window.MutationObserver(() => {
     updateThemeIcons()
+    updateCommentsTheme()
+    paintCommentsFrame()
     themedImages(document)
   }).observe(rootEl, { attributes: true, attributeFilter: ['class'] })
 
