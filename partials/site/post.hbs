@@ -52,11 +52,11 @@
         </button>
     </div>
 
-    {{#if @site.members_enabled}}
+    {{#if @site.members_enabled}}{{#unless @member}}
     <section class="sub-inline sub-box" aria-label="Подписка на блог">
         {{> "site/subscribe-box"}}
     </section>
-    {{/if}}
+    {{/unless}}{{/if}}
     {{/if}}
 
     {{!-- No Ghost comments: discussion happens in Telegram (the «Обсудить» button), and subscribing never asks readers to sign up. --}}
