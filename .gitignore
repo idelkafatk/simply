@@ -40,3 +40,6 @@ yarn.lock
 
 .env
 .idel-blog-app-staging/
+
+# personal Claude Code settings; project skills in .claude/skills are tracked
+.claude/settings.local.json
