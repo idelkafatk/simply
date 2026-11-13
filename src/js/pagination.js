@@ -32,7 +32,6 @@ import InfiniteScroll from 'infinite-scroll'
   }
 
   const finishLoading = () => {
-    document.documentElement.classList.remove('is-feed-loading')
     setButtonState('default')
     $loadingStatus.hidden = true
   }
@@ -47,7 +46,6 @@ import InfiniteScroll from 'infinite-scroll'
   })
 
   infScroll.on('request', function () {
-    document.documentElement.classList.add('is-feed-loading')
     $errorStatus.hidden = true
 
     if ($viewMoreButton.classList.contains('hidden')) {
