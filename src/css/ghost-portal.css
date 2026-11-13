@@ -228,7 +228,7 @@ html.simply-dark .gh-portal-popup-container:not(.full-size) .gh-portal-closeicon
 .gh-portal-popup-container:not(.full-size) .gh-portal-detail-header {
   margin: -22px 0 24px;
   min-height: 36px;
-  padding-inline: 72px;
+  padding-inline: 64px;
   position: static;
 }
 
