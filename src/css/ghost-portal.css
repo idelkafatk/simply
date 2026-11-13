@@ -124,40 +124,36 @@ body {
 /* Close and back
 /* ---------------------------------------------------------- */
 
+/* the same cross as the search sheet's: a plain 22px line cross in the text
+   colour on a 44px target, turning orange on hover, no background */
 .gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container {
-  border-radius: 10px;
+  color: var(--s-text);
+  cursor: pointer;
   display: grid;
-  height: 36px;
+  height: 44px;
   place-items: center;
   position: absolute;
-  right: 10px;
-  top: 10px;
-  transition: background 0.12s;
-  width: 36px;
+  right: 8px;
+  top: 8px;
+  transition: color 0.12s;
+  width: 44px;
 }
 
 .gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container:hover {
-  background: var(--s-surface);
+  color: var(--s-accent);
 }
 
-html.simply-dark .gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container:hover {
-  background: var(--s-fill);
-}
-
-/* Portal paints the cross in the accent colour inline */
+/* Ghost's own icon is a thick, filled cross; draw the search sheet's icon instead */
 .gh-portal-popup-container:not(.full-size) .gh-portal-closeicon {
-  color: var(--s-muted) !important;
-  height: 11px;
-  padding: 0;
-  width: 11px;
+  display: none !important;
 }
 
-.gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container:hover .gh-portal-closeicon {
-  color: var(--s-text) !important;
-}
-
-.gh-portal-closeicon path {
-  stroke-width: 3.6;
+.gh-portal-popup-container:not(.full-size) .gh-portal-closeicon-container::before {
+  background: currentColor;
+  content: "";
+  height: 22px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6L6 18M6 6l12 12'/%3E%3C/svg%3E") center / contain no-repeat;
+  width: 22px;
 }
 
 .gh-portal-popup-container:not(.full-size) .gh-portal-btn-back {
