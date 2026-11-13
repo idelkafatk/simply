@@ -10,7 +10,6 @@ import InfiniteScroll from 'infinite-scroll'
   if (!$feedElement) return
 
   const $viewMoreButton = document.querySelector('.load-more-btn')
-  const $buttonLabel = $viewMoreButton.querySelector('.load-more-label')
   const $loadingStatus = document.querySelector('.feed-loading-status')
   const $errorStatus = document.querySelector('.feed-load-error')
   const $retryButton = $errorStatus.querySelector('.feed-load-retry')
@@ -19,9 +18,6 @@ import InfiniteScroll from 'infinite-scroll'
     const isLoading = state === 'loading'
     $viewMoreButton.classList.toggle('is-loading', isLoading)
     $viewMoreButton.setAttribute('aria-busy', String(isLoading))
-    $buttonLabel.textContent = isLoading
-      ? $viewMoreButton.dataset.labelLoading
-      : $viewMoreButton.dataset.labelDefault
   }
 
   const showButton = () => {

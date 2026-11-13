@@ -3,11 +3,13 @@
 {{#if next}}
 <nav class="pagination" hidden><a class="older-posts" href="{{page_url next}}">Ещё</a></nav>
 
-<button class="act load-more-btn hidden" type="button" aria-busy="false" data-label-default="Показать ещё" data-label-loading="Загрузка…">
+{{!-- While loading, the label turns invisible (keeping the width) and three dots pulse over it, as on itpecpractice.com. --}}
+<button class="act load-more-btn hidden" type="button" aria-busy="false">
     <span class="load-more-label">Показать ещё</span>
+    <span class="dots-loader" aria-hidden="true"><span></span><span></span><span></span></span>
 </button>
 
-<div class="feed-loading-status" role="status" aria-live="polite" hidden>Загрузка…</div>
+<div class="feed-loading-status" role="status" aria-label="Загрузка" hidden><span class="dots-loader" aria-hidden="true"><span></span><span></span><span></span></span></div>
 
 <div class="feed-load-error" role="alert" hidden>
     <span>Не загрузилось.</span>

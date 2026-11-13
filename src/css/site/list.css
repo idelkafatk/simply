@@ -126,6 +126,83 @@
   display: none !important;
 }
 
+/* three pulsing dots, from itpecpractice.com (button-loading-dots) */
+.load-more-btn {
+  position: relative;
+}
+
+.load-more-btn .dots-loader {
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  visibility: hidden;
+}
+
+.load-more-btn.is-loading .load-more-label {
+  visibility: hidden;
+}
+
+.load-more-btn.is-loading .dots-loader {
+  visibility: visible;
+}
+
+.dots-loader {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  gap: 6px;
+}
+
+.feed-loading-status .dots-loader {
+  height: 44px;
+  justify-content: center;
+}
+
+.dots-loader > span {
+  animation: dots-grow 900ms ease-in-out infinite;
+  background-color: currentColor;
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+}
+
+.dots-loader > span:nth-child(1) {
+  animation-delay: -600ms;
+}
+
+.dots-loader > span:nth-child(2) {
+  animation-delay: -300ms;
+}
+
+@keyframes dots-grow {
+  0%,
+  45%,
+  100% {
+    transform: scale(1);
+  }
+
+  22% {
+    transform: scale(1.7);
+  }
+}
+
+@keyframes dots-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots-loader > span {
+    animation-name: dots-pulse;
+  }
+}
+
 .feed-loading-status,
 .feed-load-error {
   color: var(--muted);
