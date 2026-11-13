@@ -118,8 +118,16 @@ export const initSearch = () => {
   let stopKeyboardTracking = () => {}
 
   const setMessage = text => {
+    messageEl.removeAttribute('aria-label')
     messageEl.textContent = text || ''
     messageEl.hidden = !text
+  }
+
+  // While the index loads: three pulsing dots instead of a word
+  const setLoading = () => {
+    messageEl.innerHTML = '<span class="dots-loader" aria-hidden="true"><span></span><span></span><span></span></span>'
+    messageEl.setAttribute('aria-label', root.dataset.searchLoading || 'Загрузка')
+    messageEl.hidden = false
   }
 
   const loadIndex = () => {
@@ -225,7 +233,7 @@ export const initSearch = () => {
       return
     }
 
-    setMessage(root.dataset.searchLoading || 'Загрузка…')
+    setLoading()
 
     loadIndex()
       .then(() => {

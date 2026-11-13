@@ -155,6 +155,28 @@
   height: 48px;
   font-size: 16px;
   border-radius: 12px;
+  position: relative;
+}
+
+/* while sending: the label keeps the width, three white dots pulse over it */
+.m-submit .dots-loader {
+  color: inherit;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  visibility: hidden;
+}
+
+.m-submit.is-loading:disabled {
+  opacity: 1; /* busy, not unavailable: keep the full colour as on itpecpractice.com */
+}
+
+.m-submit.is-loading .m-submit-label {
+  visibility: hidden;
+}
+
+.m-submit.is-loading .dots-loader {
+  visibility: visible;
 }
 
 .m-or {

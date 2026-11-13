@@ -4,7 +4,7 @@
    a post. The forms are real Ghost member forms: Portal's script sends them
    and marks the form .loading / .success / .error. This module adds the
    address check before sending and turns Ghost's classes into the block's
-   states — «Отправка…», «Осталось подтвердить» — without changing its height. */
+   states — dots while sending, «Осталось подтвердить» — without changing its height. */
 
 import { trackKeyboardInset } from './util/keyboard-inset'
 
@@ -43,7 +43,8 @@ const watchForm = form => {
     const sending = form.classList.contains('loading')
 
     button.disabled = sending
-    button.textContent = sending ? button.dataset.labelSending : button.dataset.label
+    button.classList.toggle('is-loading', sending) // the label hides and three dots pulse over it
+    button.setAttribute('aria-busy', String(sending))
 
     if (form.classList.contains('success')) {
       form.classList.remove('success')
