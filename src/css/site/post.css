@@ -101,11 +101,6 @@
   color: var(--link);
 }
 
-/* Ghost native comments */
-.post-comments {
-  margin-top: 40px;
-}
-
 .block-title {
   color: var(--muted);
   font-family: var(--font);
