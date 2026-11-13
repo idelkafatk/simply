@@ -66,7 +66,8 @@
 {{!-- Three posts that share a public tag with this one, newest first; the latest posts when none do. --}}
 <section class="related" aria-labelledby="related-title">
     <h2 class="block-title" id="related-title">Ещё почитать</h2>
-    {{#get "posts" limit="3" filter="tags:[{{post.tags[?(@.visibility=='public')].slug}}]+id:-{{post.id}}" include="tags" as |related|}}
+    {{!-- Same primary (first public) tag; the JSONPath tag filter rendered nothing on Ghost 6.73. --}}
+    {{#get "posts" limit="3" filter="tags:{{post.primary_tag.slug}}+id:-{{post.id}}" include="tags" as |related|}}
         {{#foreach related}}{{> "site/row"}}{{/foreach}}
     {{else}}
         {{#get "posts" limit="3" filter="id:-{{post.id}}" as |latest|}}
