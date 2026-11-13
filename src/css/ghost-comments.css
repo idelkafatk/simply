@@ -284,3 +284,216 @@ body {
     padding: 28px 20px 24px;
   }
 }
+
+/* Dialogs: «Заполните свой профиль», report, delete, sign-in call to action
+/* ----------------------------------------------------------
+   comments-ui opens them in their own full-screen frame (ghost-frames.js marks
+   it html.simply-comments-popup). They take the look of the blog's subscribe
+   dialog: 400px card, 20px corners, black 40% backdrop, 48px controls, the
+   search sheet's cross; a bottom sheet on phones. */
+
+html.simply-comments-popup,
+html.simply-comments-popup body {
+  background: transparent;
+}
+
+/* the frame's colour scheme must match the page's, or the browser paints an
+   opaque canvas under it and the page disappears behind the backdrop */
+html.simply-comments-popup {
+  color-scheme: light;
+}
+
+html.simply-dark.simply-comments-popup {
+  color-scheme: dark;
+}
+
+/* the backdrop: the blog's, instead of a white fade */
+.simply-comments-popup .fixed.bg-gradient-to-b {
+  align-items: center;
+  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, #000 40%, transparent);
+  padding: 16px;
+}
+
+/* the card's wrapper would shrink to its content and sit off-centre */
+.simply-comments-popup .fixed.bg-gradient-to-b > div {
+  max-width: 400px;
+  width: 100%;
+}
+
+.simply-comments-popup [data-testid$="-modal"],
+.simply-comments-popup [data-testid$="-popup"] {
+  background: var(--s-bg);
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 25%);
+  color: var(--s-text);
+  height: auto;
+  max-width: 400px;
+  padding: 32px 28px 28px;
+  text-align: center;
+  width: 100%;
+}
+
+html.simply-dark.simply-comments-popup [data-testid$="-modal"],
+html.simply-dark.simply-comments-popup [data-testid$="-popup"] {
+  background: var(--s-surface);
+  box-shadow: 0 0 0 1px #262a2f, 0 24px 80px rgb(0 0 0 / 50%);
+}
+
+/* the profile dialog: no column of made-up example people, one centred column */
+.simply-comments-popup [data-testid="profile-modal"] > .flex > div:first-child {
+  display: none;
+}
+
+.simply-comments-popup [data-testid="profile-modal"] > .flex,
+.simply-comments-popup [data-testid="profile-modal"] > .flex > div:last-child {
+  display: block;
+  padding: 0;
+}
+
+.simply-comments-popup [data-testid$="-modal"] h1,
+.simply-comments-popup [data-testid$="-popup"] h1 {
+  color: var(--s-text);
+  font-family: var(--s-font);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+  text-align: center;
+}
+
+/* Ghost's full stop after the title */
+.simply-comments-popup [data-testid$="-modal"] h1 > span {
+  display: none;
+}
+
+.simply-comments-popup [data-testid$="-modal"] h1 + p,
+.simply-comments-popup [data-testid$="-popup"] h1 + p {
+  color: var(--s-muted);
+  font-family: var(--s-font);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0 auto 20px;
+  max-width: 300px;
+  padding: 0;
+  text-align: center;
+}
+
+.simply-comments-popup [data-testid$="-modal"] section {
+  margin-top: 0;
+}
+
+.simply-comments-popup [data-testid$="-modal"] label {
+  color: var(--s-muted);
+  font-family: var(--s-font);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.simply-comments-popup [data-testid$="-modal"] label + div {
+  font-size: 13px;
+}
+
+/* fields: the subscribe dialog's */
+.simply-comments-popup [data-testid$="-modal"] input {
+  background: var(--s-bg);
+  border: 1px solid color-mix(in srgb, var(--s-text) 16%, var(--s-bg));
+  border-radius: 12px;
+  color: var(--s-text);
+  font-family: var(--s-font);
+  height: 48px;
+  padding: 0 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+html.simply-dark.simply-comments-popup [data-testid$="-modal"] input {
+  background: var(--s-bg);
+}
+
+.simply-comments-popup [data-testid$="-modal"] input::placeholder {
+  color: var(--s-muted);
+}
+
+.simply-comments-popup [data-testid$="-modal"] input:focus {
+  border-color: var(--s-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--s-accent) 18%, transparent);
+}
+
+/* buttons: 48px with 12px corners; the main one in the accent with white text */
+.simply-comments-popup [data-testid$="-modal"] button:not(.absolute),
+.simply-comments-popup [data-testid$="-popup"] button:not(.absolute) {
+  border-radius: 12px;
+  font-family: var(--s-font);
+  font-size: 16px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.simply-comments-popup [data-testid="save-button"] {
+  background: var(--s-accent) !important;
+  color: #fff !important;
+  margin-top: 20px;
+}
+
+/* «Отмена» and the like: the quiet fill of the blog's «Готово» */
+.simply-comments-popup [data-testid$="-popup"] button[class*="text-neutral-500"] {
+  background: var(--s-fill);
+  color: var(--s-text);
+}
+
+.simply-comments-popup [data-testid$="-popup"] button[class*="text-neutral-500"]:hover {
+  background: var(--s-fill-hover);
+}
+
+/* the cross: the search sheet's, a 22px line cross on a 44px target */
+.simply-comments-popup [data-testid$="-modal"] > button.absolute,
+.simply-comments-popup [data-testid$="-popup"] > button.absolute,
+.simply-comments-popup [data-testid$="-modal"] button.absolute.right-6,
+.simply-comments-popup [data-testid$="-popup"] button.absolute.right-6 {
+  color: var(--s-text);
+  display: grid;
+  height: 44px;
+  opacity: 1;
+  place-items: center;
+  right: 8px;
+  top: 8px;
+  transition: color 0.12s;
+  width: 44px;
+}
+
+.simply-comments-popup button.absolute.right-6:hover {
+  color: var(--s-accent);
+  opacity: 1;
+}
+
+.simply-comments-popup button.absolute.right-6 svg {
+  display: none;
+}
+
+.simply-comments-popup button.absolute.right-6::before {
+  background: currentcolor;
+  content: "";
+  height: 22px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6L6 18M6 6l12 12'/%3E%3C/svg%3E") center / contain no-repeat;
+  width: 22px;
+}
+
+/* phones: a bottom sheet, like the blog's subscribe dialog */
+@media (max-width: 640px) {
+  .simply-comments-popup .fixed.bg-gradient-to-b {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .simply-comments-popup .fixed.bg-gradient-to-b > div {
+    max-width: none;
+  }
+
+  .simply-comments-popup [data-testid$="-modal"],
+  .simply-comments-popup [data-testid$="-popup"] {
+    border-radius: 20px 20px 0 0;
+    max-width: none;
+    padding: 28px 20px calc(24px + env(safe-area-inset-bottom));
+  }
+}

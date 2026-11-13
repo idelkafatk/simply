@@ -578,19 +578,23 @@ html.simply-dark .gh-portal-notification {
   color: var(--s-accent);
 }
 
+/* the search sheet's cross here too: the text colour, orange on hover, no fill */
 .gh-portal-notification-closeicon {
-  border-radius: 8px;
-  color: var(--s-muted);
-  height: 12px;
-  margin: -8px -4px -8px 0;
+  color: var(--s-text);
+  height: 18px;
+  margin: -12px -8px -12px 0;
   opacity: 1;
-  padding: 10px;
-  width: 12px;
+  padding: 13px;
+  transition: color 0.12s;
+  width: 18px;
 }
 
 .gh-portal-notification-closeicon:hover {
-  background: var(--s-fill);
-  color: var(--s-text);
+  color: var(--s-accent);
+}
+
+.gh-portal-notification-closeicon path {
+  stroke-width: 2;
 }
 
 /* Phones: a bottom sheet with rounded top corners, as the subscribe sheet

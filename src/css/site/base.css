@@ -19,6 +19,10 @@ body {
   color: var(--text);
   font: 17px/1.6 var(--font);
   margin: 0;
+  /* Ghost's popups add margin-right: <scrollbar width> to <body> while open, to
+     make up for a scrollbar they expect to vanish; the gutter on <html> keeps
+     that space already, so the page would slide left by half of it */
+  margin-right: 0 !important;
   overflow-x: clip;
 }
 

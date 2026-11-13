@@ -16,7 +16,12 @@
 const FRAMES = {
   'portal-popup': 'portal',
   'portal-notification': 'portal',
-  'comments-frame': 'comments'
+  'comments-frame': 'comments',
+  // comments-ui opens its dialogs in a full-screen frame titled by the popup type
+  addDetailsPopup: 'comments',
+  reportPopup: 'comments',
+  ctaPopup: 'comments',
+  deletePopup: 'comments'
 }
 
 const STYLE_ID = 'simply-frame-css'
@@ -44,6 +49,12 @@ const frameList = () => Array.from(document.querySelectorAll(
 
 const syncTheme = doc => doc.documentElement.classList.toggle('simply-dark', isDark())
 
+// comments-ui dialogs live in a full-screen frame over the page: it must stay transparent
+const POPUP_TITLES = ['addDetailsPopup', 'reportPopup', 'ctaPopup', 'deletePopup']
+const markPopup = (frame, doc) => {
+  if (POPUP_TITLES.includes(frame.getAttribute('title'))) doc.documentElement.classList.add('simply-comments-popup')
+}
+
 // Portal and comments-ui add their own <style> to the head while mounting;
 // ours has to stay after it to win at equal specificity.
 const keepLast = (doc, style) => {
@@ -56,6 +67,7 @@ const styleDocument = frame => {
   if (!doc) return
 
   syncTheme(doc)
+  markPopup(frame, doc)
   if (!css) return
 
   let style = doc.getElementById(STYLE_ID)
