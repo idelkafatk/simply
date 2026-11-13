@@ -6,59 +6,69 @@ routes:
   /offline/:
     template: offline
 
+  # Topics on the home page: unions of existing tags, each with its own RSS.
+  /life/:
+    controller: channel
+    filter: 'tag:[korea,relocation,life]'
+    template: index
+
+  /trips/:
+    controller: channel
+    filter: 'tag:[japan,travel]'
+    template: index
+
+  /tech/:
+    controller: channel
+    filter: 'tag:[tech]'
+    template: index
+
+  # Notes live in the main collection now (so /rss/ carries them); /notes/
+  # stays as a list of them, and their URLs stay /{slug}/.
+  /notes/:
+    controller: channel
+    filter: 'tag:hash-note'
+    template: index
+
+  # Old note topic pages, kept so existing links keep working.
   /notes/guides/:
     controller: channel
     filter: 'tag:hash-note+tag:guides'
-    template: godo-notes-topic
-    limit: 10
+    template: index
 
   /notes/korea/:
     controller: channel
     filter: 'tag:hash-note+tag:korea'
-    template: godo-notes-topic
-    limit: 10
+    template: index
 
   /notes/life/:
     controller: channel
     filter: 'tag:hash-note+tag:life'
-    template: godo-notes-topic
-    limit: 10
+    template: index
 
   /notes/travel/:
     controller: channel
     filter: 'tag:hash-note+tag:travel'
-    template: godo-notes-topic
-    limit: 10
+    template: index
 
   /notes/relocation/:
     controller: channel
     filter: 'tag:hash-note+tag:relocation'
-    template: godo-notes-topic
-    limit: 10
+    template: index
 
   /notes/tech/:
     controller: channel
     filter: 'tag:hash-note+tag:tech'
-    template: godo-notes-topic
-    limit: 10
+    template: index
 
   /notes/japan/:
     controller: channel
     filter: 'tag:hash-note+tag:japan'
-    template: godo-notes-topic
-    limit: 10
+    template: index
 
 collections:
-  /notes/:
-    permalink: /{slug}/
-    template: godo-notes
-    filter: 'tag:hash-note'
-    limit: 10
-
   /:
     permalink: /{slug}/
     template: index
-    filter: 'tag:-hash-note'
 
 taxonomies:
   tag: /tag/{slug}/
