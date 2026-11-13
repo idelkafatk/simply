@@ -1,23 +1,21 @@
-{{!-- Layout --}}
 {{!< default}}
+{{!-- A static page: title, cover and content in the post column, nothing below. --}}
+{{#contentFor "special_body_class"}}is-post is-page{{/contentFor}}
 
 {{#post}}
-
-{{!-- Class for <body> --}}
-{{#contentFor "special_body_class"}}is-article{{/contentFor}}
-
-<article class="post py-vmin8 relative">
+<article class="post">
     {{#match @page.show_title_and_feature_image}}
-    <header class="post-header godo-canvas">
-        <h1 class="post-title text-32 md:text-4xl lg:text-44 text-title leading-tight">{{title}}</h1>
-        {{#if custom_excerpt}}<p class="post-excerpt mt-6 text-22 text-gray-500">{{custom_excerpt}}</p>{{/if}}
-
-        {{!-- Post Image - partials/article/article-featured-image.hbs --}}
-        {{#if feature_image}}{{> "article/article-featured-image" image=feature_image class="block mt-12 kg-width-wide"}}{{/if}}
-    </header>
+    <h1 class="post-title">{{title}}</h1>
+    {{#if feature_image}}
+    <img class="cover"
+        src="{{img_url feature_image size="l"}}"
+        srcset="{{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w, {{img_url feature_image size="xl"}} 2000w"
+        sizes="(max-width: 712px) calc(100vw - 32px), 632px"
+        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{/if}}"
+        fetchpriority="high" decoding="async">
+    {{/if}}
     {{/match}}
 
-    <section id="post-body" class="post-body godo-canvas mx-auto relative {{#match @custom.post_font "=" "font-serif"}}font-serif{{else}}font-sans{{/match}}">{{content}}</section>
+    <div class="content post-body" id="post-body">{{content}}</div>
 </article>
-
 {{/post}}

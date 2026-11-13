@@ -1,41 +1,23 @@
 {{!--
-    Custom search UI, replacing Ghost's sodo-search.
-
-    sodo-search is excluded in default.hbs via {{ghost_head exclude="search"}},
-    so this partial owns the whole search experience. The Content API key below
-    is public and read-only — Ghost already exposes it in page source.
+    Custom search UI, replacing Ghost's sodo-search (excluded in default.hbs via
+    {{ghost_head exclude="search"}}). A bottom sheet on phones, a centred dialog
+    on desktop; results reuse the list rows. Behaviour: src/js/search.js.
+    The Content API key is public and read-only.
 --}}
 <div
     class="search"
     data-search
-    data-search-key="600308f3be3b0785a81df2b8a8"
-    data-search-recent="{{t "Latest posts"}}"
-    data-search-empty="{{t "Nothing found"}}"
-    data-search-loading="{{t "Loading"}}"
-    data-search-error="{{t "Search is unavailable"}}"
+    data-search-key="{{content_api_key}}"
+    data-search-empty="Ничего не найдено"
+    data-search-loading="Загрузка…"
+    data-search-error="Поиск временно недоступен"
     hidden
 >
-    <button
-        class="search-backdrop"
-        type="button"
-        tabindex="-1"
-        aria-label="{{t "Close search"}}"
-        aria-hidden="true"
-        data-search-close
-    ></button>
+    <button class="search-backdrop" type="button" tabindex="-1" aria-label="Закрыть поиск" aria-hidden="true" data-search-close></button>
 
-    <div
-        class="search-sheet"
-        id="search-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-label="{{t "Search"}}"
-        data-search-sheet
-        tabindex="-1"
-    >
+    <div class="search-sheet" id="search-sheet" role="dialog" aria-modal="true" aria-label="Поиск" data-search-sheet tabindex="-1">
         <div class="search-field">
-            {{> "icons/search" class="search-field-icon"}}
-
+            {{> "site/icon" name="search" class="search-field-icon"}}
             <input
                 class="search-input"
                 type="search"
@@ -44,43 +26,17 @@
                 autocapitalize="off"
                 spellcheck="false"
                 enterkeyhint="search"
-                placeholder="{{t "Search"}}"
-                aria-label="{{t "Search"}}"
+                placeholder="Поиск"
+                aria-label="Поиск"
                 aria-controls="search-results"
                 data-search-input
             />
-
-            <button
-                class="search-clear"
-                type="button"
-                aria-label="{{t "Close search"}}"
-                data-search-clear
-                hidden
-            >
-                {{> "icons/close"}}
-            </button>
-
-            <button
-                class="search-cancel"
-                type="button"
-                aria-label="{{t "Close search"}}"
-                title="{{t "Close search"}}"
-                data-search-close
-            >
-                {{> "icons/close"}}
-            </button>
+            <button class="search-clear" type="button" aria-label="Очистить" data-search-clear hidden>{{> "site/icon" name="close"}}</button>
+            <button class="search-cancel" type="button" aria-label="Закрыть поиск" title="Закрыть поиск" data-search-close>{{> "site/icon" name="close"}}</button>
         </div>
 
-        <p class="search-section" data-search-section hidden></p>
+        <div class="search-results" id="search-results" role="listbox" aria-label="Поиск" data-search-results></div>
 
-        <div
-            class="search-results"
-            id="search-results"
-            role="listbox"
-            aria-label="{{t "Search"}}"
-            data-search-results
-        ></div>
-
-        <p class="search-message" data-search-message></p>
+        <p class="search-message" data-search-message hidden></p>
     </div>
 </div>

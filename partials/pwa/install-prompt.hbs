@@ -22,7 +22,7 @@
                 aria-label="{{t "Close"}}"
                 title="{{t "Close"}}"
                 data-pwa-dismiss>
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-close"></use></svg>
+            {{> "site/icon" name="close"}}
         </button>
 
         <div class="pwa-install-head">
@@ -40,8 +40,8 @@
 
         {{!-- Chromium and friends: the browser install flow. --}}
         <div class="pwa-install-actions" data-pwa-actions hidden>
-            <button class="button is-primary" type="button" data-pwa-accept>{{t "Install"}}</button>
-            <button class="button is-white" type="button" data-pwa-dismiss>{{t "Not now"}}</button>
+            <button class="btn" type="button" data-pwa-accept>{{t "Install"}}</button>
+            <button class="act" type="button" data-pwa-dismiss>{{t "Not now"}}</button>
         </div>
 
         {{!-- iOS Safari has no install API, so walk the reader through the menu. --}}
@@ -68,7 +68,7 @@
             </p>
 
             <div class="pwa-install-actions">
-                <button class="button is-white" type="button" data-pwa-dismiss>{{t "Got it"}}</button>
+                <button class="act" type="button" data-pwa-dismiss>{{t "Got it"}}</button>
             </div>
         </div>
     </div>

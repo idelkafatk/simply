@@ -1,0 +1,2 @@
+{{!-- Short month name for dates like «11 ноя»; Ghost's own "MMM" gives «нояб.» --}}
+{{~#match (date format="M") "1"}}янв{{else match (date format="M") "2"}}фев{{else match (date format="M") "3"}}мар{{else match (date format="M") "4"}}апр{{else match (date format="M") "5"}}мая{{else match (date format="M") "6"}}июн{{else match (date format="M") "7"}}июл{{else match (date format="M") "8"}}авг{{else match (date format="M") "9"}}сен{{else match (date format="M") "10"}}окт{{else match (date format="M") "11"}}ноя{{else}}дек{{/match~}}

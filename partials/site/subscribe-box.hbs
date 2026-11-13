@@ -1,0 +1,48 @@
+{{!--
+  Subscribe content, identical in the modal and under a post. A real Ghost
+  member form: Portal's script sends it (data-members-form / data-members-email)
+  and marks the form .loading / .success / .error; src/js/subscribe.js turns
+  those into the states below without changing the block's height.
+  "Уведомления" is the web push toggle from src/js/pwa.js (data-push-* hooks):
+  it stays hidden where push is unavailable.
+--}}
+<div class="m-form">
+    <img class="m-ava" src="{{asset "images/avatar-idel.jpg"}}" width="64" height="64" alt="" loading="lazy">
+    <h2{{#if titleId}} id="{{titleId}}"{{/if}}>Подписка на блог</h2>
+    <p class="m-lead">Новые посты приходят на почту. Отписаться можно в&nbsp;один клик.</p>
+    <form class="m-fields" data-members-form="subscribe" data-subscribe-form novalidate>
+        <label class="m-input">
+            <span>{{> "site/icon" name="mail"}}</span>
+            <input type="email" name="email" placeholder="Email" aria-label="Email" autocomplete="email" inputmode="email" data-members-email required>
+        </label>
+        <p class="m-error" aria-live="polite" data-subscribe-error></p>
+        <button class="btn m-submit" type="submit" data-label="Подписаться" data-label-sending="Отправка…">Подписаться</button>
+    </form>
+    <div class="m-or">или</div>
+    <div class="m-alt">
+        {{#if @custom.telegram_channel_url}}
+        <a class="m-tg" href="{{@custom.telegram_channel_url}}" target="_blank" rel="noopener">{{> "site/icon" name="telegram"}}Telegram</a>
+        {{/if}}
+        <span class="push-toggle" data-push-card hidden>
+            <span class="push-subscribe"
+                  data-push-subscribe
+                  data-message-enabled=""
+                  data-message-install="Сначала добавить блог на экран «Домой»"
+                  data-message-denied="Уведомления запрещены в настройках браузера"
+                  data-message-error="Не получилось включить, ещё раз?"
+                  data-message-disable-error="Не получилось выключить, ещё раз?"
+                  hidden>
+                <button class="m-tg" type="button" data-push-enable>{{> "site/icon" name="bell"}}Уведомления</button>
+                {{!-- On: the same caption in the link colour, so the toggle never changes width and the row stays on one line --}}
+                <button class="m-tg" type="button" aria-pressed="true" aria-label="Уведомления включены, выключить" title="Выключить уведомления" data-push-disable hidden>{{> "site/icon" name="bell"}}Уведомления</button>
+                <span class="m-status" data-push-status aria-live="polite"></span>
+            </span>
+        </span>
+    </div>
+</div>
+<div class="m-done" aria-live="polite">
+    <span class="m-check">{{> "site/icon" name="check"}}</span>
+    <h2>Осталось подтвердить</h2>
+    <p class="m-lead">Письмо со ссылкой ушло на <b class="m-email" data-subscribe-email></b></p>
+    {{#if modal}}<button class="btn-ghost m-close" type="button" data-subscribe-close>Готово</button>{{/if}}
+</div>

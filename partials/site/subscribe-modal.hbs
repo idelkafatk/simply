@@ -1,0 +1,9 @@
+{{!-- Opened by «Подписаться» in the bar; a bottom sheet on phones. Not rendered for members. --}}
+{{#if @site.members_enabled}}{{#unless @member}}
+<div class="modal" id="subscribe" role="dialog" aria-modal="true" aria-labelledby="subscribe-title" data-subscribe-modal hidden>
+    <div class="modal-card sub-box">
+        <button class="modal-x ibtn" type="button" aria-label="Закрыть" data-subscribe-close>{{> "site/icon" name="close"}}</button>
+        {{> "site/subscribe-box" modal=true titleId="subscribe-title"}}
+    </div>
+</div>
+{{/unless}}{{/if}}

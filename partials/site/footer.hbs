@@ -1,0 +1,30 @@
+{{!--
+  Footer on every page: Telegram (theme setting), then an icon for each social
+  field filled in the author's Ghost profile, RSS, and the author's city on the
+  right. Ghost has no Telegram field, hence the theme setting.
+--}}
+<footer class="foot">
+    <div class="socials">
+        {{#if @custom.telegram_channel_url}}
+        <a href="{{@custom.telegram_channel_url}}" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram">{{> "site/icon" name="telegram"}}</a>
+        {{/if}}
+        {{#get "authors" limit="1" order="created_at asc" as |site_authors|}}
+            {{#foreach site_authors}}
+                {{#if threads}}<a href="{{social_url type="threads"}}" target="_blank" rel="me noopener" aria-label="Threads" title="Threads">{{> "site/icon" name="threads"}}</a>{{/if}}
+                {{#if twitter}}<a href="{{social_url type="twitter"}}" target="_blank" rel="me noopener" aria-label="X" title="X">{{> "site/icon" name="twitter"}}</a>{{/if}}
+                {{#if bluesky}}<a href="{{social_url type="bluesky"}}" target="_blank" rel="me noopener" aria-label="Bluesky" title="Bluesky">{{> "site/icon" name="bluesky"}}</a>{{/if}}
+                {{#if mastodon}}<a href="{{social_url type="mastodon"}}" target="_blank" rel="me noopener" aria-label="Mastodon" title="Mastodon">{{> "site/icon" name="mastodon"}}</a>{{/if}}
+                {{#if instagram}}<a href="{{social_url type="instagram"}}" target="_blank" rel="me noopener" aria-label="Instagram" title="Instagram">{{> "site/icon" name="instagram"}}</a>{{/if}}
+                {{#if youtube}}<a href="{{social_url type="youtube"}}" target="_blank" rel="me noopener" aria-label="YouTube" title="YouTube">{{> "site/icon" name="youtube"}}</a>{{/if}}
+                {{#if tiktok}}<a href="{{social_url type="tiktok"}}" target="_blank" rel="me noopener" aria-label="TikTok" title="TikTok">{{> "site/icon" name="tiktok"}}</a>{{/if}}
+                {{#if linkedin}}<a href="{{social_url type="linkedin"}}" target="_blank" rel="me noopener" aria-label="LinkedIn" title="LinkedIn">{{> "site/icon" name="linkedin"}}</a>{{/if}}
+                {{#if facebook}}<a href="{{social_url type="facebook"}}" target="_blank" rel="me noopener" aria-label="Facebook" title="Facebook">{{> "site/icon" name="facebook"}}</a>{{/if}}
+                {{#if website}}<a href="{{website}}" target="_blank" rel="me noopener" aria-label="Сайт" title="Сайт">{{> "site/icon" name="website"}}</a>{{/if}}
+                <a href="{{@site.url}}/rss/" aria-label="RSS" title="RSS">{{> "site/icon" name="rss"}}</a>
+                {{#if location}}<span class="geo">{{> "site/icon" name="geo"}}{{location}}</span>{{/if}}
+            {{/foreach}}
+        {{else}}
+            <a href="{{@site.url}}/rss/" aria-label="RSS" title="RSS">{{> "site/icon" name="rss"}}</a>
+        {{/get}}
+    </div>
+</footer>

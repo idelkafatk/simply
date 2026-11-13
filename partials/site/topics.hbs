@@ -1,0 +1,13 @@
+{{!--
+  Topics: quiet text links on one line, real links to the routes.yaml channels.
+  The active one is dark and underlined in the accent colour. A page that is
+  not a topic (a tag, the notes, the author) passes its name as extra=… and
+  shows it as one more, active, link.
+--}}
+<nav class="tabs" aria-label="Темы">
+    <a href="{{@site.url}}/"{{#unless extra}}{{#match relativeUrl "/"}} class="on" aria-current="page"{{else match relativeUrl "~^" "/page/"}} class="on" aria-current="page"{{/match}}{{/unless}}>Все</a>
+    <a href="{{@site.url}}/life/"{{#match relativeUrl "~^" "/life/"}} class="on" aria-current="page"{{/match}}>Жизнь</a>
+    <a href="{{@site.url}}/trips/"{{#match relativeUrl "~^" "/trips/"}} class="on" aria-current="page"{{/match}}>Поездки</a>
+    <a href="{{@site.url}}/tech/"{{#match relativeUrl "~^" "/tech/"}} class="on" aria-current="page"{{/match}}>Технологии</a>
+    {{#if extra}}<a href="{{relativeUrl}}" class="on" aria-current="page">{{extra}}</a>{{/if}}
+</nav>

@@ -1,0 +1,103 @@
+{{!--
+  The post page, one template for notes and articles: tags, title, date (with
+  reading time from 3 minutes), cover, content, actions, subscribe, comments,
+  «Ещё почитать», previous/next. Used by post.hbs and every custom-post-*.hbs,
+  so posts that still carry an old custom template look the same.
+--}}
+{{#contentFor "special_body_class"}}is-post{{/contentFor}}
+
+{{#post}}
+<article class="post">
+    {{#if tags}}
+    <div class="tags post-tags">
+        {{#foreach tags visibility="public"}}
+            <a class="tag" href="{{#match slug "korea"}}{{@site.url}}/life/{{else match slug "relocation"}}{{@site.url}}/life/{{else match slug "life"}}{{@site.url}}/life/{{else match slug "japan"}}{{@site.url}}/trips/{{else match slug "travel"}}{{@site.url}}/trips/{{else match slug "tech"}}{{@site.url}}/tech/{{else}}{{url}}{{/match}}">{{name}}</a>
+        {{/foreach}}
+    </div>
+    {{/if}}
+
+    <h1 class="post-title">{{title}}</h1>
+
+    <div class="meta">
+        <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D"}} {{> "site/month-short"}} {{date format="YYYY"}}</time>
+        {{#match reading_time ">=" 3}}<span>{{reading_time minute="1 мин" minutes="% мин"}}</span>{{/match}}
+    </div>
+
+    {{#if feature_image}}
+    <img class="cover"
+        src="{{img_url feature_image size="l"}}"
+        srcset="{{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w, {{img_url feature_image size="xl"}} 2000w"
+        sizes="(max-width: 712px) calc(100vw - 32px), 632px"
+        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{/if}}"
+        fetchpriority="high" decoding="async">
+    {{/if}}
+
+    <div class="content post-body" id="post-body">{{content}}</div>
+
+    {{#if access}}
+    <div class="post-actions">
+        {{!-- «Обсудить» opens the post's own Telegram discussion when the bot has
+              written one into the post (telegramDiscussion() in src/js/post.js),
+              otherwise the channel. --}}
+        <span class="act-wrap" data-telegram-discussion{{#unless @custom.telegram_channel_url}} hidden{{/unless}}>
+            <a class="act" href="{{@custom.telegram_channel_url}}" target="_blank" rel="noopener" data-telegram-discussion-link>{{> "site/icon" name="chat"}}Обсудить</a>
+        </span>
+        <button class="act share-link" type="button"
+            data-share-link
+            data-share-url="{{url absolute="true"}}"
+            data-share-title="{{title}}"
+            data-message-copied="Скопировано">
+            <span class="share-icons">{{> "site/icon" name="share"}}{{> "site/icon" name="check"}}</span>
+            <span class="share-text"><span class="share-link-text" aria-live="polite">Поделиться</span><span class="share-sizer" aria-hidden="true">Скопировано</span></span>
+        </button>
+    </div>
+
+    {{#if @site.members_enabled}}{{#unless @member}}
+    <section class="sub-inline sub-box" aria-label="Подписка на блог">
+        {{> "site/subscribe-box"}}
+    </section>
+    {{/unless}}{{/if}}
+    {{/if}}
+
+    {{#if comments}}
+    <section class="post-comments">
+        {{comments title="Комментарии" count=false}}
+        {{!--
+          comments-ui is deferred and fixes its config on first render. In "auto"
+          it guesses the scheme from the parent's text colour and ignores .dark on
+          <html>, so set it here: this inline script runs before the bundle.
+          Later toggles are followed by updateCommentsTheme() in main.js.
+        --}}
+        <script>
+        (function () {
+            var script = document.querySelector('script[data-ghost-comments]');
+            if (!script) return;
+            script.setAttribute(
+                'data-color-scheme',
+                document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+            );
+        })();
+        </script>
+    </section>
+    {{/if}}
+</article>
+{{/post}}
+
+{{!-- Three posts that share a public tag with this one, newest first; the latest posts when none do. --}}
+<section class="related" aria-labelledby="related-title">
+    <h2 class="block-title" id="related-title">Ещё почитать</h2>
+    {{#get "posts" limit="3" filter="tags:[{{post.tags[?(@.visibility=='public')].slug}}]+id:-{{post.id}}" include="tags" as |related|}}
+        {{#foreach related}}{{> "site/row"}}{{/foreach}}
+    {{else}}
+        {{#get "posts" limit="3" filter="id:-{{post.id}}" as |latest|}}
+            {{#foreach latest}}{{> "site/row"}}{{/foreach}}
+        {{/get}}
+    {{/get}}
+</section>
+
+{{#if @custom.show_prev_and_next_post}}{{#post}}
+<nav class="pn" aria-label="Соседние публикации">
+    {{#prev_post}}<a class="prev" href="{{url}}" title="{{title}}">{{> "site/icon" name="left"}}<span>{{title}}</span></a>{{else}}<span></span>{{/prev_post}}
+    {{#next_post}}<a class="next" href="{{url}}" title="{{title}}"><span>{{title}}</span>{{> "site/icon" name="right"}}</a>{{else}}<span></span>{{/next_post}}
+</nav>
+{{/post}}{{/if}}

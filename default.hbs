@@ -1,29 +1,15 @@
 <!DOCTYPE html>
-<!--
-    Design by:
-    ——————————
-        GODO FREDO
-        ✉ https://godofredo.ninja
-        ✎ @GodoFredoNinja
-        ✈ Lima - Perú
--->
 <html lang="{{@site.locale}}"{{#match @custom.color_scheme "Dark"}} class="dark"{{/match}}>
 <head>
-    {{!-- Document Settings --}}
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     {{!--
-      Page Meta
-
-      Collections from routes.yaml have no title of their own, so {{meta_title}} drops to its
-      fallback branch: the site title plus a page suffix that Ghost adds whenever the collection
-      holds more than one post — even on the first page. That turns /notes/ into "Idel.Blog
-      (Page 1)". Name the notes section explicitly and keep the page number from page two on.
+      Collections and channels from routes.yaml have no title of their own, so
+      {{meta_title}} falls back to the site title plus "(Page 1)". The topic
+      channels get their own name; the page number only shows from page two on.
     --}}
-    <title>{{#match relativeUrl "~^" "/notes/"}}{{t "Notes"}}{{#is "paged"}} ({{t "Page"}} {{pagination.page}}){{/is}} - {{@site.title}}{{else}}{{#is "paged"}}{{meta_title}}{{else}}{{meta_title page=""}}{{/is}}{{/match}}</title>
+    <title>{{#match relativeUrl "~^" "/life/"}}Жизнь{{#is "paged"}} ({{t "Page"}} {{pagination.page}}){{/is}} — {{@site.title}}{{else match relativeUrl "~^" "/trips/"}}Поездки{{#is "paged"}} ({{t "Page"}} {{pagination.page}}){{/is}} — {{@site.title}}{{else match relativeUrl "~^" "/tech/"}}Технологии{{#is "paged"}} ({{t "Page"}} {{pagination.page}}){{/is}} — {{@site.title}}{{else match relativeUrl "~^" "/notes/"}}{{t "Notes"}}{{#is "paged"}} ({{t "Page"}} {{pagination.page}}){{/is}} — {{@site.title}}{{else}}{{#is "paged"}}{{meta_title}}{{else}}{{meta_title page=""}}{{/is}}{{/match}}</title>
 
-    {{!-- Mobile Meta --}}
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ffffff" data-theme-color>
@@ -80,7 +66,7 @@
             root.style.colorScheme = theme;
 
             if (themeColor) {
-                themeColor.setAttribute('content', isDark ? '#151719' : '#ffffff');
+                themeColor.setAttribute('content', isDark ? '#161719' : '#ffffff');
             }
         }
 
@@ -123,56 +109,38 @@
     }());
     </script>
 
-    {{!-- Fonts -> Rubik=400,500,600,700 PT Serift=400,700 --}}
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-    <noscript><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"></noscript>
-    {{!-- <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"> --}}
+    {{!-- Rubik for everything, the post body included --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 
-    {{!-- Preload Hero Image --}}
-    {{#if feature_image}}
-    <link rel="preload" as="image" href="{{img_url feature_image size="l"}}">
-    {{/if}}
+    {{!-- The cover is the largest thing on the first screen of a post --}}
+    {{#is "post"}}{{#if feature_image}}
+    <link rel="preload" as="image" href="{{img_url feature_image size="l"}}" imagesrcset="{{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w, {{img_url feature_image size="xl"}} 2000w" imagesizes="(max-width: 712px) calc(100vw - 32px), 632px" fetchpriority="high">
+    {{/if}}{{/is}}
 
-    {{!-- Styles --}}
     <link rel="stylesheet" type="text/css" href="{{asset "styles/main.css"}}"/>
-    {{!-- <style>{{> "main-styles"}}</style> --}}
 
     {{!-- Ghost outputs important style and meta data with this tag.
           "search" is excluded because the theme ships its own search UI
           (partials/search.hbs) instead of loading sodo-search. --}}
     {{ghost_head exclude="search"}}
 
-    {{!-- Block for Headers --}}
     {{{block "header"}}}
 </head>
-<body class="{{block "special_body_class"}}">
-    <div class="simply-viewport flex flex-col justify-start">
-        {{!-- Header Content with User Account ./partials/layout/header-user-account.hbs --}}
-        {{#match @custom.header "Default"}}{{> "layout/header"}}{{/match}}
+<body class="{{body_class}} {{block "special_body_class"}}">
+    <div class="col">
+        {{> "site/bar"}}
 
-        {{!-- Header With Drop Down --}}
-        {{#match @custom.header "Drop Down Menu"}}{{> "layout/header" hasDropDown=true}}{{/match}}
+        <main class="page" id="main">{{{body}}}</main>
 
-        {{!-- All the main content gets inserted here, index.hbs, post.hbs, etc --}}
-        <main class="simply-main relative min-h-lg">{{{body}}}</main>
-
-        {{!-- Footer Default ./partials/layout/footer.hbs --}}
-        {{#match @custom.footer "Default"}}{{>"layout/footer"}}{{/match}}
-
-        {{!-- Footer - Dark ./partials/layout/footer-dark.hbs --}}
-        {{#match @custom.footer "Dark"}}{{>"layout/footer-dark"}}{{/match}}
-
-        {{!-- Footer Not Menu ./partials/layout/footer-not-menu.hbs --}}
-        {{#match @custom.footer "No Secondary Navigation"}}{{>"layout/footer-not-menu"}}{{/match}}
+        {{> "site/footer"}}
     </div>
 
-    {{!-- Mobile Navigation stays outside the pull-to-refresh transform container. --}}
-    {{> "mobile-navigation"}}
+    {{!-- Loading bar for page-to-page navigation (src/js/navigation.js) --}}
+    <div class="loadingBar" role="progressbar" aria-label="{{t "Loading..."}}" aria-hidden="true"></div>
 
-    {{!-- Loading Bar --}}
-    <div class="loadingBar top-0 fixed right-0 left-0 hidden" role="progressbar" aria-label="{{t "Loading..."}}" aria-hidden="true"></div>
-
+    {{!-- Pull to refresh in the installed app (src/js/navigation.js) --}}
     <div
         class="pull-to-refresh"
         data-pull-to-refresh
@@ -187,14 +155,12 @@
         <span class="sr-only" data-pull-to-refresh-status>{{t "Pull to refresh"}}</span>
     </div>
 
-    {{!-- Search --}}
+    {{> "site/subscribe-modal"}}
+
     {{> "search"}}
 
     {{!-- PWA install invitation, revealed after a few articles --}}
     {{> "pwa/install-prompt"}}
-
-    {{!-- Icons --}}
-    {{> "icons/icons-symbol-defs"}}
 
     {{!-- Scripts URL --}}
     <script>
@@ -202,17 +168,13 @@
         var prismJsComponents = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/';
     </script>
 
-    {{!-- Ghost outputs important scripts and data with this tag --}}
     {{ghost_foot}}
 
-    {{!-- script --}}
     {{{block "scripts"}}}
 
-    {{!-- Main scripts --}}
     <script src="{{#is "post, page"}}{{asset "scripts/post.js"}}{{else}}{{asset "scripts/main.js"}}{{/is}}" defer></script>
     <script src="{{asset "scripts/pwa.js"}}" defer></script>
 
-    {{!-- Pagination Infinite Scroll --}}
     {{#match @custom.pagination "Infinite Scroll"}}{{#if pagination.next}}<script src="{{asset "scripts/pagination.js"}}" defer async></script>{{/if}}{{/match}}
 </body>
 </html>

@@ -1,0 +1,29 @@
+{{!--
+  The list on home, the topic channels, a tag and the author: topics, then the
+  posts under month headings, paginated by Ghost with "load more"
+  (src/js/pagination.js appends the next page's .js-story rows).
+
+  Month headings are server-side: every row carries the heading of its month,
+  and a rule next to it hides that heading when the row before is from the same
+  month. Handlebars cannot look at the previous item of a loop, but CSS can look
+  at the previous sibling, and it keeps working across appended pages.
+--}}
+{{> "site/topics" extra=extra}}
+
+<div class="list js-feed-entry">
+    {{#foreach posts}}
+    <div class="entry js-story" data-month="{{date format="YYYY-MM"}}">
+        <style>.entry[data-month="{{date format="YYYY-MM"}}"]+.entry[data-month="{{date format="YYYY-MM"}}"]>.month{display:none}</style>
+        <h2 class="month">{{date format="MMMM YYYY"}}</h2>
+        {{#is "paged"}}
+            {{> "site/row"}}
+        {{else}}
+            {{#match @index "<" 6}}{{> "site/row" eager=true}}{{else}}{{> "site/row"}}{{/match}}
+        {{/is}}
+    </div>
+    {{else}}
+    <p class="empty">Здесь пока пусто</p>
+    {{/foreach}}
+</div>
+
+{{pagination}}

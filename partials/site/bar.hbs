@@ -1,0 +1,28 @@
+{{!--
+  One bar on every page. Left: avatar and name, home. Right: subscribe, search,
+  theme, at the same pixels on every page. On a list it scrolls away with the
+  page; on a post or page it sticks, hides while reading down and casts a soft
+  shadow once lifted (src/js/main.js, stickyBar). The back arrow hangs in the
+  margin left of the column, so the avatar never moves; phones hide it.
+--}}
+<header class="bar" data-bar>
+    <a class="me" href="{{@site.url}}/" aria-label="{{@site.title}}, все тексты">
+        {{> "site/icon" name="back" class="arrow"}}
+        <img src="{{asset "images/avatar-idel.jpg"}}" width="28" height="28" alt="">
+        <span>{{@site.title}}</span>
+    </a>
+    <div class="tools">
+        {{#if @site.members_enabled}}
+            {{#if @member}}
+                <a class="ibtn" href="#/portal/account" data-portal="account" aria-label="Аккаунт" title="Аккаунт">{{> "site/icon" name="person"}}</a>
+            {{else}}
+                <button class="btn btn-sm" type="button" data-subscribe-open aria-haspopup="dialog">Подписаться</button>
+            {{/if}}
+        {{/if}}
+        <button class="ibtn" type="button" data-search-open aria-label="Поиск" title="Поиск" aria-haspopup="dialog" aria-controls="search-sheet">{{> "site/icon" name="search"}}</button>
+        <button class="ibtn theme js-dark-mode" type="button" aria-label="Сменить тему" title="Сменить тему">
+            {{> "site/icon" name="moon" class="icon--moon"}}
+            {{> "site/icon" name="sun" class="icon--sunny hidden"}}
+        </button>
+    </div>
+</header>

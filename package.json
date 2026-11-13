@@ -2,7 +2,7 @@
   "name": "simply",
   "description": "simply theme for ghost by @GodoFredoNinja",
   "demo": "https://godofredo.ninja",
-  "version": "0.8.15",
+  "version": "0.9.0",
   "engines": {
     "ghost": ">=5.0.0"
   },
@@ -74,23 +74,6 @@
       ]
     },
     "custom": {
-      "header": {
-        "type": "select",
-        "options": [
-          "Default",
-          "Drop Down Menu"
-        ],
-        "default": "Default"
-      },
-      "footer": {
-        "type": "select",
-        "options": [
-          "Default",
-          "Dark",
-          "No Secondary Navigation"
-        ],
-        "default": "Default"
-      },
       "color_scheme": {
         "type": "select",
         "options": [
@@ -153,19 +136,9 @@
         "default": "font-serif",
         "group": "post"
       },
-      "show_newsletter": {
-        "type": "boolean",
-        "default": false,
-        "group": "post"
-      },
       "show_prev_and_next_post": {
         "type": "boolean",
         "default": true,
-        "group": "post"
-      },
-      "newsletter_text": {
-        "type": "text",
-        "default": "Sign up for more like this",
         "group": "post"
       },
       "telegram_channel_url": {
